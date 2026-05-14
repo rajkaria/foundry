@@ -9,8 +9,10 @@ interface Stat {
   label: string;
   value: number;
   format?: (n: number) => string;
+  decimals?: number;
   delta?: string;
   trend: number[];
+  unit?: string;
 }
 
 const stats: Stat[] = [
@@ -39,9 +41,11 @@ const stats: Stat[] = [
     trend: [0, 1, 1, 2, 3, 4, 6, 7, 9],
   },
   {
-    label: "Inference revenue distributed",
+    label: "Revenue distributed",
     value: 0.42,
-    format: (n) => `${n.toFixed(2)} OG`,
+    format: (n) => n.toFixed(2),
+    decimals: 2,
+    unit: "OG",
     delta: "+0.18 this week",
     trend: [0.01, 0.03, 0.06, 0.1, 0.14, 0.2, 0.27, 0.34, 0.42],
   },
@@ -50,7 +54,16 @@ const stats: Stat[] = [
 export function Dashboard() {
   return (
     <section className="relative border-t border-hairline py-28">
-      <div className="mx-auto max-w-[1280px] px-6">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[420px]"
+        style={{
+          background:
+            "radial-gradient(60% 60% at 50% 0%, color-mix(in oklab, var(--ember-900) 18%, transparent), transparent 70%)",
+        }}
+      />
+
+      <div className="relative mx-auto max-w-[1280px] px-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="text-caption text-ember-400">Forge in Public</p>
@@ -72,38 +85,82 @@ export function Dashboard() {
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{
-                duration: 0.4,
-                delay: i * 0.06,
+                duration: 0.5,
+                delay: i * 0.08,
                 ease: [0.32, 0.72, 0, 1],
               }}
-              className="flex flex-col justify-between gap-3 bg-ink-900 p-6"
+              className="group relative flex flex-col justify-between gap-3 bg-ink-900 p-6 transition-colors hover:bg-ink-800"
             >
               <div>
                 <p className="text-caption text-platinum-400">{s.label}</p>
-                <p className="text-display-md mt-3 tabular text-platinum-100">
-                  <LiveCounter value={s.value} format={s.format} />
+                <p className="text-display-md mt-4 tabular text-platinum-100 flex items-baseline gap-1">
+                  <LiveCounter
+                    value={s.value}
+                    format={s.format}
+                    decimals={s.decimals}
+                    duration={1.8}
+                  />
+                  {s.unit && (
+                    <span className="text-title-md text-platinum-400">
+                      {s.unit}
+                    </span>
+                  )}
                 </p>
                 {s.delta && (
-                  <p className="text-body-sm mt-2 text-signal-positive tabular">
+                  <p className="text-body-sm mt-2 text-signal-positive tabular flex items-center gap-1.5">
+                    <Arrow />
                     {s.delta}
                   </p>
                 )}
               </div>
-              <Sparkline values={s.trend} width={140} height={36} className="-mb-1" />
+              <Sparkline
+                values={s.trend}
+                width={140}
+                height={36}
+                className="-mb-1"
+              />
             </motion.div>
           ))}
         </div>
 
-        <p className="text-body-sm mt-6 text-platinum-400">
-          Powered by an indexer watching 0G Aristotle events. Sparklines
-          show 9-day rolling history; refreshes within four seconds of
-          every on-chain event.
-        </p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-8 flex flex-wrap items-center justify-between gap-3"
+        >
+          <p className="text-body-sm text-platinum-400">
+            Indexed live from 0G Aristotle events. Sparklines show 9-day
+            rolling history; refreshes within four seconds of every on-chain
+            event.
+          </p>
+          <a
+            href="/dashboard"
+            className="text-caption text-ember-400 hover:text-ember-300 transition-colors"
+          >
+            View full dashboard →
+          </a>
+        </motion.div>
       </div>
     </section>
+  );
+}
+
+function Arrow() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+      <path
+        d="M2 7 L7 2 M4 2 L7 2 L7 5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

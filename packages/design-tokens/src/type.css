@@ -1,66 +1,90 @@
 :root {
-  /* Font stacks. We use next/font in the web app for the licensed faces.
-     The CSS variables here are the consumer-facing token. */
+  /* Anthropic-inspired stack — sans-first, serif used sparingly for
+     marquee brand moments only. Faces are wired via next/font in the web app. */
   --font-display:
-    var(--font-editorial), "EB Garamond", "Tiempos Headline", ui-serif, serif;
+    var(--font-sans-soehne), "Söhne", "Inter Tight", "Inter", ui-sans-serif,
+    system-ui, sans-serif;
+  --font-serif:
+    var(--font-editorial), "Tiempos Headline", "Fraunces", "Source Serif Pro",
+    ui-serif, serif;
   --font-sans:
-    var(--font-sans-soehne), "Söhne", "Inter", ui-sans-serif, system-ui,
-    sans-serif;
+    var(--font-sans-soehne), "Söhne", "Inter Tight", "Inter", ui-sans-serif,
+    system-ui, sans-serif;
   --font-mono:
     "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
-/* ===== Display scale (serif, light) ===== */
+/* ===== Display scale — sans, tight tracking, Anthropic-feel ===== */
 .text-display-xxl {
   font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(48px, 6.4vw, 72px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  font-size: clamp(48px, 6.6vw, 76px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
 }
 .text-display-xl {
   font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(40px, 4.8vw, 56px);
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  font-size: clamp(40px, 4.8vw, 58px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 .text-display-lg {
   font-family: var(--font-display);
-  font-weight: 300;
+  font-weight: 500;
   font-size: clamp(34px, 3.6vw, 44px);
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  line-height: 1.08;
+  letter-spacing: -0.028em;
 }
 .text-display-md {
   font-family: var(--font-display);
-  font-weight: 300;
+  font-weight: 500;
   font-size: clamp(28px, 3vw, 36px);
-  line-height: 1.16;
-  letter-spacing: -0.01em;
+  line-height: 1.12;
+  letter-spacing: -0.022em;
 }
 .text-display-sm {
   font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(24px, 2.4vw, 28px);
-  line-height: 1.22;
-  letter-spacing: -0.005em;
+  font-weight: 500;
+  font-size: clamp(22px, 2.2vw, 26px);
+  line-height: 1.2;
+  letter-spacing: -0.018em;
 }
 
-/* ===== Title scale (sans, medium) ===== */
+/* ===== Serif accent — for italic pull-quotes and rare brand moments ===== */
+.text-serif-display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(28px, 3vw, 36px);
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  font-variation-settings: "opsz" 36, "SOFT" 60;
+}
+.text-serif-lg {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  font-variation-settings: "opsz" 22, "SOFT" 60;
+}
+
+/* ===== Title scale (sans, semibold) ===== */
 .text-title-lg {
   font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 22px;
-  line-height: 28px;
-  letter-spacing: -0.005em;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 26px;
+  letter-spacing: -0.012em;
 }
 .text-title-md {
   font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 24px;
-  letter-spacing: -0.003em;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 23px;
+  letter-spacing: -0.008em;
 }
 
 /* ===== Body scale ===== */
@@ -69,27 +93,30 @@
   font-weight: 400;
   font-size: 17px;
   line-height: 28px;
+  letter-spacing: -0.005em;
 }
 .text-body {
   font-family: var(--font-sans);
   font-weight: 400;
   font-size: 15px;
   line-height: 24px;
+  letter-spacing: -0.003em;
 }
 .text-body-sm {
   font-family: var(--font-sans);
   font-weight: 400;
   font-size: 13px;
   line-height: 20px;
+  letter-spacing: -0.002em;
 }
 
 /* ===== Caption (uppercase, wide) ===== */
 .text-caption {
   font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 12px;
+  font-weight: 600;
+  font-size: 11px;
   line-height: 16px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -98,17 +125,25 @@
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 20px;
+  letter-spacing: -0.01em;
 }
 .text-mono-sm {
   font-family: var(--font-mono);
   font-size: 11px;
   line-height: 16px;
+  letter-spacing: -0.005em;
 }
 
-/* ===== Wordmark utility ===== */
+/* ===== Wordmark utility — Anthropic-style tight sans capital lockup ===== */
 .foundry-wordmark {
-  font-family: var(--font-display);
-  font-weight: 200;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+/* Tabular numerics for counters and on-chain hashes */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "ss01" 1;
 }

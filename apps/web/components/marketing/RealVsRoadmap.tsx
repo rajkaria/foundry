@@ -15,7 +15,7 @@ const rows: Row[] = [
   { item: "$FORGE-denominated proportional ownership minting", status: "real" },
   { item: "RevenueSplitter — pull-payment claims", status: "real" },
   {
-    item: "@foundryprotocol/sdk on npm + Vercel AI SDK / LangChain / OpenAI-compat adapters",
+    item: "@foundryprotocol/sdk on npm + Vercel AI / LangChain / OpenAI adapters",
     status: "real",
   },
   { item: "Lineage Graph — visual on-chain family tree", status: "real" },
@@ -48,10 +48,13 @@ const rows: Row[] = [
 ];
 
 export function RealVsRoadmap() {
+  const realCount = rows.filter((r) => r.status === "real").length;
+  const roadmapCount = rows.length - realCount;
+
   return (
     <section className="relative border-t border-hairline py-28">
       <div className="mx-auto max-w-[1280px] px-6">
-        <div className="flex flex-wrap items-end justify-between gap-6">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.4fr_1fr] md:items-end">
           <div>
             <p className="text-caption text-ember-400">Honesty as a feature</p>
             <h2 className="text-display-lg mt-3 max-w-[22ch] text-platinum-100">
@@ -62,17 +65,34 @@ export function RealVsRoadmap() {
               mirrored on the dashboard and the README. Updated every release.
             </p>
           </div>
+          <div className="flex flex-col items-start gap-3 md:items-end">
+            <div className="flex items-center gap-3 rounded-lg border-hairline bg-ink-900 px-5 py-3">
+              <span className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-signal-positive" />
+                <span className="text-mono-sm text-platinum-200 tabular">
+                  {realCount} real
+                </span>
+              </span>
+              <span className="text-platinum-400">·</span>
+              <span className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-signal-warn" />
+                <span className="text-mono-sm text-platinum-200 tabular">
+                  {roadmapCount} roadmap
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="mt-12 overflow-hidden rounded-lg border-hairline">
           {rows.map((r, i) => (
             <motion.div
               key={r.item}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              initial={{ opacity: 0, x: -8 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.32, delay: Math.min(i * 0.03, 0.4) }}
-              className="grid grid-cols-[auto_1fr] items-center gap-6 border-b border-hairline bg-ink-900 px-6 py-4 last:border-b-0 md:grid-cols-[140px_1fr_auto]"
+              transition={{ duration: 0.4, delay: Math.min(i * 0.035, 0.5) }}
+              className="grid grid-cols-[auto_1fr] items-center gap-6 border-b border-hairline bg-ink-900 px-6 py-4 transition-colors last:border-b-0 hover:bg-ink-800 md:grid-cols-[140px_1fr_auto]"
             >
               <Pill
                 tone={r.status === "real" ? "positive" : "warn"}
