@@ -47,9 +47,7 @@
 
 /* Page-level ambient washes */
 .bg-stage {
-  background:
-    var(--wash-ember),
-    var(--bg-page);
+  background: var(--wash-ember), var(--bg-page);
 }
 
 /* Hairline utility */

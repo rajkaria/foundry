@@ -210,7 +210,7 @@ function Drip({ delay, x }: { delay: number; x: number }) {
   return (
     <motion.span
       aria-hidden
-      className="absolute top-0 left-1/2 size-1 rounded-full bg-ember-400"
+      className="bg-ember-400 absolute top-0 left-1/2 size-1 rounded-full"
       style={{ filter: "blur(0.5px)" }}
       initial={{ y: -40, x, opacity: 0 }}
       animate={{ y: 90, x, opacity: [0, 1, 1, 0] }}

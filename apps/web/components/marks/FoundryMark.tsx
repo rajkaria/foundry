@@ -82,27 +82,16 @@ export function FoundryMark({
         </radialGradient>
       </defs>
 
-      {!flat && (
-        <circle cx="32" cy="34" r="26" fill={`url(#${id}-glow)`} />
-      )}
+      {!flat && <circle cx="32" cy="34" r="26" fill={`url(#${id}-glow)`} />}
 
       {/* Right side facet — shadow */}
-      <path
-        d="M44 14 L56 18 L52 54 L40 50 Z"
-        fill={`url(#${id}-side)`}
-      />
+      <path d="M44 14 L56 18 L52 54 L40 50 Z" fill={`url(#${id}-side)`} />
 
       {/* Top facet — fresh casting, bright */}
-      <path
-        d="M20 10 L44 14 L40 22 L18 18 Z"
-        fill={`url(#${id}-top)`}
-      />
+      <path d="M20 10 L44 14 L40 22 L18 18 Z" fill={`url(#${id}-top)`} />
 
       {/* Front facet — ember body */}
-      <path
-        d="M18 18 L40 22 L40 50 L14 46 Z"
-        fill={`url(#${id}-front)`}
-      />
+      <path d="M18 18 L40 22 L40 50 L14 46 Z" fill={`url(#${id}-front)`} />
 
       {/* Sculpted "F" channel on the front face */}
       <g
@@ -127,11 +116,7 @@ export function FoundryMark({
       />
 
       {/* Top-rim specular */}
-      <path
-        d="M20 10 L44 14 L40 16.5 L20 13 Z"
-        fill="#fff8e8"
-        fillOpacity="0.45"
-      />
+      <path d="M20 10 L44 14 L40 16.5 L20 13 Z" fill="#fff8e8" fillOpacity="0.45" />
 
       {/* Spark at the molten core */}
       <circle cx="33" cy="37" r="1.2" fill="#fff8e8" fillOpacity="0.9" />

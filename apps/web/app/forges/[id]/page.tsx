@@ -22,7 +22,12 @@ const sampleForges: Record<
     coordinator: string;
     modelSpec: string;
     summary: string;
-    contributions: { smith: string; type: "data" | "compute" | "capital"; delta: number; amount?: string }[];
+    contributions: {
+      smith: string;
+      type: "data" | "compute" | "capital";
+      delta: number;
+      amount?: string;
+    }[];
   }
 > = {
   "0x42": {
@@ -68,7 +73,7 @@ export default async function ForgeDetailPage({ params }: PageProps) {
     <main>
       <Header />
 
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <div className="flex items-center gap-3">
             <p className="text-caption text-platinum-400">Forge · 0x{id}</p>
@@ -76,38 +81,30 @@ export default async function ForgeDetailPage({ params }: PageProps) {
               {f.state}
             </Pill>
           </div>
-          <h1 className="text-display-xl mt-3 max-w-[24ch] text-platinum-100">
+          <h1 className="text-display-xl text-platinum-100 mt-3 max-w-[24ch]">
             {f.name}
           </h1>
-          <p className="text-body-lg mt-6 max-w-[60ch] text-platinum-300">
+          <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
             {f.summary}
           </p>
 
-          <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border-hairline md:grid-cols-4">
+          <div className="border-hairline mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg md:grid-cols-4">
             <Stat label="Contributions" value={String(f.contributions.length)} />
             <Stat label="State" value={f.state} />
-            <Stat
-              label="Creator"
-              value={f.creator}
-              mono
-            />
-            <Stat
-              label="Eval coordinator"
-              value={f.coordinator}
-              mono
-            />
+            <Stat label="Creator" value={f.creator} mono />
+            <Stat label="Eval coordinator" value={f.coordinator} mono />
           </div>
         </div>
       </section>
 
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-[1.4fr_1fr]">
           <Card elevated>
             <CardEyebrow>Live attribution preview</CardEyebrow>
             <CardTitle>Marginal Δ per contribution</CardTitle>
             <CardBody>
-              Score vector emitted by the TEE eval — each Δ is what your
-              contribution moved the holdout score by. Shares mint proportionally.
+              Score vector emitted by the TEE eval — each Δ is what your contribution
+              moved the holdout score by. Shares mint proportionally.
             </CardBody>
             <div className="mt-8">
               <AttributionBloom rows={f.contributions} />
@@ -116,16 +113,26 @@ export default async function ForgeDetailPage({ params }: PageProps) {
 
           <div className="space-y-5">
             <TEEViewer
-              state={f.state === "EVALUATING" ? "scoring" : f.state === "MINTING" ? "done" : "idle"}
+              state={
+                f.state === "EVALUATING"
+                  ? "scoring"
+                  : f.state === "MINTING"
+                    ? "done"
+                    : "idle"
+              }
               baselineScore={21.4}
-              measuredScore={f.state === "MINTING" || f.state === "TRAINING" || f.state === "LIVE" ? 38.7 : undefined}
+              measuredScore={
+                f.state === "MINTING" || f.state === "TRAINING" || f.state === "LIVE"
+                  ? 38.7
+                  : undefined
+              }
             />
             <Card>
               <CardEyebrow>Contribute</CardEyebrow>
               <CardTitle>Pick a contribution type</CardTitle>
               <CardBody>
-                Wallet connection lands Sprint 1 — the buttons below are the
-                final surface area.
+                Wallet connection lands Sprint 1 — the buttons below are the final
+                surface area.
               </CardBody>
               <div className="mt-5 flex flex-col gap-2">
                 <Button variant="primary" disabled>
@@ -143,7 +150,7 @@ export default async function ForgeDetailPage({ params }: PageProps) {
             <Card>
               <CardEyebrow>Spec</CardEyebrow>
               <CardTitle>Model & eval</CardTitle>
-              <dl className="mt-5 space-y-3 text-body-sm">
+              <dl className="text-body-sm mt-5 space-y-3">
                 <Row k="modelSpec" v={f.modelSpec} mono />
                 <Row k="data weight" v="70%" />
                 <Row k="compute weight" v="20%" />
@@ -160,13 +167,21 @@ export default async function ForgeDetailPage({ params }: PageProps) {
   );
 }
 
-function Stat({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+function Stat({
+  label,
+  value,
+  mono,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
   return (
     <div className="bg-ink-900 p-5">
       <p className="text-caption text-platinum-400">{label}</p>
       <p
-        className={`mt-2 text-title-lg text-platinum-100 ${
-          mono ? "font-mono text-mono" : "tabular"
+        className={`text-title-lg text-platinum-100 mt-2 ${
+          mono ? "text-mono font-mono" : "tabular"
         }`}
       >
         {value}
@@ -177,11 +192,11 @@ function Stat({ label, value, mono }: { label: string; value: string; mono?: boo
 
 function Row({ k, v, mono }: { k: string; v: string; mono?: boolean }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-hairline pb-2 last:border-b-0 last:pb-0">
+    <div className="border-hairline flex items-center justify-between gap-4 border-b pb-2 last:border-b-0 last:pb-0">
       <dt className="text-caption text-platinum-400">{k}</dt>
       <dd
         className={`text-body text-platinum-200 ${
-          mono ? "font-mono text-mono-sm" : ""
+          mono ? "text-mono-sm font-mono" : ""
         }`}
       >
         {v}

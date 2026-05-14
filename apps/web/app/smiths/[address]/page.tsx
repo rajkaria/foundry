@@ -47,24 +47,22 @@ export default async function SmithProfilePage({
       <Header />
 
       {/* Hero */}
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <Link
                 href="/smiths"
-                className="text-caption text-platinum-400 transition-colors hover:text-platinum-200"
+                className="text-caption text-platinum-400 hover:text-platinum-200 transition-colors"
               >
                 ← All Smiths
               </Link>
-              <p className="text-caption mt-4 text-ember-400">Smith</p>
-              <h1 className="text-display-xl mt-3 text-platinum-100">
-                {smith.handle}
-              </h1>
-              <p className="text-body mt-2 font-mono text-platinum-400">
+              <p className="text-caption text-ember-400 mt-4">Smith</p>
+              <h1 className="text-display-xl text-platinum-100 mt-3">{smith.handle}</h1>
+              <p className="text-body text-platinum-400 mt-2 font-mono">
                 {smith.address}
               </p>
-              <p className="text-body-lg mt-6 max-w-[60ch] text-platinum-300">
+              <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
                 {smith.bio}
               </p>
             </div>
@@ -76,7 +74,7 @@ export default async function SmithProfilePage({
                 href={`https://aristotle.0g.explorer/address/${smith.address}`}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="text-caption text-platinum-400 transition-colors hover:text-platinum-200"
+                className="text-caption text-platinum-400 hover:text-platinum-200 transition-colors"
               >
                 View on explorer ↗
               </a>
@@ -86,9 +84,9 @@ export default async function SmithProfilePage({
       </section>
 
       {/* Stats */}
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-12">
-          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border-hairline md:grid-cols-4">
+          <div className="border-hairline grid grid-cols-2 gap-px overflow-hidden rounded-lg md:grid-cols-4">
             <Stat label="Ingots held" value={totals.ingotsHeld.toString()} />
             <Stat
               label="Total earned"
@@ -99,19 +97,16 @@ export default async function SmithProfilePage({
               value={`${totals.totalClaimableOG.toFixed(3)} OG`}
               accent={totals.totalClaimableOG > 0}
             />
-            <Stat
-              label="Contributions"
-              value={totals.contributionsCount.toString()}
-            />
+            <Stat label="Contributions" value={totals.contributionsCount.toString()} />
           </div>
         </div>
       </section>
 
       {/* Holdings */}
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <p className="text-caption text-ember-400">Holdings</p>
-          <h2 className="text-display-md mt-3 text-platinum-100">
+          <h2 className="text-display-md text-platinum-100 mt-3">
             Shares across {totals.ingotsHeld} Ingots
           </h2>
           <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -120,38 +115,33 @@ export default async function SmithProfilePage({
                 <div className="flex items-start justify-between">
                   <div className="min-w-0">
                     <CardEyebrow>
-                      {share.contributionType.toUpperCase()} ·{" "}
-                      {share.contributedAt}
+                      {share.contributionType.toUpperCase()} · {share.contributedAt}
                     </CardEyebrow>
                     <CardTitle>
                       <Link
                         href={`/ingots/${share.ingotId}`}
-                        className="transition-colors hover:text-ember-300"
+                        className="hover:text-ember-300 transition-colors"
                       >
                         {share.ingotName}
                       </Link>
                     </CardTitle>
-                    <p className="text-body-sm mt-2 font-mono text-platinum-400">
+                    <p className="text-body-sm text-platinum-400 mt-2 font-mono">
                       {shortAddr(share.ingotId)}
                     </p>
                   </div>
-                  <Pill tone="ember">
-                    {(share.shareBps / 100).toFixed(1)}%
-                  </Pill>
+                  <Pill tone="ember">{(share.shareBps / 100).toFixed(1)}%</Pill>
                 </div>
-                <div className="mt-6 grid grid-cols-2 gap-4 border-t border-hairline pt-4">
+                <div className="border-hairline mt-6 grid grid-cols-2 gap-4 border-t pt-4">
                   <div>
                     <p className="text-caption text-platinum-400">Earned</p>
-                    <p className="text-title-md mt-1 tabular text-platinum-100">
+                    <p className="text-title-md tabular text-platinum-100 mt-1">
                       {share.earnedOG.toFixed(3)} OG
                     </p>
                   </div>
                   <div>
-                    <p className="text-caption text-platinum-400">
-                      Claimable
-                    </p>
+                    <p className="text-caption text-platinum-400">Claimable</p>
                     <p
-                      className={`text-title-md mt-1 tabular ${share.claimableOG > 0 ? "text-signal-positive" : "text-platinum-100"}`}
+                      className={`text-title-md tabular mt-1 ${share.claimableOG > 0 ? "text-signal-positive" : "text-platinum-100"}`}
                     >
                       {share.claimableOG.toFixed(3)} OG
                     </p>
@@ -164,25 +154,20 @@ export default async function SmithProfilePage({
       </section>
 
       {/* Activity */}
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <p className="text-caption text-ember-400">Activity</p>
-          <h2 className="text-display-md mt-3 text-platinum-100">
+          <h2 className="text-display-md text-platinum-100 mt-3">
             Recent on-chain activity
           </h2>
-          <ol className="mt-8 divide-y divide-ink-800 rounded-lg border-hairline bg-ink-900">
+          <ol className="divide-ink-800 border-hairline bg-ink-900 mt-8 divide-y rounded-lg">
             {smith.recentActivity.map((a, i) => (
-              <li
-                key={i}
-                className="flex items-center justify-between gap-6 px-6 py-4"
-              >
+              <li key={i} className="flex items-center justify-between gap-6 px-6 py-4">
                 <div className="flex items-center gap-4">
                   <ActivityDot kind={a.kind} />
                   <div>
                     <p className="text-body text-platinum-100">{a.label}</p>
-                    <p className="text-caption mt-1 text-platinum-400">
-                      {a.at}
-                    </p>
+                    <p className="text-caption text-platinum-400 mt-1">{a.at}</p>
                   </div>
                 </div>
                 {a.txHash && (
@@ -190,7 +175,7 @@ export default async function SmithProfilePage({
                     href={`https://aristotle.0g.explorer/tx/${a.txHash}`}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="text-caption font-mono text-platinum-400 transition-colors hover:text-ember-300"
+                    className="text-caption text-platinum-400 hover:text-ember-300 font-mono transition-colors"
                   >
                     {a.txHash.slice(0, 10)}… ↗
                   </a>
@@ -219,7 +204,7 @@ function Stat({
     <div className="bg-ink-900 p-6">
       <p className="text-caption text-platinum-400">{label}</p>
       <p
-        className={`text-display-sm mt-2 tabular ${accent ? "text-signal-positive" : "text-platinum-100"}`}
+        className={`text-display-sm tabular mt-2 ${accent ? "text-signal-positive" : "text-platinum-100"}`}
       >
         {value}
       </p>
@@ -227,11 +212,7 @@ function Stat({
   );
 }
 
-function ActivityDot({
-  kind,
-}: {
-  kind: "contribute" | "claim" | "vote";
-}) {
+function ActivityDot({ kind }: { kind: "contribute" | "claim" | "vote" }) {
   const color =
     kind === "contribute"
       ? "bg-ember-500"

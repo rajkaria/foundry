@@ -240,13 +240,7 @@ export function RevenueIcon(props: StepIconProps) {
         strokeLinejoin="round"
         {...tx(0.2)}
       />
-      <motion.circle
-        cx="32"
-        cy="32"
-        r="4"
-        fill={stroke}
-        {...tx(0.5)}
-      />
+      <motion.circle cx="32" cy="32" r="4" fill={stroke} {...tx(0.5)} />
     </IconShell>
   );
 }

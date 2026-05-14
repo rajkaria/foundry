@@ -58,8 +58,18 @@ const SMITHS: Smith[] = [
       },
     ],
     recentActivity: [
-      { kind: "contribute", at: "2026-05-22", label: "Contributed 12k Konkani news articles to Konkani · news Forge", txHash: "0x6f12d4a1c9b8e5f3d2a1c7e3f1d8a9b6c2f0e7d4" },
-      { kind: "contribute", at: "2026-05-20", label: "Contributed 48k Konkani sentence pairs to Konkani v1 Forge", txHash: "0x4a7c5e3f1d8a9b6c2f0e7d4a1c9b8e5f3d2a1c7e" },
+      {
+        kind: "contribute",
+        at: "2026-05-22",
+        label: "Contributed 12k Konkani news articles to Konkani · news Forge",
+        txHash: "0x6f12d4a1c9b8e5f3d2a1c7e3f1d8a9b6c2f0e7d4",
+      },
+      {
+        kind: "contribute",
+        at: "2026-05-20",
+        label: "Contributed 48k Konkani sentence pairs to Konkani v1 Forge",
+        txHash: "0x4a7c5e3f1d8a9b6c2f0e7d4a1c9b8e5f3d2a1c7e",
+      },
     ],
   },
   {
@@ -90,8 +100,18 @@ const SMITHS: Smith[] = [
       },
     ],
     recentActivity: [
-      { kind: "contribute", at: "2026-05-26", label: "Underwrote 18 H100-hours for Tulu v1 training", txHash: "0x1c34e3f1d8a9b6c2f0e7d4a1c9b8e5f3d2a1c7e3" },
-      { kind: "claim", at: "2026-05-25", label: "Claimed 0.038 OG from Konkani v1", txHash: "0x9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b" },
+      {
+        kind: "contribute",
+        at: "2026-05-26",
+        label: "Underwrote 18 H100-hours for Tulu v1 training",
+        txHash: "0x1c34e3f1d8a9b6c2f0e7d4a1c9b8e5f3d2a1c7e3",
+      },
+      {
+        kind: "claim",
+        at: "2026-05-25",
+        label: "Claimed 0.038 OG from Konkani v1",
+        txHash: "0x9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b",
+      },
     ],
   },
   {
@@ -122,8 +142,18 @@ const SMITHS: Smith[] = [
       },
     ],
     recentActivity: [
-      { kind: "contribute", at: "2026-05-30", label: "Contributed 2.4k MSA clauses with annotations", txHash: "0xe5f3d2a1c7e3f1d8a9b6c2f0e7d44a7c5e3f1d8a" },
-      { kind: "contribute", at: "2026-05-28", label: "Contributed 8.1k labeled clauses to Clause Classifier", txHash: "0xd4a1c9b8e5f3d2a1c7e3f1d8a9b6c2f0e7d44a7c" },
+      {
+        kind: "contribute",
+        at: "2026-05-30",
+        label: "Contributed 2.4k MSA clauses with annotations",
+        txHash: "0xe5f3d2a1c7e3f1d8a9b6c2f0e7d44a7c5e3f1d8a",
+      },
+      {
+        kind: "contribute",
+        at: "2026-05-28",
+        label: "Contributed 8.1k labeled clauses to Clause Classifier",
+        txHash: "0xd4a1c9b8e5f3d2a1c7e3f1d8a9b6c2f0e7d44a7c",
+      },
     ],
   },
 ];
@@ -147,7 +177,8 @@ export function smithTotals(smith: Smith): {
     ingotsHeld: smith.shares.length,
     totalEarnedOG: smith.shares.reduce((s, x) => s + x.earnedOG, 0),
     totalClaimableOG: smith.shares.reduce((s, x) => s + x.claimableOG, 0),
-    contributionsCount: smith.recentActivity.filter((a) => a.kind === "contribute").length,
+    contributionsCount: smith.recentActivity.filter((a) => a.kind === "contribute")
+      .length,
   };
 }
 

@@ -1,4 +1,15 @@
-import { DocsLayout, H2, H3, P, Lead, Code, CodeBlock, Callout, Table, PageNav } from "@/components/docs/DocsLayout";
+import {
+  DocsLayout,
+  H2,
+  H3,
+  P,
+  Lead,
+  Code,
+  CodeBlock,
+  Callout,
+  Table,
+  PageNav,
+} from "@/components/docs/DocsLayout";
 
 export const metadata = {
   title: "SDK reference — Foundry docs",
@@ -26,15 +37,18 @@ export default function SdkReferencePage() {
         <Lead>
           One imported class — <Code>Foundry</Code> — with five namespaces:{" "}
           <Code>forge</Code>, <Code>ingot</Code>, <Code>inference</Code>,{" "}
-          <Code>revenue</Code>, <Code>lineage</Code>. No surprises, no
-          callback hell, no opaque proxies. Read methods need no wallet;
-          write methods require <Code>walletClient</Code>.
+          <Code>revenue</Code>, <Code>lineage</Code>. No surprises, no callback hell, no
+          opaque proxies. Read methods need no wallet; write methods require{" "}
+          <Code>walletClient</Code>.
         </Lead>
       }
       toc={toc}
     >
       <H2 id="client">Foundry client</H2>
-      <CodeBlock lang="ts" filename="construction">{`import { Foundry } from "@foundryprotocol/sdk";
+      <CodeBlock
+        lang="ts"
+        filename="construction"
+      >{`import { Foundry } from "@foundryprotocol/sdk";
 import { createWalletClient, custom } from "viem";
 
 // Read-only — no wallet needed.
@@ -55,9 +69,17 @@ const foundryRW = new Foundry({
         head={["Option", "Type", "Default"]}
         rows={[
           [<Code>contracts</Code>, <Code>"aristotle"</Code>, <Code>"aristotle"</Code>],
-          [<Code>rpcUrl</Code>, <Code>string</Code>, <Code>https://rpc.0g.network</Code>],
+          [
+            <Code>rpcUrl</Code>,
+            <Code>string</Code>,
+            <Code>https://rpc.0g.network</Code>,
+          ],
           [<Code>walletClient</Code>, <Code>viem.WalletClient</Code>, "—"],
-          [<Code>inferenceEndpoint</Code>, <Code>string</Code>, <Code>https://api.foundryprotocol.xyz/v1</Code>],
+          [
+            <Code>inferenceEndpoint</Code>,
+            <Code>string</Code>,
+            <Code>https://api.foundryprotocol.xyz/v1</Code>,
+          ],
           [<Code>inferenceApiKey</Code>, <Code>string</Code>, "—"],
         ]}
       />
@@ -73,7 +95,9 @@ const foundryRW = new Foundry({
   contributionWindowEnds:  BigInt(Math.floor(Date.now() / 1000) + 7 * 86400),
 });`}</CodeBlock>
 
-      <H3 id="forge-contribute">forge.contributeData() / contributeCompute() / fundForge()</H3>
+      <H3 id="forge-contribute">
+        forge.contributeData() / contributeCompute() / fundForge()
+      </H3>
       <CodeBlock lang="ts">{`await foundry.forge.contributeData("forge:0x…", "0x<storageRoot>");
 await foundry.forge.contributeCompute("forge:0x…", "0.05"); // 0.05 OG
 await foundry.forge.fundForge("forge:0x…",        "1.0");  // 1.0 OG`}</CodeBlock>
@@ -121,10 +145,10 @@ const { txHash } = await foundry.revenue.claim(tokenId);`}</CodeBlock>
 
       <Callout title="Pull payments, intentionally">
         <p>
-          Revenue is never pushed. Smiths claim when they like — gas costs
-          are theirs, and reverts on the recipient side can't grief the
-          splitter. This is the OpenZeppelin <Code>PaymentSplitter</Code>{" "}
-          pattern, adapted for ERC-721 share weights.
+          Revenue is never pushed. Smiths claim when they like — gas costs are theirs,
+          and reverts on the recipient side can't grief the splitter. This is the
+          OpenZeppelin <Code>PaymentSplitter</Code> pattern, adapted for ERC-721 share
+          weights.
         </p>
       </Callout>
 
@@ -138,18 +162,50 @@ const { txHash } = await foundry.revenue.claim(tokenId);`}</CodeBlock>
         rows={[
           [<Code>IngotId</Code>, <Code>{`\`ingot:0x\${string}\``}</Code>],
           [<Code>ForgeId</Code>, <Code>{`\`forge:0x\${string}\``}</Code>],
-          [<Code>Address</Code>, <>viem <Code>Address</Code></>],
-          [<Code>Hex</Code>, <>viem <Code>Hex</Code></>],
-          [<Code>InferenceParams</Code>, <>see <a href="/docs/sdk-reference#inference" className="text-ember-400 hover:text-ember-300">inference</a></>],
-          [<Code>InferenceResult</Code>, <>see <a href="/docs/sdk-reference#inference" className="text-ember-400 hover:text-ember-300">inference</a></>],
+          [
+            <Code>Address</Code>,
+            <>
+              viem <Code>Address</Code>
+            </>,
+          ],
+          [
+            <Code>Hex</Code>,
+            <>
+              viem <Code>Hex</Code>
+            </>,
+          ],
+          [
+            <Code>InferenceParams</Code>,
+            <>
+              see{" "}
+              <a
+                href="/docs/sdk-reference#inference"
+                className="text-ember-400 hover:text-ember-300"
+              >
+                inference
+              </a>
+            </>,
+          ],
+          [
+            <Code>InferenceResult</Code>,
+            <>
+              see{" "}
+              <a
+                href="/docs/sdk-reference#inference"
+                className="text-ember-400 hover:text-ember-300"
+              >
+                inference
+              </a>
+            </>,
+          ],
         ]}
       />
 
       <H2 id="errors">Error handling</H2>
       <P>
-        All write methods throw a viem-derived error on revert. The SDK
-        wraps inference HTTP errors in <Code>InferenceError</Code> with the
-        upstream status code and body fragment.
+        All write methods throw a viem-derived error on revert. The SDK wraps inference
+        HTTP errors in <Code>InferenceError</Code> with the upstream status code and
+        body fragment.
       </P>
       <CodeBlock lang="ts">{`import { InferenceError } from "@foundryprotocol/sdk";
 

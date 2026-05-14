@@ -47,16 +47,16 @@ export default function BuildOnFoundryPage() {
     <main>
       <Header />
 
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-20">
           <p className="text-caption text-ember-400">Build on Foundry</p>
-          <h1 className="text-display-xl mt-3 max-w-[20ch] text-platinum-100">
+          <h1 className="text-display-xl text-platinum-100 mt-3 max-w-[20ch]">
             Inference a co-owned model in three lines.
           </h1>
-          <p className="text-body-lg mt-6 max-w-[60ch] text-platinum-300">
-            The Foundry SDK ships with adapters for the agent frameworks your
-            project already uses. Revenue routes back to the Ingot&rsquo;s
-            co-owners automatically, on-chain.
+          <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
+            The Foundry SDK ships with adapters for the agent frameworks your project
+            already uses. Revenue routes back to the Ingot&rsquo;s co-owners
+            automatically, on-chain.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -75,7 +75,7 @@ export default function BuildOnFoundryPage() {
         </div>
       </section>
 
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <p className="text-caption text-platinum-400">Adapters</p>
           <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -83,7 +83,7 @@ export default function BuildOnFoundryPage() {
               <Card key={a.title}>
                 <CardEyebrow>Adapter</CardEyebrow>
                 <CardTitle>{a.title}</CardTitle>
-                <pre className="mt-5 overflow-x-auto rounded-md bg-ink-950 p-4 text-mono-sm text-platinum-200">
+                <pre className="bg-ink-950 text-mono-sm text-platinum-200 mt-5 overflow-x-auto rounded-md p-4">
                   <code>{a.code}</code>
                 </pre>
               </Card>

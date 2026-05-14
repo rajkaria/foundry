@@ -58,12 +58,12 @@ export function Hero() {
               delay: 0.08,
               ease: [0.32, 0.72, 0, 1],
             }}
-            className="text-display-xxl mt-6 max-w-[20ch] text-platinum-100"
+            className="text-display-xxl text-platinum-100 mt-6 max-w-[20ch]"
           >
             Co&#8209;own the models
             <span className="block">
               you{" "}
-              <span className="text-serif-display align-baseline text-ember-300">
+              <span className="text-serif-display text-ember-300 align-baseline">
                 help create
               </span>
               .
@@ -78,11 +78,11 @@ export function Hero() {
               delay: 0.2,
               ease: [0.32, 0.72, 0, 1],
             }}
-            className="text-body-lg mt-7 max-w-[58ch] text-platinum-300"
+            className="text-body-lg text-platinum-300 mt-7 max-w-[58ch]"
           >
-            Foundry is the supply-side protocol for 0G. Pool data, compute, and
-            capital. Co-train an AI model. Own a verifiable, revenue-generating
-            share — minted on mainnet, attributed inside a TEE.
+            Foundry is the supply-side protocol for 0G. Pool data, compute, and capital.
+            Co-train an AI model. Own a verifiable, revenue-generating share — minted on
+            mainnet, attributed inside a TEE.
           </motion.p>
 
           <motion.div
@@ -121,12 +121,10 @@ export function Hero() {
                   show: { opacity: 1, y: 0 },
                 }}
                 transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-                className="flex items-center gap-2 rounded-pill border-hairline bg-ink-900/60 px-3 py-1.5 backdrop-blur"
+                className="rounded-pill border-hairline bg-ink-900/60 flex items-center gap-2 px-3 py-1.5 backdrop-blur"
               >
-                <span className="size-1 rounded-full bg-ember-500" />
-                <span className="text-mono-sm text-platinum-200">
-                  {s.label}
-                </span>
+                <span className="bg-ember-500 size-1 rounded-full" />
+                <span className="text-mono-sm text-platinum-200">{s.label}</span>
                 <span className="text-mono-sm text-platinum-400">·</span>
                 <span className="text-mono-sm text-platinum-400">{s.note}</span>
               </motion.li>
@@ -199,7 +197,8 @@ export function Hero() {
               The Ingot &middot; a co-owned model on-chain
             </p>
             <p className="text-mono-sm text-platinum-300 tabular">
-              ingot:0x8e2…f4a &middot; <span className="text-signal-positive">attested</span>
+              ingot:0x8e2…f4a &middot;{" "}
+              <span className="text-signal-positive">attested</span>
             </p>
           </motion.div>
         </div>

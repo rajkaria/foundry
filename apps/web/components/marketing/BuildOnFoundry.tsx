@@ -88,17 +88,15 @@ function highlight(code: string) {
       .replace(/(#.*$)/g, '<span class="tk-c">$1</span>')
       .replace(
         /\b(import|from|const|await|new|console|export|return|async|function)\b/g,
-        '<span class="tk-k">$1</span>',
+        '<span class="tk-k">$1</span>'
       )
       .replace(/(['"`])([^'"`]*?)\1/g, '<span class="tk-s">$1$2$1</span>')
       .replace(/\b(POST|GET|PUT)\b/g, '<span class="tk-k">$1</span>')
       .replace(/(0x[a-f0-9…]+)/g, '<span class="tk-h">$1</span>')
       .replace(/(\bingot:[a-z0-9…]+)/g, '<span class="tk-h">$1</span>');
     return (
-      <div key={i} className="px-6 hover:bg-ink-800/40">
-        <span
-          dangerouslySetInnerHTML={{ __html: colored || "&nbsp;" }}
-        />
+      <div key={i} className="hover:bg-ink-800/40 px-6">
+        <span dangerouslySetInnerHTML={{ __html: colored || "&nbsp;" }} />
       </div>
     );
   });
@@ -128,7 +126,7 @@ export function BuildOnFoundry() {
   const active = tabs.find((t) => t.key === activeKey) ?? tabs[0];
 
   return (
-    <section className="relative border-t border-hairline py-28">
+    <section className="border-hairline relative border-t py-28">
       <style>{`
         .tk-k { color: #ffb260; font-weight: 500; }
         .tk-s { color: #d8a04c; }
@@ -140,13 +138,13 @@ export function BuildOnFoundry() {
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1fr_1.2fr] lg:items-start">
           <div>
             <p className="text-caption text-ember-400">Build on Foundry</p>
-            <h2 className="text-display-lg mt-3 max-w-[20ch] text-platinum-100">
+            <h2 className="text-display-lg text-platinum-100 mt-3 max-w-[20ch]">
               Three lines of code. Your agent calls a co-owned model.
             </h2>
-            <p className="text-body-lg mt-6 max-w-[52ch] text-platinum-300">
-              Foundry is open by design. Drop our SDK into any AI agent project
-              and inference a Foundry Ingot — revenue routes back to the
-              contributors who made it good.
+            <p className="text-body-lg text-platinum-300 mt-6 max-w-[52ch]">
+              Foundry is open by design. Drop our SDK into any AI agent project and
+              inference a Foundry Ingot — revenue routes back to the contributors who
+              made it good.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -171,13 +169,13 @@ export function BuildOnFoundry() {
                     delay: i * 0.06,
                     ease: [0.32, 0.72, 0, 1],
                   }}
-                  className="rounded-lg border-hairline bg-ink-900 p-4"
+                  className="border-hairline bg-ink-900 rounded-lg p-4"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-ember-500" />
+                    <span className="bg-ember-500 size-1.5 rounded-full" />
                     <p className="text-title-md text-platinum-100">{f.title}</p>
                   </div>
-                  <p className="text-body-sm mt-2 text-platinum-400">{f.body}</p>
+                  <p className="text-body-sm text-platinum-400 mt-2">{f.body}</p>
                 </motion.div>
               ))}
             </div>
@@ -191,12 +189,12 @@ export function BuildOnFoundry() {
             className="relative"
           >
             {/* Tabs */}
-            <div className="flex flex-wrap items-center gap-1 overflow-x-auto rounded-t-xl border border-hairline border-b-0 bg-ink-900 p-1.5">
+            <div className="border-hairline bg-ink-900 flex flex-wrap items-center gap-1 overflow-x-auto rounded-t-xl border border-b-0 p-1.5">
               {tabs.map((t) => (
                 <button
                   key={t.key}
                   onClick={() => setActiveKey(t.key)}
-                  className={`relative rounded-md px-3 py-1.5 text-mono-sm transition-colors ${
+                  className={`text-mono-sm relative rounded-md px-3 py-1.5 transition-colors ${
                     t.key === activeKey
                       ? "text-platinum-100"
                       : "text-platinum-400 hover:text-platinum-200"
@@ -205,7 +203,7 @@ export function BuildOnFoundry() {
                   {t.key === activeKey && (
                     <motion.span
                       layoutId="tab-bg"
-                      className="absolute inset-0 rounded-md bg-ink-800"
+                      className="bg-ink-800 absolute inset-0 rounded-md"
                       transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
                     />
                   )}
@@ -214,12 +212,12 @@ export function BuildOnFoundry() {
               ))}
             </div>
 
-            <div className="relative overflow-hidden rounded-b-xl border border-hairline bg-ink-900 elev-2">
-              <div className="flex items-center justify-between border-b border-hairline px-5 py-3">
+            <div className="border-hairline bg-ink-900 elev-2 relative overflow-hidden rounded-b-xl border">
+              <div className="border-hairline flex items-center justify-between border-b px-5 py-3">
                 <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-ink-600" />
-                  <span className="size-2 rounded-full bg-ink-600" />
-                  <span className="size-2 rounded-full bg-ember-500" />
+                  <span className="bg-ink-600 size-2 rounded-full" />
+                  <span className="bg-ink-600 size-2 rounded-full" />
+                  <span className="bg-ember-500 size-2 rounded-full" />
                 </div>
                 <span className="text-mono-sm text-platinum-400">
                   {active.filename}
@@ -232,12 +230,12 @@ export function BuildOnFoundry() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
-                  className="overflow-x-auto py-5 text-mono text-platinum-200 leading-6"
+                  className="text-mono text-platinum-200 overflow-x-auto py-5 leading-6"
                 >
                   <code className="block">{highlight(active.code)}</code>
                 </motion.pre>
               </AnimatePresence>
-              <div className="flex items-center justify-between border-t border-hairline px-5 py-3 text-mono-sm">
+              <div className="border-hairline text-mono-sm flex items-center justify-between border-t px-5 py-3">
                 <span className="text-platinum-400">
                   → <span className="text-signal-positive">200 OK</span>
                 </span>

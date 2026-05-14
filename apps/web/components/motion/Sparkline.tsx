@@ -43,7 +43,7 @@ export function Sparkline({
       .map(([x, y], i) => `${i === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`)
       .join(" ");
 
-    const area = `${path} L ${(points[points.length - 1][0]).toFixed(2)} ${height} L 0 ${height} Z`;
+    const area = `${path} L ${points[points.length - 1][0].toFixed(2)} ${height} L 0 ${height} Z`;
     return { path, area, lastPoint: points[points.length - 1] };
   }, [values, width, height]);
 

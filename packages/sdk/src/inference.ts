@@ -51,8 +51,9 @@ export class InferenceClient {
   }
 
   async run(ingotId: IngotId, params: InferenceParams): Promise<InferenceResult> {
-    const messages: InferenceMessage[] =
-      params.messages ?? [{ role: "user", content: params.input ?? "" }];
+    const messages: InferenceMessage[] = params.messages ?? [
+      { role: "user", content: params.input ?? "" },
+    ];
 
     const headers: Record<string, string> = {
       "content-type": "application/json",

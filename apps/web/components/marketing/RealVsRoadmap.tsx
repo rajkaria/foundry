@@ -52,30 +52,30 @@ export function RealVsRoadmap() {
   const roadmapCount = rows.length - realCount;
 
   return (
-    <section className="relative border-t border-hairline py-28">
+    <section className="border-hairline relative border-t py-28">
       <div className="mx-auto max-w-[1280px] px-6">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.4fr_1fr] md:items-end">
           <div>
             <p className="text-caption text-ember-400">Honesty as a feature</p>
-            <h2 className="text-display-lg mt-3 max-w-[22ch] text-platinum-100">
+            <h2 className="text-display-lg text-platinum-100 mt-3 max-w-[22ch]">
               Every feature is either real on mainnet, or declared as roadmap.
             </h2>
-            <p className="text-body-lg mt-6 max-w-[58ch] text-platinum-300">
-              We refuse to blur the line. This table is the source of truth —
-              mirrored on the dashboard and the README. Updated every release.
+            <p className="text-body-lg text-platinum-300 mt-6 max-w-[58ch]">
+              We refuse to blur the line. This table is the source of truth — mirrored
+              on the dashboard and the README. Updated every release.
             </p>
           </div>
           <div className="flex flex-col items-start gap-3 md:items-end">
-            <div className="flex items-center gap-3 rounded-lg border-hairline bg-ink-900 px-5 py-3">
+            <div className="border-hairline bg-ink-900 flex items-center gap-3 rounded-lg px-5 py-3">
               <span className="flex items-center gap-2">
-                <span className="size-2 rounded-full bg-signal-positive" />
+                <span className="bg-signal-positive size-2 rounded-full" />
                 <span className="text-mono-sm text-platinum-200 tabular">
                   {realCount} real
                 </span>
               </span>
               <span className="text-platinum-400">·</span>
               <span className="flex items-center gap-2">
-                <span className="size-2 rounded-full bg-signal-warn" />
+                <span className="bg-signal-warn size-2 rounded-full" />
                 <span className="text-mono-sm text-platinum-200 tabular">
                   {roadmapCount} roadmap
                 </span>
@@ -84,7 +84,7 @@ export function RealVsRoadmap() {
           </div>
         </div>
 
-        <div className="mt-12 overflow-hidden rounded-lg border-hairline">
+        <div className="border-hairline mt-12 overflow-hidden rounded-lg">
           {rows.map((r, i) => (
             <motion.div
               key={r.item}
@@ -92,7 +92,7 @@ export function RealVsRoadmap() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.4, delay: Math.min(i * 0.035, 0.5) }}
-              className="grid grid-cols-[auto_1fr] items-center gap-6 border-b border-hairline bg-ink-900 px-6 py-4 transition-colors last:border-b-0 hover:bg-ink-800 md:grid-cols-[140px_1fr_auto]"
+              className="border-hairline bg-ink-900 hover:bg-ink-800 grid grid-cols-[auto_1fr] items-center gap-6 border-b px-6 py-4 transition-colors last:border-b-0 md:grid-cols-[140px_1fr_auto]"
             >
               <Pill
                 tone={r.status === "real" ? "positive" : "warn"}
@@ -103,7 +103,7 @@ export function RealVsRoadmap() {
               </Pill>
               <p className="text-body text-platinum-100">{r.item}</p>
               {r.note && (
-                <p className="hidden text-body-sm text-platinum-400 md:block">
+                <p className="text-body-sm text-platinum-400 hidden md:block">
                   {r.note}
                 </p>
               )}

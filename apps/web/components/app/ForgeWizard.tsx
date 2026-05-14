@@ -60,9 +60,7 @@ export function ForgeWizard() {
         <Card>
           <CardEyebrow>Step 1 · Describe</CardEyebrow>
           <CardTitle>What model do you want trained?</CardTitle>
-          <CardBody>
-            Plain English. One or two sentences is enough.
-          </CardBody>
+          <CardBody>Plain English. One or two sentences is enough.</CardBody>
 
           <form
             className="mt-6"
@@ -76,7 +74,7 @@ export function ForgeWizard() {
               onChange={(e) => setPrompt(e.target.value)}
               rows={4}
               placeholder="e.g. A Konkani ↔ English translator for native speakers."
-              className="w-full rounded-md bg-ink-800 border border-hairline px-4 py-3 text-body text-platinum-100 placeholder:text-platinum-400 focus:border-ember-400 focus:outline-none"
+              className="bg-ink-800 border-hairline text-body text-platinum-100 placeholder:text-platinum-400 focus:border-ember-400 w-full rounded-md border px-4 py-3 focus:outline-none"
             />
 
             <div className="mt-3 flex flex-wrap gap-2">
@@ -88,7 +86,7 @@ export function ForgeWizard() {
                     setPrompt(ex);
                     generate(ex);
                   }}
-                  className="rounded-pill border-hairline px-3 py-1 text-caption text-platinum-300 hover:bg-ink-800 hover:text-platinum-100 transition-colors"
+                  className="rounded-pill border-hairline text-caption text-platinum-300 hover:bg-ink-800 hover:text-platinum-100 px-3 py-1 transition-colors"
                 >
                   {ex.slice(0, 48)}…
                 </button>
@@ -116,9 +114,7 @@ export function ForgeWizard() {
                 </Button>
               )}
             </div>
-            {error && (
-              <p className="mt-4 text-body-sm text-signal-danger">{error}</p>
-            )}
+            {error && <p className="text-body-sm text-signal-danger mt-4">{error}</p>}
           </form>
         </Card>
 
@@ -126,8 +122,8 @@ export function ForgeWizard() {
           <CardEyebrow>Step 2 · Review</CardEyebrow>
           <CardTitle>Edit anything before you confirm</CardTitle>
           <CardBody>
-            The draft is a starting point — every field is editable in the
-            preview to the right. (Wallet-gated final create lands Sprint 3.)
+            The draft is a starting point — every field is editable in the preview to
+            the right. (Wallet-gated final create lands Sprint 3.)
           </CardBody>
         </Card>
       </div>
@@ -150,7 +146,7 @@ function DraftEmpty() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="grid h-full place-items-center rounded-xl border border-dashed border-hairline p-8 text-center"
+      className="border-hairline grid h-full place-items-center rounded-xl border border-dashed p-8 text-center"
     >
       <p className="text-body text-platinum-400 max-w-[40ch]">
         Your drafted Forge spec will appear here.
@@ -165,12 +161,12 @@ function DraftSkeleton() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="space-y-3 rounded-xl border-hairline bg-ink-900 p-6"
+      className="border-hairline bg-ink-900 space-y-3 rounded-xl p-6"
     >
       {[60, 40, 80, 70, 50].map((w, i) => (
         <motion.div
           key={i}
-          className="h-3 rounded-pill bg-ink-700"
+          className="rounded-pill bg-ink-700 h-3"
           initial={{ width: 0 }}
           animate={{ width: `${w}%` }}
           transition={{ duration: 0.4, delay: i * 0.06 }}
@@ -187,7 +183,7 @@ function DraftPreview({ draft }: { draft: ForgeDraft }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
-      className="rounded-xl border-hairline bg-ink-900 p-8 elev-2"
+      className="border-hairline bg-ink-900 elev-2 rounded-xl p-8"
     >
       <div className="flex items-center justify-between">
         <p className="text-caption text-ember-400">Drafted Forge</p>
@@ -195,10 +191,10 @@ function DraftPreview({ draft }: { draft: ForgeDraft }) {
           AI-assisted
         </Pill>
       </div>
-      <h3 className="text-display-sm mt-3 text-platinum-100">{draft.name}</h3>
-      <p className="text-body mt-3 text-platinum-300">{draft.summary}</p>
+      <h3 className="text-display-sm text-platinum-100 mt-3">{draft.name}</h3>
+      <p className="text-body text-platinum-300 mt-3">{draft.summary}</p>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 border-t border-hairline pt-6">
+      <div className="border-hairline mt-8 grid grid-cols-2 gap-4 border-t pt-6">
         <Stat k="base model" v={draft.modelSpec.baseModel} />
         <Stat k="task" v={draft.modelSpec.task} />
         <Stat k="method" v={draft.modelSpec.fineTuneMethod} />
@@ -212,7 +208,7 @@ function DraftPreview({ draft }: { draft: ForgeDraft }) {
 
       <div className="mt-6">
         <p className="text-caption text-platinum-400">Weights</p>
-        <div className="mt-3 flex items-center gap-2 text-body-sm">
+        <div className="text-body-sm mt-3 flex items-center gap-2">
           <Tag label={`${draft.weights.data / 100}% data`} tone="ember" />
           <Tag label={`${draft.weights.compute / 100}% compute`} tone="warn" />
           <Tag label={`${draft.weights.capital / 100}% capital`} tone="neutral" />
@@ -221,7 +217,7 @@ function DraftPreview({ draft }: { draft: ForgeDraft }) {
 
       <div className="mt-6">
         <p className="text-caption text-platinum-400">Dataset guidance</p>
-        <ul className="mt-3 space-y-2 text-body-sm text-platinum-200">
+        <ul className="text-body-sm text-platinum-200 mt-3 space-y-2">
           {draft.datasetGuidance.map((g) => (
             <li key={g} className="flex gap-2">
               <span className="text-ember-500">·</span>
@@ -231,7 +227,7 @@ function DraftPreview({ draft }: { draft: ForgeDraft }) {
         </ul>
       </div>
 
-      <div className="mt-8 flex gap-3 border-t border-hairline pt-6">
+      <div className="border-hairline mt-8 flex gap-3 border-t pt-6">
         <Button variant="primary" disabled>
           Confirm & create (Sprint 3)
         </Button>
@@ -247,7 +243,7 @@ function Stat({ k, v }: { k: string; v: string }) {
   return (
     <div>
       <p className="text-caption text-platinum-400">{k}</p>
-      <p className="text-title-md mt-1 text-platinum-100 truncate">{v}</p>
+      <p className="text-title-md text-platinum-100 mt-1 truncate">{v}</p>
     </div>
   );
 }

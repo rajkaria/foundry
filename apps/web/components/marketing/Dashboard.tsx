@@ -53,7 +53,7 @@ const stats: Stat[] = [
 
 export function Dashboard() {
   return (
-    <section className="relative border-t border-hairline py-28">
+    <section className="border-hairline relative border-t py-28">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[420px]"
@@ -67,7 +67,7 @@ export function Dashboard() {
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="text-caption text-ember-400">Forge in Public</p>
-            <h2 className="text-display-lg mt-3 max-w-[24ch] text-platinum-100">
+            <h2 className="text-display-lg text-platinum-100 mt-3 max-w-[24ch]">
               No fake counters. Just live mainnet activity.
             </h2>
           </div>
@@ -81,7 +81,7 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-lg border-hairline md:grid-cols-5">
+        <div className="border-hairline mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-lg md:grid-cols-5">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
@@ -93,11 +93,11 @@ export function Dashboard() {
                 delay: i * 0.08,
                 ease: [0.32, 0.72, 0, 1],
               }}
-              className="group relative flex flex-col justify-between gap-3 bg-ink-900 p-6 transition-colors hover:bg-ink-800"
+              className="group bg-ink-900 hover:bg-ink-800 relative flex flex-col justify-between gap-3 p-6 transition-colors"
             >
               <div>
                 <p className="text-caption text-platinum-400">{s.label}</p>
-                <p className="text-display-md mt-4 tabular text-platinum-100 flex items-baseline gap-1">
+                <p className="text-display-md tabular text-platinum-100 mt-4 flex items-baseline gap-1">
                   <LiveCounter
                     value={s.value}
                     format={s.format}
@@ -105,24 +105,17 @@ export function Dashboard() {
                     duration={1.8}
                   />
                   {s.unit && (
-                    <span className="text-title-md text-platinum-400">
-                      {s.unit}
-                    </span>
+                    <span className="text-title-md text-platinum-400">{s.unit}</span>
                   )}
                 </p>
                 {s.delta && (
-                  <p className="text-body-sm mt-2 text-signal-positive tabular flex items-center gap-1.5">
+                  <p className="text-body-sm text-signal-positive tabular mt-2 flex items-center gap-1.5">
                     <Arrow />
                     {s.delta}
                   </p>
                 )}
               </div>
-              <Sparkline
-                values={s.trend}
-                width={140}
-                height={36}
-                className="-mb-1"
-              />
+              <Sparkline values={s.trend} width={140} height={36} className="-mb-1" />
             </motion.div>
           ))}
         </div>
@@ -135,9 +128,8 @@ export function Dashboard() {
           className="mt-8 flex flex-wrap items-center justify-between gap-3"
         >
           <p className="text-body-sm text-platinum-400">
-            Indexed live from 0G Aristotle events. Sparklines show 9-day
-            rolling history; refreshes within four seconds of every on-chain
-            event.
+            Indexed live from 0G Aristotle events. Sparklines show 9-day rolling
+            history; refreshes within four seconds of every on-chain event.
           </p>
           <a
             href="/dashboard"

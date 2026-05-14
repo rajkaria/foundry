@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  animate,
-  motion,
-  useInView,
-  useMotionValue,
-  useTransform,
-} from "motion/react";
+import { animate, motion, useInView, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useRef } from "react";
 
 /**
@@ -32,7 +26,7 @@ export function LiveCounter({
   const inView = useInView(ref, { once: true, margin: "-15% 0px -15% 0px" });
   const mv = useMotionValue(0);
   const text = useTransform(mv, (n) =>
-    format(decimals != null ? Number(n.toFixed(decimals)) : Math.round(n)),
+    format(decimals != null ? Number(n.toFixed(decimals)) : Math.round(n))
   );
 
   useEffect(() => {

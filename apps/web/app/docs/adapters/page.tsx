@@ -1,8 +1,19 @@
-import { DocsLayout, H2, H3, P, Lead, Code, CodeBlock, Callout, PageNav } from "@/components/docs/DocsLayout";
+import {
+  DocsLayout,
+  H2,
+  H3,
+  P,
+  Lead,
+  Code,
+  CodeBlock,
+  Callout,
+  PageNav,
+} from "@/components/docs/DocsLayout";
 
 export const metadata = {
   title: "Adapters — Foundry docs",
-  description: "Drop-in adapters for Vercel AI SDK, LangChain, and the OpenAI-compatible HTTP proxy.",
+  description:
+    "Drop-in adapters for Vercel AI SDK, LangChain, and the OpenAI-compatible HTTP proxy.",
 };
 
 const toc = [
@@ -21,10 +32,10 @@ export default function AdaptersPage() {
       title="Plug Foundry into your existing stack in three lines."
       intro={
         <Lead>
-          Foundry ships three first-class adapters. Each one is a thin
-          translation layer over the same OpenAI-compatible HTTP proxy —
-          so the inference path, receipts, and on-chain revenue routing are
-          identical regardless of which adapter you choose.
+          Foundry ships three first-class adapters. Each one is a thin translation layer
+          over the same OpenAI-compatible HTTP proxy — so the inference path, receipts,
+          and on-chain revenue routing are identical regardless of which adapter you
+          choose.
         </Lead>
       }
       toc={toc}
@@ -32,7 +43,8 @@ export default function AdaptersPage() {
       <H2 id="vercel-ai">Vercel AI SDK</H2>
       <P>
         Implements the <Code>LanguageModelV1</Code> interface. Works with{" "}
-        <Code>generateText</Code>, <Code>streamText</Code>, and <Code>generateObject</Code>.
+        <Code>generateText</Code>, <Code>streamText</Code>, and{" "}
+        <Code>generateObject</Code>.
       </P>
       <CodeBlock lang="ts" filename="vercel-ai.ts">{`import { generateText } from "ai";
 import { foundry } from "@foundryprotocol/sdk/adapters/vercel-ai";
@@ -59,10 +71,13 @@ for await (const chunk of result.textStream) {
 
       <H2 id="langchain">LangChain</H2>
       <P>
-        Implements a <Code>BaseChatModel</Code>-compatible class. Plugs into
-        LCEL chains, agents, and RAG pipelines.
+        Implements a <Code>BaseChatModel</Code>-compatible class. Plugs into LCEL
+        chains, agents, and RAG pipelines.
       </P>
-      <CodeBlock lang="ts" filename="langchain.ts">{`import { FoundryChat } from "@foundryprotocol/sdk/adapters/langchain";
+      <CodeBlock
+        lang="ts"
+        filename="langchain.ts"
+      >{`import { FoundryChat } from "@foundryprotocol/sdk/adapters/langchain";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
 const llm = new FoundryChat({
@@ -81,20 +96,22 @@ console.log(res.additional_kwargs.foundry.receipt);`}</CodeBlock>
       <Callout tone="ember" title="LangChain is an optional peer dependency">
         <p>
           We declare <Code>@langchain/core</Code> as an optional peer in
-          <Code> package.json</Code>. If you don't install it, only the
-          adapter module is unavailable — the rest of the SDK works
-          identically.
+          <Code> package.json</Code>. If you don't install it, only the adapter module
+          is unavailable — the rest of the SDK works identically.
         </p>
       </Callout>
 
       <H2 id="openai">OpenAI-compatible HTTP</H2>
       <P>
-        Any tool that speaks the OpenAI API can call a Foundry Ingot.
-        Point the base URL at <Code>api.foundryprotocol.xyz/v1</Code> and
-        pass the Ingot ID as <Code>x-foundry-ingot-id</Code>.
+        Any tool that speaks the OpenAI API can call a Foundry Ingot. Point the base URL
+        at <Code>api.foundryprotocol.xyz/v1</Code> and pass the Ingot ID as{" "}
+        <Code>x-foundry-ingot-id</Code>.
       </P>
 
-      <CodeBlock lang="bash" filename="curl">{`curl https://api.foundryprotocol.xyz/v1/chat/completions \\
+      <CodeBlock
+        lang="bash"
+        filename="curl"
+      >{`curl https://api.foundryprotocol.xyz/v1/chat/completions \\
   -H "content-type: application/json" \\
   -H "x-foundry-ingot-id: 0x8e2af4a000000000000000000000000000000001" \\
   -d '{
@@ -123,8 +140,8 @@ console.log(res.choices[0].message.content);`}</CodeBlock>
 
       <H2 id="streaming">Streaming</H2>
       <P>
-        All three adapters stream tokens via Server-Sent Events in the
-        OpenAI delta format. The final frame includes a <Code>foundry</Code>
+        All three adapters stream tokens via Server-Sent Events in the OpenAI delta
+        format. The final frame includes a <Code>foundry</Code>
         block with the inference + revenue tx hashes.
       </P>
 
@@ -143,11 +160,17 @@ data: [DONE]`}</CodeBlock>
 
       <H2 id="headers">Headers & receipts</H2>
 
-      <CodeBlock lang="text" filename="request headers">{`x-foundry-ingot-id   0x…           required: which Ingot to call
+      <CodeBlock
+        lang="text"
+        filename="request headers"
+      >{`x-foundry-ingot-id   0x…           required: which Ingot to call
 authorization        Bearer …       optional: integrator API key for rate-limit
 content-type         application/json`}</CodeBlock>
 
-      <CodeBlock lang="text" filename="response headers">{`x-foundry-ingot-id   0x…   echo
+      <CodeBlock
+        lang="text"
+        filename="response headers"
+      >{`x-foundry-ingot-id   0x…   echo
 x-foundry-stub       1     present on stub responses (Sprint 2/3); absent in prod`}</CodeBlock>
 
       <PageNav

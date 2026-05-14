@@ -27,8 +27,7 @@ export function GridBackdrop({
           }%, transparent) 1px, transparent 1px)
         `,
         backgroundSize: `${size}px ${size}px`,
-        maskImage:
-          "radial-gradient(ellipse at center, black 0%, transparent 70%)",
+        maskImage: "radial-gradient(ellipse at center, black 0%, transparent 70%)",
         WebkitMaskImage:
           "radial-gradient(ellipse at center, black 0%, transparent 70%)",
       }}

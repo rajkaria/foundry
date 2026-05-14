@@ -22,7 +22,7 @@ export function EmberField({
     return Array.from({ length: count }, (_, i) => {
       const rand = (offset: number) =>
         // deterministic pseudo-random — stable across renders
-        ((Math.sin(i * 12.9898 + offset) * 43758.5453) % 1 + 1) % 1;
+        (((Math.sin(i * 12.9898 + offset) * 43758.5453) % 1) + 1) % 1;
       return {
         id: i,
         x: rand(1) * 100,
@@ -44,7 +44,7 @@ export function EmberField({
       {motes.map((m) => (
         <motion.span
           key={m.id}
-          className="absolute rounded-full bg-ember-400"
+          className="bg-ember-400 absolute rounded-full"
           style={{
             left: `${m.x}%`,
             top: `${m.y}%`,

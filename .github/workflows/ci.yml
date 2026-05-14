@@ -51,6 +51,15 @@ jobs:
         with:
           version: stable
 
+      # The contracts/lib/ vendored dependencies are not committed.
+      # Install them fresh on every CI run.
+      - name: forge install deps
+        run: |
+          forge install --no-commit \
+            foundry-rs/forge-std \
+            OpenZeppelin/openzeppelin-contracts \
+            Vectorized/solady
+
       - name: forge build
         run: forge build --sizes
 

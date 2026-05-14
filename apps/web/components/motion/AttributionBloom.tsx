@@ -38,11 +38,11 @@ export function AttributionBloom({ rows }: { rows: ContributionRow[] }) {
             }}
             className="grid grid-cols-[1fr_auto_auto] items-center gap-4"
           >
-            <div className="flex items-center gap-3 min-w-0">
+            <div className="flex min-w-0 items-center gap-3">
               <span className="text-mono-sm text-platinum-400 tabular w-20 shrink-0 truncate">
                 {row.smith}
               </span>
-              <div className="h-2 flex-1 rounded-pill bg-ink-800 overflow-hidden">
+              <div className="rounded-pill bg-ink-800 h-2 flex-1 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${share}%` }}
@@ -51,15 +51,12 @@ export function AttributionBloom({ rows }: { rows: ContributionRow[] }) {
                     duration: 0.6,
                     ease: [0.32, 0.72, 0, 1],
                   }}
-                  className="h-full rounded-pill"
+                  className="rounded-pill h-full"
                   style={{ background: typeColor[row.type] }}
                 />
               </div>
             </div>
-            <span
-              className="text-caption"
-              style={{ color: typeColor[row.type] }}
-            >
+            <span className="text-caption" style={{ color: typeColor[row.type] }}>
               {row.type}
             </span>
             <span className="text-body-sm tabular text-platinum-200 w-14 text-right">

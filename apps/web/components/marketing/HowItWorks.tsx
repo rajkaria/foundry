@@ -23,37 +23,32 @@ const steps: Step[] = [
   {
     n: "01",
     title: "A Forge opens",
-    body:
-      "Anyone creates a Forge for a model they want trained. Data, compute, and capital are escrowed on-chain.",
+    body: "Anyone creates a Forge for a model they want trained. Data, compute, and capital are escrowed on-chain.",
     Icon: ForgeOpensIcon,
   },
   {
     n: "02",
     title: "Contributions roll in",
-    body:
-      "Smiths contribute datasets to 0G Storage, compute credits, or capital — independent wallets, real value.",
+    body: "Smiths contribute datasets to 0G Storage, compute credits, or capital — independent wallets, real value.",
     Icon: ContributionsIcon,
   },
   {
     n: "03",
     title: "Verifiable attribution",
-    body:
-      "Inside a TEE on 0G Compute, baseline + contribution is measured against a secret holdout. Marginal delta = your share.",
+    body: "Inside a TEE on 0G Compute, baseline + contribution is measured against a secret holdout. Marginal delta = your share.",
     Icon: AttributionIcon,
     accent: true,
   },
   {
     n: "04",
     title: "Ownership mints",
-    body:
-      "$FORGE-denominated shares mint to contributors proportional to measured marginal contribution. The cap table is on-chain.",
+    body: "$FORGE-denominated shares mint to contributors proportional to measured marginal contribution. The cap table is on-chain.",
     Icon: OwnershipIcon,
   },
   {
     n: "05",
     title: "Inference routes revenue",
-    body:
-      "Any 0G dApp calls the Ingot via the SDK. Payment hits the RevenueSplitter. Owners claim, on-chain, automatically.",
+    body: "Any 0G dApp calls the Ingot via the SDK. Payment hits the RevenueSplitter. Owners claim, on-chain, automatically.",
     Icon: RevenueIcon,
   },
 ];
@@ -68,21 +63,18 @@ const sampleRows = [
 
 export function HowItWorks() {
   return (
-    <section
-      id="how"
-      className="relative border-t border-hairline py-28"
-    >
+    <section id="how" className="border-hairline relative border-t py-28">
       <div className="mx-auto max-w-[1280px] px-6">
         <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
           <div>
             <p className="text-caption text-ember-400">How it works</p>
-            <h2 className="text-display-lg mt-3 max-w-[22ch] text-platinum-100">
+            <h2 className="text-display-lg text-platinum-100 mt-3 max-w-[22ch]">
               A foundry, on-chain. Anyone contributes. Everyone who matters, owns.
             </h2>
           </div>
-          <p className="text-body max-w-[36ch] text-platinum-400">
-            Five steps from open call to claimable revenue — each one
-            verifiable on 0G mainnet.
+          <p className="text-body text-platinum-400 max-w-[36ch]">
+            Five steps from open call to claimable revenue — each one verifiable on 0G
+            mainnet.
           </p>
         </div>
 
@@ -91,7 +83,7 @@ export function HowItWorks() {
           <ol className="relative">
             <motion.span
               aria-hidden
-              className="absolute left-[39px] top-6 bottom-6 w-px"
+              className="absolute top-6 bottom-6 left-[39px] w-px"
               initial={{ scaleY: 0, originY: 0 }}
               whileInView={{ scaleY: 1 }}
               viewport={{ once: true, margin: "-15% 0px -15% 0px" }}
@@ -128,14 +120,10 @@ export function HowItWorks() {
                   </div>
                   <div className="pt-2">
                     <div className="flex items-center gap-3">
-                      <span className="text-mono-sm text-ember-400 tabular">
-                        {s.n}
-                      </span>
-                      <h3 className="text-title-lg text-platinum-100">
-                        {s.title}
-                      </h3>
+                      <span className="text-mono-sm text-ember-400 tabular">{s.n}</span>
+                      <h3 className="text-title-lg text-platinum-100">{s.title}</h3>
                     </div>
-                    <p className="text-body mt-2 max-w-[54ch] text-platinum-300">
+                    <p className="text-body text-platinum-300 mt-2 max-w-[54ch]">
                       {s.body}
                     </p>
                   </div>
@@ -152,7 +140,7 @@ export function HowItWorks() {
             transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
             className="relative h-fit lg:sticky lg:top-24"
           >
-            <div className="relative overflow-hidden rounded-xl border-hairline bg-ink-900 p-8 elev-2">
+            <div className="border-hairline bg-ink-900 elev-2 relative overflow-hidden rounded-xl p-8">
               <div
                 aria-hidden
                 className="pointer-events-none absolute -inset-px"
@@ -167,23 +155,23 @@ export function HowItWorks() {
                     TEE attestation · Forge #0042
                   </p>
                   <motion.span
-                    className="flex items-center gap-1.5 text-caption text-signal-positive"
+                    className="text-caption text-signal-positive flex items-center gap-1.5"
                     animate={{ opacity: [0.55, 1, 0.55] }}
                     transition={{ duration: 2.4, repeat: Infinity }}
                   >
-                    <span className="size-1.5 rounded-full bg-signal-positive" />
+                    <span className="bg-signal-positive size-1.5 rounded-full" />
                     verified
                   </motion.span>
                 </div>
-                <h3 className="text-display-sm mt-3 text-platinum-100">
+                <h3 className="text-display-sm text-platinum-100 mt-3">
                   Multilingual Translator
                 </h3>
-                <p className="text-mono-sm mt-1 text-platinum-400 tabular">
+                <p className="text-mono-sm text-platinum-400 tabular mt-1">
                   ingot:0x8e2…f4a · baseline 21.4 → 38.7 BLEU
                 </p>
 
                 {/* TEE chip diagram */}
-                <div className="mt-6 grid grid-cols-3 gap-2 rounded-md border-hairline bg-ink-950 p-3">
+                <div className="border-hairline bg-ink-950 mt-6 grid grid-cols-3 gap-2 rounded-md p-3">
                   <Telemetry label="enclave" value="sgx" />
                   <Telemetry label="holdout" value="sealed" />
                   <Telemetry label="quote" value="0x7a3b…91d" />
@@ -196,7 +184,7 @@ export function HowItWorks() {
                   <AttributionBloom rows={sampleRows} />
                 </div>
 
-                <div className="mt-8 flex items-center justify-between border-t border-hairline pt-5 text-caption">
+                <div className="border-hairline text-caption mt-8 flex items-center justify-between border-t pt-5">
                   <span className="text-platinum-400">share minted</span>
                   <span className="text-mono-sm text-ember-400 tabular">
                     1,000 $FORGE-0042 → 5 wallets
@@ -213,8 +201,8 @@ export function HowItWorks() {
 
 function Telemetry({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-sm bg-ink-800 px-2.5 py-2">
-      <p className="text-[10px] uppercase tracking-[0.14em] text-platinum-400">
+    <div className="bg-ink-800 rounded-sm px-2.5 py-2">
+      <p className="text-platinum-400 text-[10px] tracking-[0.14em] uppercase">
         {label}
       </p>
       <p className="text-mono-sm text-platinum-200 tabular mt-0.5">{value}</p>

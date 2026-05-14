@@ -9,7 +9,10 @@
     "./css": "./src/index.css",
     "./marks/*": "./marks/*"
   },
-  "files": ["src", "marks"],
+  "files": [
+    "src",
+    "marks"
+  ],
   "scripts": {
     "lint": "echo 'design-tokens has no lint'",
     "typecheck": "tsc --noEmit",

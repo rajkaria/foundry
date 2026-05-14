@@ -100,7 +100,10 @@ export class FoundryChat {
    * We coerce all three into our internal message shape.
    */
   async invoke(
-    input: string | AnyMessage[] | { toChatMessages?: () => AnyMessage[]; toString?: () => string },
+    input:
+      | string
+      | AnyMessage[]
+      | { toChatMessages?: () => AnyMessage[]; toString?: () => string },
     options?: CallOptions
   ): Promise<{ content: string; additional_kwargs: Record<string, unknown> }> {
     const messages = coerceMessages(input);
@@ -163,7 +166,10 @@ function normalizeIngotId(id: string): IngotId {
 }
 
 function coerceMessages(
-  input: string | AnyMessage[] | { toChatMessages?: () => AnyMessage[]; toString?: () => string }
+  input:
+    | string
+    | AnyMessage[]
+    | { toChatMessages?: () => AnyMessage[]; toString?: () => string }
 ): AnyMessage[] {
   if (typeof input === "string") {
     return [{ role: "user", content: input }];

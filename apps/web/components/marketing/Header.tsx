@@ -12,25 +12,18 @@ const nav = [
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-hairline bg-ink-950/75 backdrop-blur-xl">
+    <header className="border-hairline bg-ink-950/75 sticky top-0 z-40 border-b backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-6">
-        <Link
-          href="/"
-          aria-label="Foundry — home"
-          className="-ml-1 flex items-center"
-        >
+        <Link href="/" aria-label="Foundry — home" className="-ml-1 flex items-center">
           <FoundryLockup size={28} />
         </Link>
 
-        <nav
-          aria-label="Primary"
-          className="hidden items-center gap-1 md:flex"
-        >
+        <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-md px-3 py-1.5 text-[14px] font-medium text-platinum-300 transition-colors hover:bg-ink-800 hover:text-platinum-100"
+              className="text-platinum-300 hover:bg-ink-800 hover:text-platinum-100 rounded-md px-3 py-1.5 text-[14px] font-medium transition-colors"
             >
               {item.label}
             </Link>
