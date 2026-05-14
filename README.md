@@ -3,13 +3,13 @@
   <!-- Foundry mark goes here once shipped -->
   <h1>FOUNDRY</h1>
 
-  **The supply-side protocol for 0G.**
+**The supply-side protocol for 0G.**
 
-  Pool data, compute, and capital. Co-train an AI model. Own a verifiable, revenue-generating share — minted on mainnet, attributed inside a TEE.
+Pool data, compute, and capital. Co-train an AI model. Own a verifiable, revenue-generating share — minted on mainnet, attributed inside a TEE.
 
-  [Website](https://foundryprotocol.xyz) · [Docs](https://foundryprotocol.xyz/docs) · [Build on Foundry](https://foundryprotocol.xyz/build-on-foundry) · [Dashboard](https://foundryprotocol.xyz/dashboard) · [X](https://x.com/foundryprotocol)
+[Website](https://foundryprotocol.xyz) · [Docs](https://foundryprotocol.xyz/docs) · [Build on Foundry](https://foundryprotocol.xyz/build-on-foundry) · [Dashboard](https://foundryprotocol.xyz/dashboard) · [X](https://x.com/foundryprotocol)
 
-  *0G APAC Hackathon 2026 · Grand Prize Build*
+_0G APAC Hackathon 2026 · Grand Prize Build_
 
 </div>
 
@@ -50,15 +50,15 @@ Detailed architecture: [`docs/03-tech-architecture.md`](./docs/03-tech-architect
 
 ## What's in this repo
 
-| Path | What |
-|---|---|
-| [`docs/`](./docs) | The build spec, the brand, the design system, the architecture, the sprint plan, the enhancements menu, the real-vs-roadmap honesty table |
-| [`apps/web/`](./apps/web) | Next.js 16 — landing, app, dashboard, lineage graph, docs |
-| [`packages/sdk/`](./packages/sdk) | `@foundryprotocol/sdk` — install via `pnpm add @foundryprotocol/sdk` |
-| [`packages/indexer/`](./packages/indexer) | TypeScript indexer feeding the dashboard |
-| [`packages/design-tokens/`](./packages/design-tokens) | Color, type, motion, spacing tokens |
-| [`contracts/`](./contracts) | Solidity (Foundry toolkit). 6 contracts. 100% line coverage. |
-| [`eval/`](./eval) | Python attribution coordinator. TEE-aware. |
+| Path                                                  | What                                                                                                                                      |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [`docs/`](./docs)                                     | The build spec, the brand, the design system, the architecture, the sprint plan, the enhancements menu, the real-vs-roadmap honesty table |
+| [`apps/web/`](./apps/web)                             | Next.js 16 — landing, app, dashboard, lineage graph, docs                                                                                 |
+| [`packages/sdk/`](./packages/sdk)                     | `@foundryprotocol/sdk` — install via `pnpm add @foundryprotocol/sdk`                                                                      |
+| [`packages/indexer/`](./packages/indexer)             | TypeScript indexer feeding the dashboard                                                                                                  |
+| [`packages/design-tokens/`](./packages/design-tokens) | Color, type, motion, spacing tokens                                                                                                       |
+| [`contracts/`](./contracts)                           | Solidity (Foundry toolkit). 6 contracts. 100% line coverage.                                                                              |
+| [`eval/`](./eval)                                     | Python attribution coordinator. TEE-aware.                                                                                                |
 
 ## Documentation
 
@@ -76,10 +76,10 @@ The full docs are rendered at [foundryprotocol.xyz/docs](https://foundryprotocol
 ## Three-line quickstart
 
 ```ts
-import { Foundry } from '@foundryprotocol/sdk';
+import { Foundry } from "@foundryprotocol/sdk";
 
-const foundry = new Foundry({ contracts: 'aristotle' });
-const result  = await foundry.inference.run('ingot:0x…', { input: 'Hello' });
+const foundry = new Foundry({ contracts: "aristotle" });
+const result = await foundry.inference.run("ingot:0x…", { input: "Hello" });
 ```
 
 That's it. Your call is routed to the Ingot via 0G Compute. Revenue routes back to the Ingot's co-owners on-chain.
@@ -99,14 +99,14 @@ curl https://foundryprotocol.xyz/api/v1/chat/completions \
 
 ## Live mainnet status
 
-| | |
-|---|---|
-| Network | 0G Aristotle mainnet |
-| Deployed contracts | _populated on first deploy_ |
-| Forges live | _live-updated_ |
-| Ingots minted | _live-updated_ |
-| Total contributions | _live-updated_ |
-| Revenue distributed | _live-updated_ |
+|                     |                             |
+| ------------------- | --------------------------- |
+| Network             | 0G Aristotle mainnet        |
+| Deployed contracts  | _populated on first deploy_ |
+| Forges live         | _live-updated_              |
+| Ingots minted       | _live-updated_              |
+| Total contributions | _live-updated_              |
+| Revenue distributed | _live-updated_              |
 
 The [dashboard](https://foundryprotocol.xyz/dashboard) shows real-time figures.
 
@@ -120,4 +120,4 @@ Foundry is an open protocol. If you're building on 0G and need a model — [buil
 
 ---
 
-*Built for the 0G APAC Hackathon 2026 — and beyond.*
+_Built for the 0G APAC Hackathon 2026 — and beyond._

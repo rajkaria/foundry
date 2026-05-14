@@ -21,7 +21,7 @@ export function TEEViewer({
   attestation?: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-xl border-hairline bg-ink-900 elev-2 p-8">
+    <div className="border-hairline bg-ink-900 elev-2 relative overflow-hidden rounded-xl p-8">
       <div className="flex items-center justify-between">
         <p className="text-caption text-platinum-400">TEE attestation</p>
         <StatePill state={state} />
@@ -29,14 +29,10 @@ export function TEEViewer({
 
       <div className="relative mt-8 grid grid-cols-[140px_1fr_140px] items-center gap-4">
         {/* Input: encrypted holdout */}
-        <Lane
-          label="encrypted holdout"
-          color="--platinum-400"
-          direction="in"
-        />
+        <Lane label="encrypted holdout" color="--platinum-400" direction="in" />
 
         {/* The enclave */}
-        <div className="relative h-48 rounded-xl border border-ember-500/40 bg-[color-mix(in_oklab,var(--ember-900)_50%,var(--ink-900))] p-5">
+        <div className="border-ember-500/40 relative h-48 rounded-xl border bg-[color-mix(in_oklab,var(--ember-900)_50%,var(--ink-900))] p-5">
           <motion.div
             aria-hidden
             className="pointer-events-none absolute inset-0 rounded-xl"
@@ -56,7 +52,7 @@ export function TEEViewer({
               ease: "easeInOut",
             }}
           />
-          <div className="relative space-y-3 text-mono-sm">
+          <div className="text-mono-sm relative space-y-3">
             <Line k="seal" v="0x3b…14a" muted />
             <Line
               k="baseline"
@@ -104,10 +100,11 @@ export function TEEViewer({
         />
       </div>
 
-      <p className="text-body-sm mt-6 text-platinum-400">
-        Holdout is decrypted only inside the enclave. The eval result carries
-        a hardware-signed attestation; <code className="text-mono-sm text-platinum-200">submitEvalResult</code> on
-        the Forge contract reverts if the attestation is invalid.
+      <p className="text-body-sm text-platinum-400 mt-6">
+        Holdout is decrypted only inside the enclave. The eval result carries a
+        hardware-signed attestation;{" "}
+        <code className="text-mono-sm text-platinum-200">submitEvalResult</code> on the
+        Forge contract reverts if the attestation is invalid.
       </p>
     </div>
   );
@@ -116,14 +113,17 @@ export function TEEViewer({
 function StatePill({ state }: { state: string }) {
   const map: Record<string, { label: string; tone: string }> = {
     idle: { label: "idle", tone: "text-platinum-400 bg-ink-800" },
-    "measuring-baseline": { label: "measuring baseline", tone: "text-ember-400 bg-ember-900/30" },
+    "measuring-baseline": {
+      label: "measuring baseline",
+      tone: "text-ember-400 bg-ember-900/30",
+    },
     scoring: { label: "scoring contributions", tone: "text-ember-400 bg-ember-900/40" },
     attesting: { label: "sealing attestation", tone: "text-ember-300 bg-ember-900/60" },
     done: { label: "verified", tone: "text-signal-positive bg-signal-positive/10" },
   };
   const m = map[state] ?? map.idle;
   return (
-    <span className={`rounded-pill px-2.5 py-0.5 text-caption ${m?.tone}`}>
+    <span className={`rounded-pill text-caption px-2.5 py-0.5 ${m?.tone}`}>
       {m?.label}
     </span>
   );
@@ -143,16 +143,12 @@ function Lane({
   return (
     <div className="text-center">
       <motion.div
-        className="h-2 rounded-pill"
+        className="rounded-pill h-2"
         style={{ background: `var(${color})`, opacity: glow ? 1 : 0.35 }}
-        animate={
-          direction === "in"
-            ? { x: [-12, 4, -12] }
-            : { x: [4, 12, 4] }
-        }
+        animate={direction === "in" ? { x: [-12, 4, -12] } : { x: [4, 12, 4] }}
         transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
       />
-      <p className="text-caption mt-3 text-platinum-400">{label}</p>
+      <p className="text-caption text-platinum-400 mt-3">{label}</p>
     </div>
   );
 }

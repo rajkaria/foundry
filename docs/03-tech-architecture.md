@@ -124,40 +124,40 @@ foundry/                              <— git root, github.com/rajkaria/foundry
 
 Each row records the chosen tool, the reason chosen, and the exit criterion (what would make us switch).
 
-| Layer | Choice | Why | Exit criterion |
-|---|---|---|---|
-| **Monorepo** | pnpm + Turborepo | Best caching, native workspace support, no Nx complexity | If a single-package SDK release becomes painful (it won't). |
-| **TS package manager** | pnpm 9 | Fastest, content-addressed store | — |
-| **Language (web/sdk)** | TypeScript strict | Strict typing across SDK boundary is non-negotiable | — |
-| **Web framework** | Next.js 16 App Router with Cache Components | SSR + ISR + edge OG cards + RSC for ingestion pages | Switch only if Vercel becomes deploy-blocking. |
-| **Style** | Tailwind 4 (`@theme` consuming our CSS vars) | Tokens-first, atomic, fast | — |
-| **Motion** | `motion` (Framer Motion fork) | Best primitives for layout, scroll, springs, reduced-motion | — |
-| **Component primitives** | Radix UI primitives, custom-styled | Headless + a11y baked in; we own the visual language | — |
-| **Chain access (web)** | wagmi v2 + viem | Best DX, viem's typed contracts | — |
-| **Wallet** | WalletConnect v3 + injected | Multi-wallet support without lock-in | — |
-| **Smart contracts toolkit** | Foundry (forge, anvil, cast) | Industry standard, fast tests, fuzz-first | — |
-| **Contracts language** | Solidity 0.8.24 | Latest stable, Aristotle-compatible | — |
-| **Contract libs** | OpenZeppelin (ERC20/721/1155 base, ReentrancyGuard, AccessControl) + Solady (gas-optimal utilities where appropriate) | Audited primitives, minimal surface | — |
-| **Eval language** | Python 3.12 | ML ecosystem + 0G SDK examples are Python | — |
-| **Eval deps** | uv (package mgmt) + pydantic v2 + httpx + sentence-transformers / transformers (for small fine-tunes) | Modern, fast, reproducible | — |
-| **TEE runtime** | 0G Compute TEE (per 0G integration docs) | Mandatory for verifiable attribution | If 0G TEE not integration-ready, ship labeled non-TEE fallback on 0G Compute (per spec §5.4) |
-| **Indexer** | Custom TS Node service with viem `watchEvent` → Postgres (Supabase) → tRPC | Lightweight, type-safe, no Subgraph dependency | If Supabase rate-limited at submission scale, move to Railway/Postgres direct. |
-| **Cache** | Vercel Runtime Cache for dashboard aggregates; revalidateTag on chain events | Tag-based invalidation is exactly the access pattern | — |
-| **Auth (app)** | Wallet-only (SIWE) — no email, no oauth | Wallet IS the identity | — |
-| **Auth (docs admin / preview)** | Vercel password protection on preview | Simple, sufficient | — |
-| **Hosting (web)** | Vercel | Best DX for Next; AI Gateway, ImageResponse, Cron all native | — |
-| **Hosting (eval)** | Fly.io (Docker, 1×CPU + 4GB to start; auto-stop when idle) | Cheap, fast cold start, persistent volumes for model artifacts | If GPU eval scale exceeds Fly's offering, move to Modal or RunPod. |
-| **Hosting (indexer)** | Fly.io alongside eval, or Vercel Cron with edge functions | — | — |
-| **DNS / domains** | Cloudflare for `foundryprotocol.xyz` | Free, fast, DDoS mitigation | — |
-| **Email** | Resend for transactional + outreach templates | Best DX for Next | — |
-| **Analytics** | Vercel Analytics + a single privacy-respecting product analytics (PostHog self-host or skip for hackathon) | Minimal | — |
-| **Observability** | Sentry (Next + Node) | Standard; free tier sufficient | — |
-| **CI** | GitHub Actions, matrix per package | Fast, free, integrates with PR checks | — |
-| **SDK release** | Changesets + npm publish on merge to `main` with the `release` label | Semantic versioning enforced | — |
-| **Docs rendering** | Source MDX in `/docs` rendered by `apps/web` `(docs)` route group with `next-mdx-remote/rsc` | Single source of truth; no separate docs site to maintain | — |
-| **Code style** | Prettier + ESLint (typescript-eslint, eslint-plugin-react-hooks, eslint-plugin-tailwindcss) | — | — |
-| **Solidity style** | forge fmt + slither + cloc gates | Audit-ready cleanliness | — |
-| **License** | MIT (root) + Apache-2.0 (contracts, optional) | Permissive, audit-friendly | — |
+| Layer                           | Choice                                                                                                                | Why                                                            | Exit criterion                                                                               |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Monorepo**                    | pnpm + Turborepo                                                                                                      | Best caching, native workspace support, no Nx complexity       | If a single-package SDK release becomes painful (it won't).                                  |
+| **TS package manager**          | pnpm 9                                                                                                                | Fastest, content-addressed store                               | —                                                                                            |
+| **Language (web/sdk)**          | TypeScript strict                                                                                                     | Strict typing across SDK boundary is non-negotiable            | —                                                                                            |
+| **Web framework**               | Next.js 16 App Router with Cache Components                                                                           | SSR + ISR + edge OG cards + RSC for ingestion pages            | Switch only if Vercel becomes deploy-blocking.                                               |
+| **Style**                       | Tailwind 4 (`@theme` consuming our CSS vars)                                                                          | Tokens-first, atomic, fast                                     | —                                                                                            |
+| **Motion**                      | `motion` (Framer Motion fork)                                                                                         | Best primitives for layout, scroll, springs, reduced-motion    | —                                                                                            |
+| **Component primitives**        | Radix UI primitives, custom-styled                                                                                    | Headless + a11y baked in; we own the visual language           | —                                                                                            |
+| **Chain access (web)**          | wagmi v2 + viem                                                                                                       | Best DX, viem's typed contracts                                | —                                                                                            |
+| **Wallet**                      | WalletConnect v3 + injected                                                                                           | Multi-wallet support without lock-in                           | —                                                                                            |
+| **Smart contracts toolkit**     | Foundry (forge, anvil, cast)                                                                                          | Industry standard, fast tests, fuzz-first                      | —                                                                                            |
+| **Contracts language**          | Solidity 0.8.24                                                                                                       | Latest stable, Aristotle-compatible                            | —                                                                                            |
+| **Contract libs**               | OpenZeppelin (ERC20/721/1155 base, ReentrancyGuard, AccessControl) + Solady (gas-optimal utilities where appropriate) | Audited primitives, minimal surface                            | —                                                                                            |
+| **Eval language**               | Python 3.12                                                                                                           | ML ecosystem + 0G SDK examples are Python                      | —                                                                                            |
+| **Eval deps**                   | uv (package mgmt) + pydantic v2 + httpx + sentence-transformers / transformers (for small fine-tunes)                 | Modern, fast, reproducible                                     | —                                                                                            |
+| **TEE runtime**                 | 0G Compute TEE (per 0G integration docs)                                                                              | Mandatory for verifiable attribution                           | If 0G TEE not integration-ready, ship labeled non-TEE fallback on 0G Compute (per spec §5.4) |
+| **Indexer**                     | Custom TS Node service with viem `watchEvent` → Postgres (Supabase) → tRPC                                            | Lightweight, type-safe, no Subgraph dependency                 | If Supabase rate-limited at submission scale, move to Railway/Postgres direct.               |
+| **Cache**                       | Vercel Runtime Cache for dashboard aggregates; revalidateTag on chain events                                          | Tag-based invalidation is exactly the access pattern           | —                                                                                            |
+| **Auth (app)**                  | Wallet-only (SIWE) — no email, no oauth                                                                               | Wallet IS the identity                                         | —                                                                                            |
+| **Auth (docs admin / preview)** | Vercel password protection on preview                                                                                 | Simple, sufficient                                             | —                                                                                            |
+| **Hosting (web)**               | Vercel                                                                                                                | Best DX for Next; AI Gateway, ImageResponse, Cron all native   | —                                                                                            |
+| **Hosting (eval)**              | Fly.io (Docker, 1×CPU + 4GB to start; auto-stop when idle)                                                            | Cheap, fast cold start, persistent volumes for model artifacts | If GPU eval scale exceeds Fly's offering, move to Modal or RunPod.                           |
+| **Hosting (indexer)**           | Fly.io alongside eval, or Vercel Cron with edge functions                                                             | —                                                              | —                                                                                            |
+| **DNS / domains**               | Cloudflare for `foundryprotocol.xyz`                                                                                  | Free, fast, DDoS mitigation                                    | —                                                                                            |
+| **Email**                       | Resend for transactional + outreach templates                                                                         | Best DX for Next                                               | —                                                                                            |
+| **Analytics**                   | Vercel Analytics + a single privacy-respecting product analytics (PostHog self-host or skip for hackathon)            | Minimal                                                        | —                                                                                            |
+| **Observability**               | Sentry (Next + Node)                                                                                                  | Standard; free tier sufficient                                 | —                                                                                            |
+| **CI**                          | GitHub Actions, matrix per package                                                                                    | Fast, free, integrates with PR checks                          | —                                                                                            |
+| **SDK release**                 | Changesets + npm publish on merge to `main` with the `release` label                                                  | Semantic versioning enforced                                   | —                                                                                            |
+| **Docs rendering**              | Source MDX in `/docs` rendered by `apps/web` `(docs)` route group with `next-mdx-remote/rsc`                          | Single source of truth; no separate docs site to maintain      | —                                                                                            |
+| **Code style**                  | Prettier + ESLint (typescript-eslint, eslint-plugin-react-hooks, eslint-plugin-tailwindcss)                           | —                                                              | —                                                                                            |
+| **Solidity style**              | forge fmt + slither + cloc gates                                                                                      | Audit-ready cleanliness                                        | —                                                                                            |
+| **License**                     | MIT (root) + Apache-2.0 (contracts, optional)                                                                         | Permissive, audit-friendly                                     | —                                                                                            |
 
 ---
 
@@ -165,14 +165,14 @@ Each row records the chosen tool, the reason chosen, and the exit criterion (wha
 
 Mapped to the build spec §5.2. Every component is **load-bearing** (Foundry breaks without it), not decorative.
 
-| Component | Surface that uses it | Concrete data |
-|---|---|---|
-| **0G Storage (Log)** | datasets, weights archival, holdout (encrypted), lineage records | content-addressed blobs, ≤4GB per chunk |
-| **0G Storage (KV)** | Ingot metadata, Forge state cache, lineage indices (fast reads) | small JSON docs, write-on-event |
-| **0G Compute** | baseline + final training runs, attribution eval (inside TEE), all consumer inference | per-Forge: 1 baseline + N LOO runs (N = contribution count); per-inference: 1 call per consumer request |
-| **0G Compute TEE / Privacy** | the attribution eval *only* | holdout decrypted only inside enclave; result = score vector + hardware-signed attestation; the attestation is what `Forge.submitEvalResult` validates |
-| **0G Chain (Aristotle)** | all contracts (FORGEToken, ForgeFactory, Forge, Ingot, ContributionRegistry, RevenueSplitter); all state transitions and value-moving operations | EVM-compatible |
-| **Agent ID** | each Ingot registered with an Agent ID; metadata encrypted; tradeable ownership reflects Ingot share ledger | one Agent ID per Ingot |
+| Component                    | Surface that uses it                                                                                                                             | Concrete data                                                                                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **0G Storage (Log)**         | datasets, weights archival, holdout (encrypted), lineage records                                                                                 | content-addressed blobs, ≤4GB per chunk                                                                                                                |
+| **0G Storage (KV)**          | Ingot metadata, Forge state cache, lineage indices (fast reads)                                                                                  | small JSON docs, write-on-event                                                                                                                        |
+| **0G Compute**               | baseline + final training runs, attribution eval (inside TEE), all consumer inference                                                            | per-Forge: 1 baseline + N LOO runs (N = contribution count); per-inference: 1 call per consumer request                                                |
+| **0G Compute TEE / Privacy** | the attribution eval _only_                                                                                                                      | holdout decrypted only inside enclave; result = score vector + hardware-signed attestation; the attestation is what `Forge.submitEvalResult` validates |
+| **0G Chain (Aristotle)**     | all contracts (FORGEToken, ForgeFactory, Forge, Ingot, ContributionRegistry, RevenueSplitter); all state transitions and value-moving operations | EVM-compatible                                                                                                                                         |
+| **Agent ID**                 | each Ingot registered with an Agent ID; metadata encrypted; tradeable ownership reflects Ingot share ledger                                      | one Agent ID per Ingot                                                                                                                                 |
 
 Integration order (per the sprint plan): Chain → Storage Log → Compute (without TEE) → Storage KV → Agent ID → Compute TEE. Each adds verifiable proof of the previous; TEE is last because it's the highest-risk integration.
 
@@ -217,21 +217,23 @@ The SDK is **load-bearing for Addition 3** (another team integrating). Its DX is
 ### 6.1 Public surface (v0.1)
 
 ```ts
-import { Foundry } from '@foundryprotocol/sdk';
+import { Foundry } from "@foundryprotocol/sdk";
 
 const foundry = new Foundry({
-  rpcUrl: 'https://rpc.0g.network',          // or use default
-  contracts: 'aristotle',                     // resolves to deployment addresses
-  signer,                                     // viem WalletClient or PrivateKeyAccount
+  rpcUrl: "https://rpc.0g.network", // or use default
+  contracts: "aristotle", // resolves to deployment addresses
+  signer, // viem WalletClient or PrivateKeyAccount
 });
 
-await foundry.forge.create({ /* modelSpec, evalSpec, window */ });
+await foundry.forge.create({
+  /* modelSpec, evalSpec, window */
+});
 await foundry.forge.contributeData(forgeId, { datasetRef });
 await foundry.forge.contributeCompute(forgeId, { amount });
 await foundry.forge.fundForge(forgeId, { amount });
 
-const ingot   = await foundry.ingot.get(ingotId);
-const result  = await foundry.inference.run(ingotId, { input });
+const ingot = await foundry.ingot.get(ingotId);
+const result = await foundry.inference.run(ingotId, { input });
 await foundry.revenue.claim(ingotId);
 const lineage = await foundry.lineage.get(ingotId);
 foundry.subscribe.onForgeStateChange(forgeId, cb);
@@ -243,13 +245,13 @@ foundry.subscribe.onForgeStateChange(forgeId, cb);
 
 ```ts
 // Vercel AI SDK adapter
-import { foundry } from '@foundryprotocol/sdk/adapters/vercel-ai';
-const model = foundry('ingot:0x...');                          // returns a LanguageModelV2
-await generateText({ model, prompt: 'Translate ...' });        // revenue auto-routes
+import { foundry } from "@foundryprotocol/sdk/adapters/vercel-ai";
+const model = foundry("ingot:0x..."); // returns a LanguageModelV2
+await generateText({ model, prompt: "Translate ..." }); // revenue auto-routes
 
 // LangChain adapter
-import { FoundryChat } from '@foundryprotocol/sdk/adapters/langchain';
-const llm = new FoundryChat({ ingotId: '0x...' });
+import { FoundryChat } from "@foundryprotocol/sdk/adapters/langchain";
+const llm = new FoundryChat({ ingotId: "0x..." });
 
 // OpenAI-compatible HTTP proxy
 //   POST https://api.foundryprotocol.xyz/v1/chat/completions
@@ -300,8 +302,9 @@ Detailed in build-spec §5.4. Implementation notes:
 **Choice: a low-resource-language translation LoRA.** Specifically a small (≤200M parameter) translation model fine-tuned on a community-contributed sentence corpus — e.g. **Konkani↔English** or **Tulu↔English**, both real low-resource languages with passionate native-speaker communities (latter has none in production; output will be visibly novel).
 
 Why this choice over alternatives:
-- A judge with no ML background can *feel* the quality: type a sentence → see a coherent translation.
-- The improvement curve is steep enough that contributing data has *measurable* impact in the eval.
+
+- A judge with no ML background can _feel_ the quality: type a sentence → see a coherent translation.
+- The improvement curve is steep enough that contributing data has _measurable_ impact in the eval.
 - Native-speaker contributors are findable on X / Reddit (Addition 2).
 - It's small enough to train end-to-end inside the hackathon window.
 
@@ -323,6 +326,7 @@ Lightweight TS Node service. The frontend never reads chain logs directly; every
 - **Serve**: tRPC over HTTP, consumed by `apps/web` with React Query.
 
 Critical queries:
+
 - `getLiveStats()` — for the Forge in Public dashboard (cumulative Forges, Ingots, contributions, revenue).
 - `getForge(id)` — Forge detail + contribution list + state.
 - `getIngot(id)` — cap table + weights ref + lineage parent.
@@ -342,16 +346,16 @@ Next.js 16 with App Router and Cache Components (the new `use cache` directive +
 
 ### 9.1 Hero pages
 
-| Page | Static? | Notes |
-|---|---|---|
-| `/` (landing) | PPR | Metal-pour intro, "Real vs. Roadmap" table, live dashboard preview from indexer (revalidate on chain-event tag) |
-| `/forges` | dynamic with `use cache` | tagged `forge-list`, invalidated by indexer on new Forge event |
-| `/forges/[id]` | dynamic | tagged `forge:${id}` |
-| `/ingots/[id]` | dynamic | tagged `ingot:${id}` |
-| `/lineage` | dynamic with `use cache` | tagged `lineage-graph` |
-| `/dashboard` (Forge in Public) | dynamic | tagged `dashboard-stats`, ws-driven counters |
-| `/build-on-foundry` | static | the integrator funnel; SDK quickstart |
-| `/docs/*` | static (build-time MDX) | rendered from `/docs/*.mdx` |
+| Page                           | Static?                  | Notes                                                                                                           |
+| ------------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `/` (landing)                  | PPR                      | Metal-pour intro, "Real vs. Roadmap" table, live dashboard preview from indexer (revalidate on chain-event tag) |
+| `/forges`                      | dynamic with `use cache` | tagged `forge-list`, invalidated by indexer on new Forge event                                                  |
+| `/forges/[id]`                 | dynamic                  | tagged `forge:${id}`                                                                                            |
+| `/ingots/[id]`                 | dynamic                  | tagged `ingot:${id}`                                                                                            |
+| `/lineage`                     | dynamic with `use cache` | tagged `lineage-graph`                                                                                          |
+| `/dashboard` (Forge in Public) | dynamic                  | tagged `dashboard-stats`, ws-driven counters                                                                    |
+| `/build-on-foundry`            | static                   | the integrator funnel; SDK quickstart                                                                           |
+| `/docs/*`                      | static (build-time MDX)  | rendered from `/docs/*.mdx`                                                                                     |
 
 ---
 
@@ -359,18 +363,18 @@ Next.js 16 with App Router and Cache Components (the new `use cache` directive +
 
 Threats addressed at the design level. Each maps to a defense.
 
-| Threat | Defense |
-|---|---|
-| Sybil — one entity creating many wallets to game contribution shares | Per-wallet contribution cap per Forge (hackathon). Reputation-weighting roadmap. |
-| Holdout leakage — contributor reverse-engineering the eval set | Holdout never on-chain. Decrypted only inside TEE. Holdout ref + symmetric key encrypted with TEE enclave public key. |
-| Eval coordinator compromise — malicious score vector submitted | Eval result MUST carry valid TEE attestation; `Forge.submitEvalResult` reverts on invalid signature/measurement. |
-| Re-entrancy on RevenueSplitter | OZ ReentrancyGuard + checks-effects-interactions ordering. |
-| Gas-bomb DoS on revenue distribution | Pull-payments. No N-holder loops. |
-| Front-running of `mintOwnership` | Mint is single-shot per Forge; no MEV-exploitable parameters. |
-| Compromised SDK npm publish | npm 2FA + GitHub Actions provenance attestation on every publish. |
-| Phishing of judge wallets | Pre-funded wallets are PR'd into the README as test addresses; judges generate their own keys; we hand them an explicit "do not share" warning. |
-| Domain hijack | Cloudflare DNS with 2FA on the registrar; TLS everywhere; HSTS preload. |
-| Supply chain — malicious dep | Renovate + `pnpm audit` + lockfile review; minimize deps. |
+| Threat                                                               | Defense                                                                                                                                         |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sybil — one entity creating many wallets to game contribution shares | Per-wallet contribution cap per Forge (hackathon). Reputation-weighting roadmap.                                                                |
+| Holdout leakage — contributor reverse-engineering the eval set       | Holdout never on-chain. Decrypted only inside TEE. Holdout ref + symmetric key encrypted with TEE enclave public key.                           |
+| Eval coordinator compromise — malicious score vector submitted       | Eval result MUST carry valid TEE attestation; `Forge.submitEvalResult` reverts on invalid signature/measurement.                                |
+| Re-entrancy on RevenueSplitter                                       | OZ ReentrancyGuard + checks-effects-interactions ordering.                                                                                      |
+| Gas-bomb DoS on revenue distribution                                 | Pull-payments. No N-holder loops.                                                                                                               |
+| Front-running of `mintOwnership`                                     | Mint is single-shot per Forge; no MEV-exploitable parameters.                                                                                   |
+| Compromised SDK npm publish                                          | npm 2FA + GitHub Actions provenance attestation on every publish.                                                                               |
+| Phishing of judge wallets                                            | Pre-funded wallets are PR'd into the README as test addresses; judges generate their own keys; we hand them an explicit "do not share" warning. |
+| Domain hijack                                                        | Cloudflare DNS with 2FA on the registrar; TLS everywhere; HSTS preload.                                                                         |
+| Supply chain — malicious dep                                         | Renovate + `pnpm audit` + lockfile review; minimize deps.                                                                                       |
 
 ---
 
@@ -386,17 +390,17 @@ Threats addressed at the design level. Each maps to a defense.
 
 ## 12. Performance budgets
 
-| Surface | Budget |
-|---|---|
-| Landing — LCP | ≤ 1.6s (mobile) |
-| Landing — CLS | ≤ 0.02 |
-| Landing — INP | ≤ 200ms |
-| App route transitions | ≤ 320ms perceived |
-| Dashboard counter latency | ≤ 4s from on-chain event |
-| OG card generation | ≤ 800ms p95 (Vercel Edge) |
-| SDK `runInference()` overhead (excluding model latency) | ≤ 120ms |
-| Bundle (landing, gzipped) | ≤ 110 KB |
-| Bundle (app shell, gzipped) | ≤ 240 KB |
+| Surface                                                 | Budget                    |
+| ------------------------------------------------------- | ------------------------- |
+| Landing — LCP                                           | ≤ 1.6s (mobile)           |
+| Landing — CLS                                           | ≤ 0.02                    |
+| Landing — INP                                           | ≤ 200ms                   |
+| App route transitions                                   | ≤ 320ms perceived         |
+| Dashboard counter latency                               | ≤ 4s from on-chain event  |
+| OG card generation                                      | ≤ 800ms p95 (Vercel Edge) |
+| SDK `runInference()` overhead (excluding model latency) | ≤ 120ms                   |
+| Bundle (landing, gzipped)                               | ≤ 110 KB                  |
+| Bundle (app shell, gzipped)                             | ≤ 240 KB                  |
 
 Enforced in CI via `next build` size analysis + Lighthouse CI on every PR.
 
@@ -429,13 +433,13 @@ A PR cannot merge unless:
 
 Full risk register in build-spec §12. Engineering-specific:
 
-| Risk | Owner | Mitigation |
-|---|---|---|
-| TEE integration delay | eval team | Start Week 1. Non-TEE labeled fallback ready by end of Week 2. |
-| Indexer falls behind chain | infra | Restart-from-block, idempotent decode. On-call alert if lag > 60s. |
-| SDK breaking changes mid-week | sdk owner | Changesets; pre-1.0; documented in release notes; integrators pinned to exact version. |
-| Aristotle mainnet downtime | infra | Cache last-known-good dashboard state; degrade gracefully ("Network unreachable, last update 4m ago"). |
-| Vercel build failure on deploy day | infra | Frozen `next` version; `pnpm-lock.yaml` committed; build-cache primed nightly. |
+| Risk                               | Owner     | Mitigation                                                                                             |
+| ---------------------------------- | --------- | ------------------------------------------------------------------------------------------------------ |
+| TEE integration delay              | eval team | Start Week 1. Non-TEE labeled fallback ready by end of Week 2.                                         |
+| Indexer falls behind chain         | infra     | Restart-from-block, idempotent decode. On-call alert if lag > 60s.                                     |
+| SDK breaking changes mid-week      | sdk owner | Changesets; pre-1.0; documented in release notes; integrators pinned to exact version.                 |
+| Aristotle mainnet downtime         | infra     | Cache last-known-good dashboard state; degrade gracefully ("Network unreachable, last update 4m ago"). |
+| Vercel build failure on deploy day | infra     | Frozen `next` version; `pnpm-lock.yaml` committed; build-cache primed nightly.                         |
 
 ---
 

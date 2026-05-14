@@ -33,28 +33,28 @@ const sections = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-hairline">
+    <footer className="border-hairline relative border-t">
       <div className="mx-auto max-w-[1280px] px-6 py-16">
         <div className="grid grid-cols-2 gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <FoundryLockup size={28} />
-            <p className="text-body-sm mt-5 max-w-[42ch] text-platinum-400">
-              The supply-side protocol for 0G. Pool data, compute, and capital.
-              Co-train an AI model. Own a verifiable, revenue-generating share.
+            <FoundryLockup size={32} />
+            <p className="text-body-sm text-platinum-400 mt-5 max-w-[42ch]">
+              The supply-side protocol for 0G. Pool data, compute, and capital. Co-train
+              an AI model. Own a verifiable, revenue-generating share.
             </p>
-            <p className="text-mono-sm mt-6 text-platinum-400">
+            <p className="text-mono-sm text-platinum-400 mt-6">
               Built for the 0G APAC Hackathon 2026.
             </p>
           </div>
           {sections.map((s) => (
             <div key={s.title}>
               <p className="text-caption text-platinum-400">{s.title}</p>
-              <ul className="mt-4 space-y-2">
+              <ul className="mt-4 space-y-2.5">
                 {s.links.map((l) => (
                   <li key={l.href}>
                     <Link
                       href={l.href}
-                      className="text-body text-platinum-200 transition-colors hover:text-platinum-100"
+                      className="text-body text-platinum-200 hover:text-ember-300 transition-colors"
                     >
                       {l.label}
                     </Link>
@@ -64,7 +64,7 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-hairline pt-6">
+        <div className="border-hairline mt-16 flex flex-wrap items-center justify-between gap-4 border-t pt-6">
           <p className="text-mono-sm text-platinum-400">
             © {new Date().getFullYear()} Foundry · MIT
           </p>

@@ -16,8 +16,7 @@ const variants: Record<Variant, string> = {
     "bg-ember-500 text-ink-950 hover:bg-ember-400 active:bg-ember-600 shadow-[0_8px_24px_-12px_rgba(255,138,26,0.6)]",
   secondary:
     "bg-transparent text-platinum-100 border border-hairline hover:bg-ink-800 hover:border-platinum-400/30",
-  ghost:
-    "bg-transparent text-platinum-300 hover:text-platinum-100 hover:bg-ink-800",
+  ghost: "bg-transparent text-platinum-300 hover:text-platinum-100 hover:bg-ink-800",
 };
 
 const sizes: Record<Size, string> = {
@@ -47,10 +46,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
-    <button
-      className={cn(base, variants[variant], sizes[size], className)}
-      {...props}
-    >
+    <button className={cn(base, variants[variant], sizes[size], className)} {...props}>
       {leading}
       {children}
       {trailing}
@@ -76,12 +72,7 @@ export function LinkButton({
   const classes = cn(base, variants[variant], sizes[size], className);
   if (external) {
     return (
-      <a
-        href={href}
-        className={classes}
-        target="_blank"
-        rel="noreferrer noopener"
-      >
+      <a href={href} className={classes} target="_blank" rel="noreferrer noopener">
         {leading}
         {children}
         {trailing}

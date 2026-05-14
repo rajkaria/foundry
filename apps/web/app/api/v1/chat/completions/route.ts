@@ -82,8 +82,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       inferenceTxHash: null,
       revenueTxHash: null,
       proxy: "edge",
-      note:
-        "Stub backend — response shape is the stable v1 contract. 0G Compute dispatch + on-chain revenue routing land when the eval coordinator goes live on mainnet.",
+      note: "Stub backend — response shape is the stable v1 contract. 0G Compute dispatch + on-chain revenue routing land when the eval coordinator goes live on mainnet.",
     },
   };
 
@@ -102,8 +101,7 @@ export async function OPTIONS(): Promise<NextResponse> {
     headers: {
       "access-control-allow-origin": "*",
       "access-control-allow-methods": "POST, OPTIONS",
-      "access-control-allow-headers":
-        "content-type, authorization, x-foundry-ingot-id",
+      "access-control-allow-headers": "content-type, authorization, x-foundry-ingot-id",
       "access-control-max-age": "86400",
     },
   });
@@ -160,9 +158,7 @@ function sseStream(args: {
               object: "chat.completion.chunk",
               created: args.created,
               model: args.model,
-              choices: [
-                { index: 0, delta: { content: piece }, finish_reason: null },
-              ],
+              choices: [{ index: 0, delta: { content: piece }, finish_reason: null }],
             })
           )
         );

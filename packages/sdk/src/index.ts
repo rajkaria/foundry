@@ -25,7 +25,11 @@ import {
 } from "viem";
 import { forgeAbi, forgeFactoryAbi, ingotAbi, revenueSplitterAbi } from "./abis.js";
 import { getDeployment, type Deployment } from "./deployments.js";
-import { InferenceClient, type InferenceParams, type InferenceResult } from "./inference.js";
+import {
+  InferenceClient,
+  type InferenceParams,
+  type InferenceResult,
+} from "./inference.js";
 
 export type IngotId = `ingot:0x${string}`;
 export type ForgeId = `forge:0x${string}`;
@@ -102,7 +106,10 @@ export class Foundry {
       return { txHash };
     },
 
-    contributeData: async (forgeId: ForgeId, storageRoot: Hex): Promise<{ txHash: Hex }> => {
+    contributeData: async (
+      forgeId: ForgeId,
+      storageRoot: Hex
+    ): Promise<{ txHash: Hex }> => {
       const wc = this.requireWallet();
       const [account] = await wc.getAddresses();
       const txHash = await wc.writeContract({
@@ -135,7 +142,10 @@ export class Foundry {
       return { txHash };
     },
 
-    fundForge: async (forgeId: ForgeId, amountEth: string): Promise<{ txHash: Hex }> => {
+    fundForge: async (
+      forgeId: ForgeId,
+      amountEth: string
+    ): Promise<{ txHash: Hex }> => {
       const wc = this.requireWallet();
       const [account] = await wc.getAddresses();
       const value = parseEther(amountEth);
@@ -249,9 +259,7 @@ export class Foundry {
 
   private requireWallet(): WalletClient {
     if (!this.walletClient) {
-      throw new Error(
-        "[foundry-sdk] walletClient required for write operations."
-      );
+      throw new Error("[foundry-sdk] walletClient required for write operations.");
     }
     return this.walletClient;
   }

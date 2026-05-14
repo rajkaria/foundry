@@ -8,13 +8,13 @@ A web-rendered version with the same content (and live links to the source) live
 
 ## Tooling pass
 
-| Tool | Status | Notes |
-|---|---|---|
-| **slither** | clean | 0 high, 0 medium findings. Informational warnings documented in `slither.config.json`. |
-| **forge fuzz** | passing | 10,000 runs/property on `Ingot.mintOwnership` share-conservation invariant. |
-| **forge coverage** | 100% line | Branch coverage 97% (uncovered branches are explicit reverts on impossible states). |
-| **mythril** | partial | Run on `Forge` + `RevenueSplitter`. Times out on `Ingot` due to packed-share unpacking math; manually reviewed. |
-| **echidna** | v1.1 | Property-based testing setup tracked. Not blocking v1. |
+| Tool               | Status    | Notes                                                                                                           |
+| ------------------ | --------- | --------------------------------------------------------------------------------------------------------------- |
+| **slither**        | clean     | 0 high, 0 medium findings. Informational warnings documented in `slither.config.json`.                          |
+| **forge fuzz**     | passing   | 10,000 runs/property on `Ingot.mintOwnership` share-conservation invariant.                                     |
+| **forge coverage** | 100% line | Branch coverage 97% (uncovered branches are explicit reverts on impossible states).                             |
+| **mythril**        | partial   | Run on `Forge` + `RevenueSplitter`. Times out on `Ingot` due to packed-share unpacking math; manually reviewed. |
+| **echidna**        | v1.1      | Property-based testing setup tracked. Not blocking v1.                                                          |
 
 Reproduce locally:
 
@@ -28,6 +28,7 @@ slither . --config-file slither.config.json
 ## Contract-by-contract
 
 ### `FORGEToken`
+
 ERC-20 with fixed supply, used for governance + staking by eval coordinators.
 
 - ✅ Fixed-supply invariant: no `mint` function exists after constructor.
@@ -35,6 +36,7 @@ ERC-20 with fixed supply, used for governance + staking by eval coordinators.
 - ✅ Decimals = 18, OG-conventional.
 
 ### `ContributionRegistry`
+
 Append-only ledger of all data, compute, and eval contributions.
 
 - ✅ No `delete` or `update` functions exist.
@@ -43,6 +45,7 @@ Append-only ledger of all data, compute, and eval contributions.
 - ⚠️ Storage growth unbounded. Accepted for v1; v2 introduces archive-and-prove via a Merkle checkpoint.
 
 ### `ForgeFactory`
+
 Spawns Forge instances and tracks the canonical list.
 
 - ✅ `createForge` is permissionless — anyone can fund a Forge.
@@ -50,6 +53,7 @@ Spawns Forge instances and tracks the canonical list.
 - ✅ No proxy upgradability — every Forge is immutable.
 
 ### `Forge`
+
 The state machine. Highest-risk contract because it interacts with every other.
 
 - ✅ State transitions enforce strict ordering: `OPEN → TRAINING → ATTESTED → MINTED`. No state regression possible.
@@ -70,6 +74,7 @@ function _transition(State to) internal {
 ```
 
 ### `Ingot`
+
 ERC-721 with packed share mappings (gas-optimized via Solady).
 
 - ✅ `mintOwnership` callable only by the issuing Forge.
@@ -79,6 +84,7 @@ ERC-721 with packed share mappings (gas-optimized via Solady).
 - ✅ `weightsRoot` can be set exactly once.
 
 ### `RevenueSplitter`
+
 The contract that ships ETH outward. Highest blast radius.
 
 - ✅ Checks-effects-interactions on `claim()`.
@@ -103,13 +109,13 @@ function claim(uint256 tokenId) external nonReentrant {
 
 ## Adversaries considered
 
-| Adversary | Threat | Mitigation |
-|---|---|---|
-| Greedy Smith | Submits duplicate/low-effort data to inflate shares. | Content-hash dedupe in the eval pipeline; LOO score for duplicates = 0. |
-| Coordinator collusion | Signs false attestation. | Forge stores the registered TEE provider's pubkey at create; on-chain verification of the signature; provider registration is governance-gated. |
-| Replay attack | Reuses an old attestation. | Per-Forge nonce in attestation payload; Forge rejects mismatched nonces. |
-| Re-entrant claimant | Calls back into `claim` during transfer. | Checks-effects-interactions + `nonReentrant` + balance-debit-before-send. |
-| Lineage forger | Mints a child Ingot claiming a parent that didn't authorize it. | Child Forge's attestation must consume the parent's `weightsRoot` as input. Forging the parent collapses to forging the TEE attestation. |
+| Adversary             | Threat                                                          | Mitigation                                                                                                                                      |
+| --------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Greedy Smith          | Submits duplicate/low-effort data to inflate shares.            | Content-hash dedupe in the eval pipeline; LOO score for duplicates = 0.                                                                         |
+| Coordinator collusion | Signs false attestation.                                        | Forge stores the registered TEE provider's pubkey at create; on-chain verification of the signature; provider registration is governance-gated. |
+| Replay attack         | Reuses an old attestation.                                      | Per-Forge nonce in attestation payload; Forge rejects mismatched nonces.                                                                        |
+| Re-entrant claimant   | Calls back into `claim` during transfer.                        | Checks-effects-interactions + `nonReentrant` + balance-debit-before-send.                                                                       |
+| Lineage forger        | Mints a child Ingot claiming a parent that didn't authorize it. | Child Forge's attestation must consume the parent's `weightsRoot` as input. Forging the parent collapses to forging the TEE attestation.        |
 
 ## External review status
 
@@ -119,9 +125,9 @@ function claim(uint256 tokenId) external nonReentrant {
 
 ## Out of scope (v1, tracked)
 
-- Adversarial training data crafted to insert a backdoor while passing LOO. *Mitigation v1: human review of high-impact contributors. v2: pre-eval adversarial probe.*
-- Inference oracle gaming (calling an Ingot many times to pump its perceived value). *Mitigation v1: dashboard flags concentrated callers. v2: economic friction.*
-- Compute-side collusion via host-level tampering inside an attested-but-compromised environment. *Mitigation v1: trust 0G Compute's TEE attestation. v2: per-batch GPU attestation.*
+- Adversarial training data crafted to insert a backdoor while passing LOO. _Mitigation v1: human review of high-impact contributors. v2: pre-eval adversarial probe._
+- Inference oracle gaming (calling an Ingot many times to pump its perceived value). _Mitigation v1: dashboard flags concentrated callers. v2: economic friction._
+- Compute-side collusion via host-level tampering inside an attested-but-compromised environment. _Mitigation v1: trust 0G Compute's TEE attestation. v2: per-batch GPU attestation._
 
 ## Reporting a vulnerability
 

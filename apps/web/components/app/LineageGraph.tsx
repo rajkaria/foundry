@@ -78,7 +78,7 @@ export function LineageGraph({
   return (
     <div className="space-y-4">
       <div
-        className="relative w-full overflow-hidden rounded-xl border-hairline bg-ink-900"
+        className="border-hairline bg-ink-900 relative w-full overflow-hidden rounded-xl"
         style={{ aspectRatio: `${width}/${height}` }}
       >
         <div
@@ -115,12 +115,7 @@ export function LineageGraph({
               <stop offset="0%" stopColor="#a0a6b2" stopOpacity="0.7" />
               <stop offset="100%" stopColor="#1e2330" stopOpacity="0.7" />
             </radialGradient>
-            <pattern
-              id="lg-grid"
-              width="40"
-              height="40"
-              patternUnits="userSpaceOnUse"
-            >
+            <pattern id="lg-grid" width="40" height="40" patternUnits="userSpaceOnUse">
               <path
                 d="M 40 0 L 0 0 0 40"
                 fill="none"
@@ -135,9 +130,7 @@ export function LineageGraph({
           {/* edges */}
           {layout.edges.map((e, i) => {
             const isHot =
-              lineageIds &&
-              lineageIds.has(e.fromId) &&
-              lineageIds.has(e.toId);
+              lineageIds && lineageIds.has(e.fromId) && lineageIds.has(e.toId);
             const isDimmed = lineageIds && !isHot;
             return (
               <motion.line
@@ -160,8 +153,7 @@ export function LineageGraph({
           {layout.positions.map((n, i) => {
             const isHot = lineageIds && lineageIds.has(n.id);
             const isDimmed = lineageIds && !isHot;
-            const radius =
-              n.depth === 0 ? 22 : n.depth === 1 ? 17 : 13;
+            const radius = n.depth === 0 ? 22 : n.depth === 1 ? 17 : 13;
             const fill = isHot
               ? "url(#lg-node-hot)"
               : isDimmed
@@ -184,9 +176,7 @@ export function LineageGraph({
                 }}
                 onMouseEnter={() => setHoverId(n.id)}
                 onMouseLeave={() => setHoverId(null)}
-                onClick={() =>
-                  setFocusId((cur) => (cur === n.id ? null : n.id))
-                }
+                onClick={() => setFocusId((cur) => (cur === n.id ? null : n.id))}
               >
                 {/* halo for contributor count */}
                 {n.contributors && (
@@ -247,22 +237,22 @@ export function LineageGraph({
         </svg>
 
         {/* Legend */}
-        <div className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-4 text-[11px] text-platinum-400">
+        <div className="text-platinum-400 pointer-events-none absolute bottom-3 left-3 flex items-center gap-4 text-[11px]">
           <span className="flex items-center gap-1.5">
-            <span className="inline-block size-2.5 rounded-full bg-ember-500" />
+            <span className="bg-ember-500 inline-block size-2.5 rounded-full" />
             Root Ingot
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="inline-block size-1.5 rounded-full bg-ember-500/60" />
+            <span className="bg-ember-500/60 inline-block size-1.5 rounded-full" />
             Fork / reforging
           </span>
           <span className="hidden items-center gap-1.5 sm:flex">
-            <span className="inline-block h-px w-4 bg-ember-500/40" />
+            <span className="bg-ember-500/40 inline-block h-px w-4" />
             Lineage edge
           </span>
         </div>
         {(focusId || hoverId) && (
-          <div className="pointer-events-none absolute right-3 top-3 rounded-md border-hairline bg-ink-950/80 px-3 py-1.5 text-[11px] text-platinum-200 backdrop-blur">
+          <div className="border-hairline bg-ink-950/80 text-platinum-200 pointer-events-none absolute top-3 right-3 rounded-md px-3 py-1.5 text-[11px] backdrop-blur">
             Lineage focus active · click again to clear
           </div>
         )}
@@ -298,20 +288,20 @@ function FocusPanel({
   const descendants = all.filter((n) => n.parent === node.id);
 
   return (
-    <div className="rounded-lg border-hairline bg-ink-900 p-5">
+    <div className="border-hairline bg-ink-900 rounded-lg p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-caption text-ember-400">Lineage focus</p>
-          <p className="text-title-lg mt-1 text-platinum-100">{node.name}</p>
+          <p className="text-title-lg text-platinum-100 mt-1">{node.name}</p>
           {node.ingotId && (
-            <p className="text-caption mt-1 font-mono text-platinum-400">
+            <p className="text-caption text-platinum-400 mt-1 font-mono">
               {node.ingotId}
             </p>
           )}
         </div>
         <button
           onClick={onClear}
-          className="text-caption text-platinum-400 transition-colors hover:text-platinum-200"
+          className="text-caption text-platinum-400 hover:text-platinum-200 transition-colors"
         >
           Clear ×
         </button>
@@ -347,7 +337,7 @@ function FocusPanel({
         </div>
         <div>
           <p className="text-caption text-platinum-400">Metadata</p>
-          <ul className="mt-2 space-y-1 text-body-sm text-platinum-200">
+          <ul className="text-body-sm text-platinum-200 mt-2 space-y-1">
             {node.contributors !== undefined && (
               <li>
                 <span className="text-platinum-400">Contributors · </span>
@@ -426,16 +416,9 @@ function layoutRadial(
     if (kids.length === 0 || depth >= ringRadii.length) return;
     const ring = ringRadii[depth];
     const span =
-      depth === 1
-        ? Math.PI * 0.85
-        : depth === 2
-          ? Math.PI * 0.55
-          : Math.PI * 0.4;
+      depth === 1 ? Math.PI * 0.85 : depth === 2 ? Math.PI * 0.55 : Math.PI * 0.4;
     kids.forEach((kid, ki) => {
-      const offset =
-        kids.length === 1
-          ? 0
-          : (ki / (kids.length - 1) - 0.5) * span;
+      const offset = kids.length === 1 ? 0 : (ki / (kids.length - 1) - 0.5) * span;
       const angle = parentAngle + offset;
       const kx = cx + ring * Math.cos(angle);
       const ky = cy + ring * Math.sin(angle);

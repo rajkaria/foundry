@@ -2,6 +2,7 @@
 pragma solidity 0.8.24;
 
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {ContributionRegistry} from "./ContributionRegistry.sol";
 import {Ingot} from "./Ingot.sol";
 import {RevenueSplitter} from "./RevenueSplitter.sol";
@@ -12,7 +13,7 @@ import {RevenueSplitter} from "./RevenueSplitter.sol";
 ///   Anti-abuse: contribution window closes before eval; eval coordinator
 ///   address is immutable post-creation; eval result must carry a valid TEE
 ///   attestation or the call reverts.
-contract Forge is ReentrancyGuard {
+contract Forge is ReentrancyGuard, IERC721Receiver {
     enum State { Open, Evaluating, Minting, Training, Live }
 
     /* immutable spec */
@@ -218,5 +219,15 @@ contract Forge is ReentrancyGuard {
         uint128 n = contributionCountByWallet[smith] + 1;
         if (n > MAX_CONTRIBUTIONS_PER_WALLET) revert CapHit();
         contributionCountByWallet[smith] = n;
+    }
+
+    /// @notice Accept Ingots minted to this contract by Ingot.mintTo (safeMint).
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
     }
 }

@@ -65,35 +65,40 @@ export default async function IngotDetailPage({ params }: PageProps) {
   return (
     <main>
       <Header />
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <div className="flex items-center gap-3">
             <p className="text-caption text-platinum-400">Ingot · {ingotIdHex}</p>
             <Pill tone="positive" dot>
               {i.state}
             </Pill>
-            <Pill tone="ember">+{((i.measured - i.baseline) / i.baseline * 100).toFixed(0)}% vs baseline</Pill>
+            <Pill tone="ember">
+              +{(((i.measured - i.baseline) / i.baseline) * 100).toFixed(0)}% vs
+              baseline
+            </Pill>
           </div>
 
-          <h1 className="text-display-xl mt-3 text-platinum-100">{i.name}</h1>
-          <div className="mt-4 flex flex-wrap items-center gap-3 text-mono-sm text-platinum-400">
+          <h1 className="text-display-xl text-platinum-100 mt-3">{i.name}</h1>
+          <div className="text-mono-sm text-platinum-400 mt-4 flex flex-wrap items-center gap-3">
             <span>weights: {i.weightsRoot}</span>
             <span>·</span>
             <span>forged at {i.forge}</span>
             <span>·</span>
-            <span>{i.metric}: {i.baseline} → {i.measured}</span>
+            <span>
+              {i.metric}: {i.baseline} → {i.measured}
+            </span>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-[1.4fr_1fr]">
           <Card elevated>
             <CardEyebrow>Run inference</CardEyebrow>
             <CardTitle>Call this Ingot via the OpenAI-compatible proxy</CardTitle>
             <CardBody>
-              Revenue routes to co-owners on every inference call, on-chain
-              via <code className="text-mono-sm text-platinum-200">RevenueSplitter</code>.
+              Revenue routes to co-owners on every inference call, on-chain via{" "}
+              <code className="text-mono-sm text-platinum-200">RevenueSplitter</code>.
             </CardBody>
             <div className="mt-6">
               <InferenceWidget ingotId={ingotIdHex} />
@@ -103,7 +108,7 @@ export default async function IngotDetailPage({ params }: PageProps) {
           <Card>
             <CardEyebrow>Cap table</CardEyebrow>
             <CardTitle>Who owns this Ingot</CardTitle>
-            <div className="mt-5 divide-y divide-hairline">
+            <div className="divide-hairline mt-5 divide-y">
               {i.capTable.map((row) => (
                 <div
                   key={row.holder}
@@ -132,7 +137,7 @@ export default async function IngotDetailPage({ params }: PageProps) {
                 </div>
               ))}
             </div>
-            <p className="text-body-sm mt-5 border-t border-hairline pt-4 text-platinum-400">
+            <p className="text-body-sm border-hairline text-platinum-400 mt-5 border-t pt-4">
               Revenue distributed to date:{" "}
               <span className="text-platinum-200 tabular">{i.revenueDistributed}</span>
             </p>
@@ -140,10 +145,10 @@ export default async function IngotDetailPage({ params }: PageProps) {
         </div>
       </section>
 
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <p className="text-caption text-ember-400">Lineage</p>
-          <h2 className="text-display-md mt-3 max-w-[26ch] text-platinum-100">
+          <h2 className="text-display-md text-platinum-100 mt-3 max-w-[26ch]">
             Where this Ingot came from — and what came from it.
           </h2>
           <div className="mt-8">

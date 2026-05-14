@@ -62,7 +62,7 @@ export function DocsLayout({
   return (
     <main>
       <Header />
-      <div className="border-t border-hairline">
+      <div className="border-hairline border-t">
         <div className="mx-auto flex max-w-[1280px] gap-12 px-6 py-12 lg:py-16">
           {/* Sidebar */}
           <aside className="hidden w-56 shrink-0 lg:block">
@@ -89,9 +89,9 @@ export function DocsLayout({
                   </ul>
                 </div>
               ))}
-              <div className="mt-10 rounded-lg border-hairline bg-ink-900 p-4">
+              <div className="border-hairline bg-ink-900 mt-10 rounded-lg p-4">
                 <p className="text-caption text-ember-400">v1.0.0-rc.1</p>
-                <p className="text-body-sm mt-2 text-platinum-300">
+                <p className="text-body-sm text-platinum-300 mt-2">
                   Frozen public surface. Breaking changes only via major version bump.
                 </p>
               </div>
@@ -101,11 +101,11 @@ export function DocsLayout({
           {/* Content */}
           <article className="min-w-0 flex-1">
             <p className="text-caption text-ember-400">{eyebrow}</p>
-            <h1 className="text-display-lg mt-3 max-w-[24ch] text-platinum-100">
+            <h1 className="text-display-lg text-platinum-100 mt-3 max-w-[24ch]">
               {title}
             </h1>
             {intro && (
-              <div className="text-body-lg mt-6 max-w-[68ch] text-platinum-300">
+              <div className="text-body-lg text-platinum-300 mt-6 max-w-[68ch]">
                 {intro}
               </div>
             )}
@@ -122,7 +122,7 @@ export function DocsLayout({
                     <li key={t.id}>
                       <a
                         href={`#${t.id}`}
-                        className="block text-[13px] text-platinum-400 transition-colors hover:text-platinum-100"
+                        className="text-platinum-400 hover:text-platinum-100 block text-[13px] transition-colors"
                       >
                         {t.label}
                       </a>
@@ -145,7 +145,7 @@ export function H2({ id, children }: { id: string; children: ReactNode }) {
   return (
     <h2
       id={id}
-      className="text-display-sm scroll-mt-24 text-platinum-100 first:mt-0 [&:not(:first-child)]:mt-12"
+      className="text-display-sm text-platinum-100 scroll-mt-24 first:mt-0 [&:not(:first-child)]:mt-12"
     >
       {children}
     </h2>
@@ -154,10 +154,7 @@ export function H2({ id, children }: { id: string; children: ReactNode }) {
 
 export function H3({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <h3
-      id={id}
-      className="text-title-lg scroll-mt-24 mt-8 text-platinum-100"
-    >
+    <h3 id={id} className="text-title-lg text-platinum-100 mt-8 scroll-mt-24">
       {children}
     </h3>
   );
@@ -173,7 +170,7 @@ export function Lead({ children }: { children: ReactNode }) {
 
 export function Code({ children }: { children: ReactNode }) {
   return (
-    <code className="rounded-sm bg-ink-800 px-1.5 py-0.5 text-[0.92em] text-ember-300 font-mono">
+    <code className="bg-ink-800 text-ember-300 rounded-sm px-1.5 py-0.5 font-mono text-[0.92em]">
       {children}
     </code>
   );
@@ -187,9 +184,9 @@ interface CodeBlockProps {
 
 export function CodeBlock({ lang, children, filename }: CodeBlockProps) {
   return (
-    <div className="overflow-hidden rounded-lg border-hairline bg-ink-900">
+    <div className="border-hairline bg-ink-900 overflow-hidden rounded-lg">
       {(lang || filename) && (
-        <div className="flex items-center justify-between border-b border-hairline px-4 py-2">
+        <div className="border-hairline flex items-center justify-between border-b px-4 py-2">
           <span className="text-caption text-platinum-400 font-mono">
             {filename ?? lang}
           </span>
@@ -198,7 +195,7 @@ export function CodeBlock({ lang, children, filename }: CodeBlockProps) {
           )}
         </div>
       )}
-      <pre className="overflow-x-auto px-4 py-4 text-[13.5px] leading-[22px] font-mono text-platinum-100">
+      <pre className="text-platinum-100 overflow-x-auto px-4 py-4 font-mono text-[13.5px] leading-[22px]">
         <code>{children}</code>
       </pre>
     </div>
@@ -215,7 +212,8 @@ export function Callout({ tone = "note", title, children }: CalloutProps) {
   const styles = {
     note: "border-platinum-400/20 bg-ink-800/60",
     warn: "border-signal-warn/40 bg-[color-mix(in_oklab,var(--signal-warn)_8%,transparent)]",
-    ember: "border-ember-500/40 bg-[color-mix(in_oklab,var(--ember-500)_8%,transparent)]",
+    ember:
+      "border-ember-500/40 bg-[color-mix(in_oklab,var(--ember-500)_8%,transparent)]",
   } as const;
   const labels = {
     note: "Note",
@@ -241,22 +239,16 @@ export function Callout({ tone = "note", title, children }: CalloutProps) {
   );
 }
 
-export function Table({
-  head,
-  rows,
-}: {
-  head: string[];
-  rows: ReactNode[][];
-}) {
+export function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
   return (
-    <div className="overflow-hidden rounded-lg border-hairline">
+    <div className="border-hairline overflow-hidden rounded-lg">
       <table className="w-full border-collapse text-left">
         <thead className="bg-ink-900">
           <tr>
             {head.map((h) => (
               <th
                 key={h}
-                className="text-caption px-4 py-3 text-platinum-400 border-b border-hairline"
+                className="text-caption text-platinum-400 border-hairline border-b px-4 py-3"
               >
                 {h}
               </th>
@@ -265,11 +257,11 @@ export function Table({
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="divide-x divide-ink-800/60">
+            <tr key={i} className="divide-ink-800/60 divide-x">
               {row.map((cell, j) => (
                 <td
                   key={j}
-                  className="text-body-sm border-b border-hairline px-4 py-3 text-platinum-200 last:border-r-0"
+                  className="text-body-sm border-hairline text-platinum-200 border-b px-4 py-3 last:border-r-0"
                 >
                   {cell}
                 </td>
@@ -290,15 +282,15 @@ export function PageNav({
   next?: { href: string; label: string };
 }) {
   return (
-    <div className="mt-16 grid grid-cols-2 gap-4 border-t border-hairline pt-8">
+    <div className="border-hairline mt-16 grid grid-cols-2 gap-4 border-t pt-8">
       <div>
         {prev && (
           <Link
             href={prev.href}
-            className="block rounded-md border-hairline p-4 transition-colors hover:bg-ink-800"
+            className="border-hairline hover:bg-ink-800 block rounded-md p-4 transition-colors"
           >
             <p className="text-caption text-platinum-400">← Previous</p>
-            <p className="text-title-md mt-1 text-platinum-100">{prev.label}</p>
+            <p className="text-title-md text-platinum-100 mt-1">{prev.label}</p>
           </Link>
         )}
       </div>
@@ -306,10 +298,10 @@ export function PageNav({
         {next && (
           <Link
             href={next.href}
-            className="block rounded-md border-hairline p-4 transition-colors hover:bg-ink-800"
+            className="border-hairline hover:bg-ink-800 block rounded-md p-4 transition-colors"
           >
             <p className="text-caption text-platinum-400">Next →</p>
-            <p className="text-title-md mt-1 text-platinum-100">{next.label}</p>
+            <p className="text-title-md text-platinum-100 mt-1">{next.label}</p>
           </Link>
         )}
       </div>

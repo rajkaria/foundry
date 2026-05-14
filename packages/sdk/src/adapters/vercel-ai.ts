@@ -46,7 +46,9 @@ class FoundryLanguageModel {
     content: Array<{ type: "text"; text: string }>;
     finishReason: "stop";
     usage: { inputTokens: number; outputTokens: number; totalTokens: number };
-    providerMetadata: { foundry: { ingotId: string; requestId: string; latencyMs: number } };
+    providerMetadata: {
+      foundry: { ingotId: string; requestId: string; latencyMs: number };
+    };
   }> {
     const messages = toInferenceMessages(options.prompt);
     const result = await this.client.run(this.modelId as IngotId, {
@@ -101,7 +103,8 @@ type AIPrompt = AIPromptMessage[];
 function toInferenceMessages(prompt: AIPrompt): InferenceMessage[] {
   return prompt.map((m) => ({
     role: m.role,
-    content: typeof m.content === "string" ? m.content : m.content.map((p) => p.text).join(""),
+    content:
+      typeof m.content === "string" ? m.content : m.content.map((p) => p.text).join(""),
   }));
 }
 

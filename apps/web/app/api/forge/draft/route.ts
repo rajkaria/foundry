@@ -56,8 +56,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 function inferDraft(prompt: string): ForgeDraft {
   const lower = prompt.toLowerCase();
-  const isTranslation = /translat|language|↔|<->|to english|to spanish|low-resource/.test(lower);
-  const isClassifier = /classif|sentiment|intent|clause|detect|categori[sz]e/.test(lower);
+  const isTranslation =
+    /translat|language|↔|<->|to english|to spanish|low-resource/.test(lower);
+  const isClassifier = /classif|sentiment|intent|clause|detect|categori[sz]e/.test(
+    lower
+  );
   const isEmbedding = /embed|retrieval|search|similar/.test(lower);
 
   let task: ForgeDraft["modelSpec"]["task"] = "generation";
@@ -128,9 +131,25 @@ function inferDraft(prompt: string): ForgeDraft {
 
 function extractLanguages(prompt: string): string[] {
   const langs = [
-    "english", "spanish", "french", "german", "japanese", "korean", "chinese",
-    "mandarin", "hindi", "konkani", "tulu", "tamil", "telugu", "kannada",
-    "marathi", "bengali", "arabic", "portuguese", "russian",
+    "english",
+    "spanish",
+    "french",
+    "german",
+    "japanese",
+    "korean",
+    "chinese",
+    "mandarin",
+    "hindi",
+    "konkani",
+    "tulu",
+    "tamil",
+    "telugu",
+    "kannada",
+    "marathi",
+    "bengali",
+    "arabic",
+    "portuguese",
+    "russian",
   ];
   const found = new Set<string>();
   for (const l of langs) {

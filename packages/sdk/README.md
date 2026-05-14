@@ -12,10 +12,9 @@ pnpm add @foundryprotocol/sdk
 import { Foundry } from "@foundryprotocol/sdk";
 
 const foundry = new Foundry({ contracts: "aristotle" });
-const { output, receipt } = await foundry.inference.run(
-  "ingot:0x8e2…f4a",
-  { input: "Translate to Konkani: hello" }
-);
+const { output, receipt } = await foundry.inference.run("ingot:0x8e2…f4a", {
+  input: "Translate to Konkani: hello",
+});
 
 console.log(output);
 console.log("inference tx:", receipt.inferenceTxHash);
@@ -63,13 +62,13 @@ Response shape is OpenAI-compatible plus a `foundry` block containing the infere
 
 ## API surface
 
-| Namespace | Methods |
-|---|---|
-| `forge` | `create`, `contributeData`, `contributeCompute`, `fundForge`, `state`, `list` |
-| `ingot` | `meta`, `shareOf` |
-| `inference` | `run` |
-| `revenue` | `claimable`, `claim` |
-| `lineage` | `get` |
+| Namespace   | Methods                                                                       |
+| ----------- | ----------------------------------------------------------------------------- |
+| `forge`     | `create`, `contributeData`, `contributeCompute`, `fundForge`, `state`, `list` |
+| `ingot`     | `meta`, `shareOf`                                                             |
+| `inference` | `run`                                                                         |
+| `revenue`   | `claimable`, `claim`                                                          |
+| `lineage`   | `get`                                                                         |
 
 Full reference: [foundryprotocol.xyz/docs/sdk-reference](https://foundryprotocol.xyz/docs/sdk-reference).
 

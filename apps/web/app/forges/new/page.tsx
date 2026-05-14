@@ -12,16 +12,16 @@ export default function NewForgePage() {
   return (
     <main>
       <Header />
-      <section className="border-t border-hairline">
+      <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <p className="text-caption text-ember-400">Create a Forge</p>
-          <h1 className="text-display-xl mt-3 max-w-[26ch] text-platinum-100">
+          <h1 className="text-display-xl text-platinum-100 mt-3 max-w-[26ch]">
             Describe what you want trained.
           </h1>
-          <p className="text-body-lg mt-6 max-w-[60ch] text-platinum-300">
-            Foundry drafts the model spec, suggests dataset shape and size,
-            picks the right eval metric, and pre-fills the contribution
-            window. Edit anything before you confirm.
+          <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
+            Foundry drafts the model spec, suggests dataset shape and size, picks the
+            right eval metric, and pre-fills the contribution window. Edit anything
+            before you confirm.
           </p>
 
           <div className="mt-12">

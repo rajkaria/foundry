@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/Button";
 
 interface InferenceResponse {
   choices: Array<{ message: { content: string } }>;
-  foundry?: { ingotId: string; inferenceTxHash: string | null; revenueTxHash: string | null };
+  foundry?: {
+    ingotId: string;
+    inferenceTxHash: string | null;
+    revenueTxHash: string | null;
+  };
 }
 
 export function InferenceWidget({ ingotId }: { ingotId: string }) {
@@ -50,7 +54,7 @@ export function InferenceWidget({ ingotId }: { ingotId: string }) {
         onChange={(e) => setInput(e.target.value)}
         rows={3}
         placeholder="Enter input to send to this Ingot…"
-        className="w-full rounded-md bg-ink-800 border border-hairline px-4 py-3 text-body text-platinum-100 placeholder:text-platinum-400 focus:border-ember-400 focus:outline-none"
+        className="bg-ink-800 border-hairline text-body text-platinum-100 placeholder:text-platinum-400 focus:border-ember-400 w-full rounded-md border px-4 py-3 focus:outline-none"
       />
       <div className="mt-3 flex items-center justify-between gap-3">
         <Button onClick={run} disabled={!input.trim() || loading}>
@@ -69,7 +73,7 @@ export function InferenceWidget({ ingotId }: { ingotId: string }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-body-sm mt-3 text-signal-danger"
+            className="text-body-sm text-signal-danger mt-3"
           >
             {error}
           </motion.p>
@@ -80,7 +84,7 @@ export function InferenceWidget({ ingotId }: { ingotId: string }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
-            className="mt-5 rounded-md border-hairline bg-ink-950 p-4 text-body text-platinum-100"
+            className="border-hairline bg-ink-950 text-body text-platinum-100 mt-5 rounded-md p-4"
           >
             {output}
           </motion.div>

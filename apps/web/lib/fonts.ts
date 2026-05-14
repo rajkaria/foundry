@@ -1,24 +1,27 @@
-import { EB_Garamond, Inter, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Inter_Tight, JetBrains_Mono } from "next/font/google";
 
 /**
- * Type stack — hackathon fallback:
- *   Display: EB Garamond (Google) — stands in for PP Editorial New (licensed).
- *   Sans:    Inter (Google) — stands in for Söhne (licensed).
- *   Mono:    JetBrains Mono (free, OFL).
+ * Foundry type stack — Anthropic-inspired.
  *
- * Swap to licensed faces in production via `localFont`.
+ *   Display:  Fraunces — contemporary humanist serif, Tiempos-adjacent.
+ *             Variable axes (opsz, SOFT) for rare brand-headline moments.
+ *   Sans:     Inter Tight — tight-tracking modern sans, Söhne/Styrene-adjacent.
+ *             Default for display AND body.
+ *   Mono:     JetBrains Mono — for code, hashes, on-chain payloads.
  */
 
-export const fontDisplay = EB_Garamond({
+export const fontDisplay = Fraunces({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: "variable",
+  axes: ["opsz", "SOFT"],
+  style: ["normal", "italic"],
   variable: "--font-editorial",
   display: "swap",
 });
 
-export const fontSans = Inter({
+export const fontSans = Inter_Tight({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-sans-soehne",
   display: "swap",
 });

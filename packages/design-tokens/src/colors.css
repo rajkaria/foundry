@@ -45,13 +45,10 @@
   --ring-focus: var(--ember-400);
 
   /* Elevation */
-  --elev-1:
-    0 1px 0 0 rgb(255 255 255 / 0.04) inset,
-    0 0 0 1px rgb(255 255 255 / 0.04);
+  --elev-1: 0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 0 0 1px rgb(255 255 255 / 0.04);
 
   --elev-2:
-    0 1px 0 0 rgb(255 255 255 / 0.06) inset,
-    0 0 0 1px rgb(255 255 255 / 0.06),
+    0 1px 0 0 rgb(255 255 255 / 0.06) inset, 0 0 0 1px rgb(255 255 255 / 0.06),
     0 24px 48px -16px rgb(0 0 0 / 0.6);
 
   /* Ambient washes */

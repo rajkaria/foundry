@@ -92,10 +92,7 @@ export const ingotAbi = [
     type: "function",
     name: "shareOf",
     stateMutability: "view",
-    inputs: [
-      { type: "uint256" },
-      { type: "address" },
-    ],
+    inputs: [{ type: "uint256" }, { type: "address" }],
     outputs: [{ type: "uint128" }],
   },
   {
@@ -139,10 +136,7 @@ export const revenueSplitterAbi = [
     type: "function",
     name: "claimable",
     stateMutability: "view",
-    inputs: [
-      { type: "uint256" },
-      { type: "address" },
-    ],
+    inputs: [{ type: "uint256" }, { type: "address" }],
     outputs: [{ type: "uint256" }],
   },
 ] as const;

@@ -29,36 +29,36 @@ All values are CSS variables registered in `packages/design-tokens/src/colors.cs
 
 ```css
 /* Ink — cool dark, the stage */
---ink-950: #07080a;   /* page background, default */
---ink-900: #0c0e12;   /* card / panel */
---ink-800: #14171d;   /* elevated card */
---ink-700: #1d2129;   /* border on dark */
---ink-600: #2a2f3a;   /* hairline / divider */
---ink-500: #424857;   /* placeholder text on dark */
---ink-400: #6c7384;   /* secondary text on dark */
---ink-300: #8d94a3;   /* tertiary */
+--ink-950: #07080a; /* page background, default */
+--ink-900: #0c0e12; /* card / panel */
+--ink-800: #14171d; /* elevated card */
+--ink-700: #1d2129; /* border on dark */
+--ink-600: #2a2f3a; /* hairline / divider */
+--ink-500: #424857; /* placeholder text on dark */
+--ink-400: #6c7384; /* secondary text on dark */
+--ink-300: #8d94a3; /* tertiary */
 
 /* Platinum — cool light, the type */
---platinum-100: #f3f4f6;  /* body text on dark */
+--platinum-100: #f3f4f6; /* body text on dark */
 --platinum-200: #e3e5ea;
---platinum-300: #c8ccd4;  /* muted text on dark */
+--platinum-300: #c8ccd4; /* muted text on dark */
 --platinum-400: #a0a6b2;
---platinum-50:  #fafbfc;  /* page bg on light */
---platinum-0:   #ffffff;
+--platinum-50: #fafbfc; /* page bg on light */
+--platinum-0: #ffffff;
 
 /* Ember — the focal warm. Molten metal. */
---ember-300: #ffd9a6;  /* highlight on dark */
---ember-400: #ffb260;  /* hover */
---ember-500: #ff8a1a;  /* primary — the FOUNDRY orange */
---ember-600: #e26a00;  /* pressed */
---ember-700: #a64a00;  /* primary on light */
---ember-900: #4a1f00;  /* deep ember, ambient washes */
+--ember-300: #ffd9a6; /* highlight on dark */
+--ember-400: #ffb260; /* hover */
+--ember-500: #ff8a1a; /* primary — the FOUNDRY orange */
+--ember-600: #e26a00; /* pressed */
+--ember-700: #a64a00; /* primary on light */
+--ember-900: #4a1f00; /* deep ember, ambient washes */
 
 /* Signal — single semantic chain */
 --signal-positive: #2bd07c;
---signal-warn:     #f5b400;
---signal-danger:   #ff5a5a;
---signal-info:     #6fa7ff;
+--signal-warn: #f5b400;
+--signal-danger: #ff5a5a;
+--signal-info: #6fa7ff;
 ```
 
 ### 2.2 Semantic mappings
@@ -66,15 +66,15 @@ All values are CSS variables registered in `packages/design-tokens/src/colors.cs
 Always use semantic names in components; never hard-code palette tokens.
 
 ```css
---bg-page:        var(--ink-950);
---bg-surface:     var(--ink-900);
---bg-elevated:    var(--ink-800);
---bg-hairline:    var(--ink-600);
---text-primary:   var(--platinum-100);
+--bg-page: var(--ink-950);
+--bg-surface: var(--ink-900);
+--bg-elevated: var(--ink-800);
+--bg-hairline: var(--ink-600);
+--text-primary: var(--platinum-100);
 --text-secondary: var(--platinum-300);
---text-muted:     var(--ink-400);
---text-accent:    var(--ember-500);
---ring-focus:     var(--ember-400);
+--text-muted: var(--ink-400);
+--text-accent: var(--ember-500);
+--ring-focus: var(--ember-400);
 ```
 
 ### 2.3 Usage rules
@@ -86,13 +86,13 @@ Always use semantic names in components; never hard-code palette tokens.
 
 ### 2.4 Contrast targets
 
-| Combo | Ratio | Required |
-|---|---|---|
-| platinum-100 on ink-950 | 16.8 : 1 | AAA |
-| platinum-300 on ink-950 | 9.4 : 1 | AAA |
-| ember-500 on ink-950 | 7.1 : 1 | AAA |
-| platinum-400 on ink-950 | 6.0 : 1 | AA (large) |
-| ember-300 on ember-900 (ambient) | 4.6 : 1 | AA |
+| Combo                            | Ratio    | Required   |
+| -------------------------------- | -------- | ---------- |
+| platinum-100 on ink-950          | 16.8 : 1 | AAA        |
+| platinum-300 on ink-950          | 9.4 : 1  | AAA        |
+| ember-500 on ink-950             | 7.1 : 1  | AAA        |
+| platinum-400 on ink-950          | 6.0 : 1  | AA (large) |
+| ember-300 on ember-900 (ambient) | 4.6 : 1  | AA         |
 
 ---
 
@@ -102,11 +102,11 @@ Two families, no more. We use a refined display serif for moments of impact, and
 
 ### 3.1 Families
 
-| Role | Family | Weights | License note |
-|---|---|---|---|
+| Role        | Family                                         | Weights  | License note                                                                  |
+| ----------- | ---------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
 | **Display** | `PP Editorial New` (Ultralight, Light, Italic) | 200, 300 | Pangram Pangram — purchase for web (~$200). Fallback: Tiempos Headline Light. |
-| **Sans** | `Söhne` (Buch, Kräftig) | 400, 500 | Klim — license required. Fallback: `Inter`, then `system-ui`. |
-| **Mono** | `JetBrains Mono` | 400, 500 | Free, OFL. For code blocks and contract addresses. |
+| **Sans**    | `Söhne` (Buch, Kräftig)                        | 400, 500 | Klim — license required. Fallback: `Inter`, then `system-ui`.                 |
+| **Mono**    | `JetBrains Mono`                               | 400, 500 | Free, OFL. For code blocks and contract addresses.                            |
 
 **Hackathon fallback (week 0):** ship with `EB Garamond` (Google) for display + `Inter` for sans until the licensed faces are purchased. The fallbacks are intentionally good enough that the brand still reads premium.
 
@@ -166,12 +166,11 @@ A 4px base, exponentially friendly: `0, 2, 4, 8, 12, 16, 20, 24, 32, 40, 56, 80,
 We have **two** elevations, period. Anything more elaborate is decoration.
 
 ```css
---elev-1: 0 1px 0 0 rgb(255 255 255 / 0.04) inset,
-          0 0 0 1px rgb(255 255 255 / 0.04);
+--elev-1: 0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 0 0 1px rgb(255 255 255 / 0.04);
 
---elev-2: 0 1px 0 0 rgb(255 255 255 / 0.06) inset,
-          0 0 0 1px rgb(255 255 255 / 0.06),
-          0 24px 48px -16px rgb(0 0 0 / 0.6);
+--elev-2:
+  0 1px 0 0 rgb(255 255 255 / 0.06) inset, 0 0 0 1px rgb(255 255 255 / 0.06),
+  0 24px 48px -16px rgb(0 0 0 / 0.6);
 ```
 
 Elev-1 is the default card. Elev-2 is reserved for modals, the hero artifact, and the active state of the Forge card.
@@ -188,18 +187,19 @@ All dividers, table rules, and panel borders use `--hairline`. Heavy 2px borders
 
 ## 5. Components
 
-The component library lives in `apps/web/components/ui/`. It is *not* shadcn out-of-the-box — it is custom-built on Radix primitives so visual quality is non-negotiable.
+The component library lives in `apps/web/components/ui/`. It is _not_ shadcn out-of-the-box — it is custom-built on Radix primitives so visual quality is non-negotiable.
 
 ### 5.1 Buttons
 
-| Variant | When | Style |
-|---|---|---|
-| `primary` | Single CTA on a screen | Ember-500 fill, ink-950 text, weight 500, 40px height |
-| `secondary` | Supporting action | Transparent fill, platinum-100 text, hairline border |
-| `ghost` | Tertiary action | Transparent, text-only with hover state |
-| `destructive` | Irreversible, rare | Signal-danger border + text, ink fill |
+| Variant       | When                   | Style                                                 |
+| ------------- | ---------------------- | ----------------------------------------------------- |
+| `primary`     | Single CTA on a screen | Ember-500 fill, ink-950 text, weight 500, 40px height |
+| `secondary`   | Supporting action      | Transparent fill, platinum-100 text, hairline border  |
+| `ghost`       | Tertiary action        | Transparent, text-only with hover state               |
+| `destructive` | Irreversible, rare     | Signal-danger border + text, ink fill                 |
 
 **Interaction states (always):**
+
 - Hover: 100ms ease-out, brightness shift only (no scale, no shadow)
 - Focus-visible: 2px ember-400 ring offset 2px
 - Active: 80ms inward press, brightness -4%
@@ -299,7 +299,7 @@ When the TEE eval result arrives, each contribution's marginal Δ animates into 
 The graph starts with all nodes converged at the center; edges materialize first (1px ember stroke fading in), then nodes spring outward to their force-directed positions over 800ms with 30ms per-node stagger. Looks like an alchemy diagram condensing.
 
 **Live Counter Tick** — dashboard
-When a real on-chain event updates a dashboard stat (new contribution, new mint, new revenue claim), the number animates with a 320ms count-up + a 1px ember bottom underline pulse. Implement as a websocket-driven counter so the dashboard *literally moves* while a judge watches.
+When a real on-chain event updates a dashboard stat (new contribution, new mint, new revenue claim), the number animates with a 320ms count-up + a 1px ember bottom underline pulse. Implement as a websocket-driven counter so the dashboard _literally moves_ while a judge watches.
 
 **Route transitions**
 Default page transitions are subtle: fade-through over 220ms (`--dur-quick`, `--ease-standard`) with a 4px Y translate. App routes share the same shell; only content swaps.
@@ -307,7 +307,7 @@ Default page transitions are subtle: fade-through over 220ms (`--dur-quick`, `--
 ### 6.3 Motion principles
 
 - **Reversible.** Every exit reverses its entrance.
-- **Direction = causality.** Things that come from where the action originated. (A new contribution row animates *down* from where the user clicked submit.)
+- **Direction = causality.** Things that come from where the action originated. (A new contribution row animates _down_ from where the user clicked submit.)
 - **No loop animations on the page.** Background ambient motion is forbidden — it competes with data.
 - **`prefers-reduced-motion`:** all `--dur-statement` animations degrade to fades; all `--dur-base` and below remain but with motion reduced (no Y/X translate, only opacity).
 
@@ -330,6 +330,7 @@ Default page transitions are subtle: fade-through over 220ms (`--dur-quick`, `--
 - **Forbidden:** stock 3D, isometric clip-art, robot faces, hand drawings, "AI art" aesthetic
 
 ### 7.3 The Foundry mark animated
+
 The full SVG of the mark + the Metal Pour animation lives in `packages/design-tokens/marks/`. Reused as the favicon (animated favicon on tab focus), the deck title-slide, the X profile picture (still frame), and the video intro.
 
 ---
@@ -339,6 +340,7 @@ The full SVG of the mark + the Metal Pour animation lives in `packages/design-to
 Every Forge, Ingot, and Smith page auto-generates a beautiful 1200×630 OG image. Generated at request time via Next.js `ImageResponse`.
 
 Layout:
+
 - Top-left: Foundry mark, 64px
 - Top-right: caption ("FORGE" / "INGOT" / "SMITH"), platinum-400
 - Center: the artifact's hero text (Forge name, Ingot title, Smith handle), display-lg

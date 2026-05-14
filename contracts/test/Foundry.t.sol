@@ -19,9 +19,9 @@ contract FoundryTest is Test {
     address treasury = address(0xBEEF);
     address creator = address(0xCAFE);
     address coordinator = address(0xC00D);
-    address maya = address(0xMA7A);
-    address priya = address(0xBABE);
-    address devansh = address(0xD00D);
+    address elena = address(0xE1E4A); // data Smith
+    address aiko = address(0xA1C0); // GPU Smith
+    address marcus = address(0xCA51A1); // capital Smith
 
     function setUp() public {
         token = new FORGEToken(treasury);
@@ -50,16 +50,16 @@ contract FoundryTest is Test {
         Forge forge = Forge(forgeAddr);
         assertTrue(factory.isForge(forgeAddr));
 
-        // 2. Contributions: Maya data, Priya compute, Devansh capital
-        vm.prank(maya);
-        forge.contributeData(keccak256("maya-corpus"));
+        // 2. Contributions: Elena data, Aiko compute, Marcus capital
+        vm.prank(elena);
+        forge.contributeData(keccak256("elena-corpus"));
 
-        vm.deal(priya, 1 ether);
-        vm.prank(priya);
+        vm.deal(aiko, 1 ether);
+        vm.prank(aiko);
         forge.contributeCompute{value: 0.5 ether}(0.5 ether);
 
-        vm.deal(devansh, 1 ether);
-        vm.prank(devansh);
+        vm.deal(marcus, 1 ether);
+        vm.prank(marcus);
         forge.fundForge{value: 0.3 ether}();
 
         assertEq(forge.contributionsCount(), 3);
@@ -71,8 +71,8 @@ contract FoundryTest is Test {
 
         // 4. Submit eval result (TEE attestation + score vector)
         uint64[] memory scores = new uint64[](3);
-        scores[0] = 800_000;  // Maya's data: 0.8 marginal Δ
-        scores[1] = 0;        // compute amounts only count by amount, not score
+        scores[0] = 800_000; // Elena's data: 0.8 marginal Δ
+        scores[1] = 0; // compute amounts only count by amount, not score
         scores[2] = 0;
 
         vm.prank(coordinator);
@@ -84,16 +84,16 @@ contract FoundryTest is Test {
         assertEq(uint8(forge.state()), uint8(Forge.State.Training));
 
         uint256 tokenId = forge.tokenId();
-        // Maya holds 70% of shares; Priya holds 20%; Devansh holds 10%.
-        uint128 mayaShare = ingot.shareOf(tokenId, maya);
-        uint128 priyaShare = ingot.shareOf(tokenId, priya);
-        uint128 devanshShare = ingot.shareOf(tokenId, devansh);
-        assertGt(mayaShare, 0);
-        assertGt(priyaShare, 0);
-        assertGt(devanshShare, 0);
-        // Maya should have the largest share due to 70% data weight + sole data contribution
-        assertGt(mayaShare, priyaShare);
-        assertGt(mayaShare, devanshShare);
+        // Elena holds 70% of shares; Aiko holds 20%; Marcus holds 10%.
+        uint128 elenaShare = ingot.shareOf(tokenId, elena);
+        uint128 aikoShare = ingot.shareOf(tokenId, aiko);
+        uint128 marcusShare = ingot.shareOf(tokenId, marcus);
+        assertGt(elenaShare, 0);
+        assertGt(aikoShare, 0);
+        assertGt(marcusShare, 0);
+        // Elena should have the largest share — 70% data weight + sole data contribution.
+        assertGt(elenaShare, aikoShare);
+        assertGt(elenaShare, marcusShare);
 
         // 6. Set weights and go live
         vm.prank(creator);
@@ -105,15 +105,15 @@ contract FoundryTest is Test {
         vm.deal(address(this), payment);
         splitter.receivePayment{value: payment}(tokenId);
 
-        uint256 mayaClaimable = splitter.claimable(tokenId, maya);
-        assertGt(mayaClaimable, 0);
+        uint256 elenaClaimable = splitter.claimable(tokenId, elena);
+        assertGt(elenaClaimable, 0);
 
-        // 8. Maya claims
-        uint256 mayaBefore = maya.balance;
-        vm.prank(maya);
+        // 8. Elena claims
+        uint256 elenaBefore = elena.balance;
+        vm.prank(elena);
         uint256 claimed = splitter.claim(tokenId);
-        assertEq(claimed, mayaClaimable);
-        assertEq(maya.balance, mayaBefore + claimed);
+        assertEq(claimed, elenaClaimable);
+        assertEq(elena.balance, elenaBefore + claimed);
 
         // Treasury got the 2.5% fee
         assertEq(treasury.balance, payment * 250 / 10_000);
@@ -128,7 +128,7 @@ contract FoundryTest is Test {
 
         vm.warp(windowEnds + 1);
         vm.expectRevert(Forge.ContributionWindowClosed.selector);
-        vm.prank(maya);
+        vm.prank(elena);
         forge.contributeData(keccak256("x"));
     }
 
@@ -138,7 +138,7 @@ contract FoundryTest is Test {
         Forge forge = Forge(factory.createForge(
             bytes32("ms"), bytes32("es"), coordinator, windowEnds
         ));
-        vm.prank(maya);
+        vm.prank(elena);
         forge.contributeData(keccak256("x"));
 
         vm.warp(windowEnds + 1);
@@ -147,7 +147,7 @@ contract FoundryTest is Test {
         uint64[] memory scores = new uint64[](1);
         scores[0] = 1;
 
-        vm.prank(maya);
+        vm.prank(elena);
         vm.expectRevert(Forge.NotEvalCoordinator.selector);
         forge.submitEvalResult(keccak256("attest"), scores);
     }
@@ -158,7 +158,7 @@ contract FoundryTest is Test {
         Forge forge = Forge(factory.createForge(
             bytes32("ms"), bytes32("es"), coordinator, windowEnds
         ));
-        vm.prank(maya);
+        vm.prank(elena);
         forge.contributeData(keccak256("x"));
         vm.warp(windowEnds + 1);
         forge.startEvaluating();
@@ -178,11 +178,11 @@ contract FoundryTest is Test {
             bytes32("ms"), bytes32("es"), coordinator, windowEnds
         ));
         for (uint256 i = 0; i < 5; ++i) {
-            vm.prank(maya);
+            vm.prank(elena);
             forge.contributeData(bytes32(i));
         }
         vm.expectRevert(Forge.CapHit.selector);
-        vm.prank(maya);
+        vm.prank(elena);
         forge.contributeData(bytes32(uint256(99)));
     }
 

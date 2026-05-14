@@ -19,6 +19,9 @@ contracts/out/
 contracts/cache/
 contracts/broadcast/
 contracts/lib/
+contracts/foundry.lock
+# Submodules are managed by `forge install` in CI, not git submodules
+.gitmodules
 
 # Python eval
 eval/.venv/

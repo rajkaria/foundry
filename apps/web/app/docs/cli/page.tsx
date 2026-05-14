@@ -1,4 +1,14 @@
-import { DocsLayout, H2, H3, P, Lead, Code, CodeBlock, Callout, PageNav } from "@/components/docs/DocsLayout";
+import {
+  DocsLayout,
+  H2,
+  H3,
+  P,
+  Lead,
+  Code,
+  CodeBlock,
+  Callout,
+  PageNav,
+} from "@/components/docs/DocsLayout";
 
 export const metadata = {
   title: "Foundry CLI — Foundry docs",
@@ -22,10 +32,9 @@ export default function CliPage() {
       title="foundry — the one-binary developer experience."
       intro={
         <Lead>
-          The Foundry CLI scaffolds new integrations, opens Forges from the
-          terminal, runs smoke inferences against any Ingot, and ships
-          machine-readable JSON for CI pipelines. It's the same SDK surface,
-          one alias away.
+          The Foundry CLI scaffolds new integrations, opens Forges from the terminal,
+          runs smoke inferences against any Ingot, and ships machine-readable JSON for
+          CI pipelines. It's the same SDK surface, one alias away.
         </Lead>
       }
       toc={toc}
@@ -41,9 +50,9 @@ foundry --help`}</CodeBlock>
 
       <Callout tone="warn" title="CLI status">
         <p>
-          The CLI ships in v1.0.0. The commands below are the locked public
-          surface; the <Code>--help</Code> output in the v1.0.0-rc.1
-          pre-release matches this page exactly.
+          The CLI ships in v1.0.0. The commands below are the locked public surface; the{" "}
+          <Code>--help</Code> output in the v1.0.0-rc.1 pre-release matches this page
+          exactly.
         </p>
       </Callout>
 
@@ -113,8 +122,13 @@ foundry ingot claim ingot:0x8e2af4a…`}</CodeBlock>
 #   }`}</CodeBlock>
 
       <H2 id="ci">CI usage</H2>
-      <P>Every command supports <Code>--json</Code> for stable machine output.</P>
-      <CodeBlock lang="yaml" filename=".github/workflows/foundry-smoke.yml">{`name: foundry-smoke
+      <P>
+        Every command supports <Code>--json</Code> for stable machine output.
+      </P>
+      <CodeBlock
+        lang="yaml"
+        filename=".github/workflows/foundry-smoke.yml"
+      >{`name: foundry-smoke
 on: [pull_request]
 
 jobs:
