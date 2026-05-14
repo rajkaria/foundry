@@ -6,7 +6,7 @@ const sections = [
     title: "Protocol",
     links: [
       { href: "/forges", label: "Forges" },
-      { href: "/ingots", label: "Ingots" },
+      { href: "/smiths", label: "Smiths" },
       { href: "/lineage", label: "Lineage Graph" },
       { href: "/dashboard", label: "Forge in Public" },
     ],
