@@ -46,15 +46,25 @@ export default function ForgesPage() {
       <Header />
       <section className="border-t border-hairline">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
-          <p className="text-caption text-ember-400">Forges</p>
-          <h1 className="text-display-lg mt-3 text-platinum-100">
-            Active and recent collectives, on mainnet.
-          </h1>
-          <p className="text-body-lg mt-5 max-w-[60ch] text-platinum-300">
-            Each Forge pools data, compute, and capital to train one Ingot.
-            Connect a wallet to contribute. Ownership mints proportionally to
-            measured contribution.
-          </p>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-caption text-ember-400">Forges</p>
+              <h1 className="text-display-lg mt-3 text-platinum-100">
+                Active and recent collectives, on mainnet.
+              </h1>
+              <p className="text-body-lg mt-5 max-w-[60ch] text-platinum-300">
+                Each Forge pools data, compute, and capital to train one Ingot.
+                Connect a wallet to contribute. Ownership mints proportionally to
+                measured contribution.
+              </p>
+            </div>
+            <Link
+              href="/forges/new"
+              className="rounded-md bg-ember-500 px-5 h-10 inline-flex items-center text-ink-950 font-medium hover:bg-ember-400 transition-colors"
+            >
+              Create with AI →
+            </Link>
+          </div>
 
           <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {sampleForges.map((f) => (

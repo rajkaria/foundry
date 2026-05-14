@@ -5,6 +5,7 @@ import { Pill } from "@/components/ui/Pill";
 import { Card, CardEyebrow, CardTitle, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { AttributionBloom } from "@/components/motion/AttributionBloom";
+import { TEEViewer } from "@/components/app/TEEViewer";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -114,6 +115,11 @@ export default async function ForgeDetailPage({ params }: PageProps) {
           </Card>
 
           <div className="space-y-5">
+            <TEEViewer
+              state={f.state === "EVALUATING" ? "scoring" : f.state === "MINTING" ? "done" : "idle"}
+              baselineScore={21.4}
+              measuredScore={f.state === "MINTING" || f.state === "TRAINING" || f.state === "LIVE" ? 38.7 : undefined}
+            />
             <Card>
               <CardEyebrow>Contribute</CardEyebrow>
               <CardTitle>Pick a contribution type</CardTitle>

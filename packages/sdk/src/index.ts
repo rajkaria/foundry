@@ -25,10 +25,13 @@ import {
 } from "viem";
 import { forgeAbi, forgeFactoryAbi, ingotAbi, revenueSplitterAbi } from "./abis.js";
 import { getDeployment, type Deployment } from "./deployments.js";
+import { InferenceClient, type InferenceParams, type InferenceResult } from "./inference.js";
 
 export type IngotId = `ingot:0x${string}`;
 export type ForgeId = `forge:0x${string}`;
 export type { Address, Hex };
+export type { InferenceParams, InferenceResult };
+export { InferenceClient } from "./inference.js";
 
 const ARISTOTLE_DEFAULT_RPC = "https://rpc.0g.network";
 
@@ -43,6 +46,8 @@ export interface FoundryConfig {
   contracts?: "aristotle";
   rpcUrl?: string;
   walletClient?: WalletClient;
+  inferenceEndpoint?: string;
+  inferenceApiKey?: string;
 }
 
 function unwrap<T extends `${string}:0x${string}`>(id: T): Address {
@@ -54,6 +59,7 @@ export class Foundry {
   readonly deployment: Deployment;
   readonly publicClient: PublicClient;
   readonly walletClient?: WalletClient;
+  private readonly inferenceClient: InferenceClient;
 
   constructor(config: FoundryConfig = {}) {
     this.config = { contracts: "aristotle", ...config };
@@ -63,6 +69,10 @@ export class Foundry {
       transport: http(this.config.rpcUrl ?? ARISTOTLE_DEFAULT_RPC),
     });
     this.walletClient = config.walletClient;
+    this.inferenceClient = new InferenceClient({
+      endpoint: config.inferenceEndpoint,
+      apiKey: config.inferenceApiKey,
+    });
   }
 
   /* ─── forge ────────────────────────────────────────────────────────── */
@@ -197,19 +207,8 @@ export class Foundry {
   /* ─── inference ────────────────────────────────────────────────────── */
 
   readonly inference = {
-    run: async (
-      _ingotId: IngotId,
-      params: { input: string }
-    ): Promise<{ output: string; receipt: { txHash?: Hex } }> => {
-      // Sprint 2 wires this to 0G Compute through the OpenAI-compatible
-      // proxy on api.foundryprotocol.xyz. Until then, throw a clear error
-      // rather than silently mocking output.
-      void params;
-      throw new Error(
-        "[foundry-sdk] inference.run() requires the inference proxy " +
-          "(Sprint 2). Use the Vercel AI SDK adapter once it lands."
-      );
-    },
+    run: (ingotId: IngotId, params: InferenceParams) =>
+      this.inferenceClient.run(ingotId, params),
   };
 
   /* ─── revenue ──────────────────────────────────────────────────────── */
@@ -259,4 +258,4 @@ export class Foundry {
 }
 
 export { createWalletClient, http, parseEther };
-export const VERSION = "0.1.0-alpha" as const;
+export const VERSION = "0.2.0-beta" as const;
