@@ -1,7 +1,6 @@
 import {
   DocsLayout,
   H2,
-  H3,
   P,
   Lead,
   Code,

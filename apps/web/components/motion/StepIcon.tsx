@@ -36,11 +36,6 @@ function IconShell({
   );
 }
 
-const path = {
-  initial: { pathLength: 0, opacity: 0 },
-  whileInView: { pathLength: 1, opacity: 1 },
-};
-
 const tx = (delay = 0) => ({
   initial: { pathLength: 0, opacity: 0 },
   whileInView: { pathLength: 1, opacity: 1 },

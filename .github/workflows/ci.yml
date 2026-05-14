@@ -55,7 +55,9 @@ jobs:
       # Install them fresh on every CI run.
       - name: forge install deps
         run: |
-          forge install --no-commit \
+          git config --global user.email "ci@foundry.test"
+          git config --global user.name "ci"
+          forge install \
             foundry-rs/forge-std \
             OpenZeppelin/openzeppelin-contracts \
             Vectorized/solady

@@ -1,7 +1,7 @@
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { LinkButton } from "@/components/ui/Button";
-import { Card, CardEyebrow, CardTitle, CardBody } from "@/components/ui/Card";
+import { Card, CardEyebrow, CardTitle } from "@/components/ui/Card";
 
 export const metadata = {
   title: "Build on Foundry",
