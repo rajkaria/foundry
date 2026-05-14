@@ -1,6 +1,6 @@
 {
   "name": "@foundryprotocol/sdk",
-  "version": "0.0.0",
+  "version": "0.1.0-alpha.1",
   "description": "Foundry SDK — call any Foundry Ingot in three lines.",
   "license": "MIT",
   "homepage": "https://foundryprotocol.xyz",
@@ -43,6 +43,9 @@
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
+    "viem": "^2.21.0"
+  },
+  "dependencies": {
     "viem": "^2.21.0"
   }
 }

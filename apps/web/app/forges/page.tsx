@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Pill } from "@/components/ui/Pill";
@@ -57,7 +58,8 @@ export default function ForgesPage() {
 
           <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {sampleForges.map((f) => (
-              <Card key={f.id}>
+              <Link key={f.id} href={`/forges/${f.id.replace("0x", "").split("…")[0]}`} className="block">
+              <Card>
                 <div className="flex items-start justify-between gap-3">
                   <CardEyebrow>{f.id}</CardEyebrow>
                   <Pill
@@ -96,6 +98,7 @@ export default function ForgesPage() {
                   </div>
                 </div>
               </Card>
+              </Link>
             ))}
           </div>
 

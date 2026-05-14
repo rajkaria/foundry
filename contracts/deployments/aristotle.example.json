@@ -1,0 +1,8 @@
+{
+  "_comment": "Populated by script/Deploy.s.sol on first mainnet deploy (Sprint 1, Tue May 19). The SDK + indexer consume this file at build time.",
+  "FORGEToken": "0x0000000000000000000000000000000000000000",
+  "ContributionRegistry": "0x0000000000000000000000000000000000000000",
+  "Ingot": "0x0000000000000000000000000000000000000000",
+  "RevenueSplitter": "0x0000000000000000000000000000000000000000",
+  "ForgeFactory": "0x0000000000000000000000000000000000000000"
+}
