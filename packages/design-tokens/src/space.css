@@ -1,0 +1,28 @@
+:root {
+  /* 4px base, exponentially friendly */
+  --space-0: 0;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-7: 24px;
+  --space-8: 32px;
+  --space-9: 40px;
+  --space-10: 56px;
+  --space-11: 80px;
+  --space-12: 120px;
+
+  /* Radius */
+  --radius-pill: 999px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Max content widths */
+  --width-prose: 720px;
+  --width-doc: 960px;
+  --width-page: 1280px;
+}

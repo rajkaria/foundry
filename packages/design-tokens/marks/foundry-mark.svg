@@ -1,0 +1,46 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  fill="none"
+  role="img"
+  aria-label="Foundry"
+>
+  <!--
+    The Foundry Ingot mark.
+    A trapezoidal silhouette — flat on top, two angled sides converging to a
+    wider base — rendered as a single solid form filled with a vertical
+    ember gradient. A faint specular highlight reads as polished metal.
+  -->
+  <defs>
+    <linearGradient id="ember-fill" x1="32" y1="6" x2="32" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffd9a6" />
+      <stop offset="38%" stop-color="#ff8a1a" />
+      <stop offset="100%" stop-color="#a64a00" />
+    </linearGradient>
+    <linearGradient id="specular" x1="32" y1="6" x2="32" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff8e8" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#fff8e8" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Ingot silhouette: flat top, angled sides, wider base -->
+  <path
+    d="M18 8 L46 8 L54 54 L10 54 Z"
+    fill="url(#ember-fill)"
+  />
+
+  <!-- Specular highlight band, top -->
+  <path
+    d="M18 8 L46 8 L44 14 L20 14 Z"
+    fill="url(#specular)"
+  />
+
+  <!-- Engraved hairline rim -->
+  <path
+    d="M18 8 L46 8 L54 54 L10 54 Z"
+    fill="none"
+    stroke="#4a1f00"
+    stroke-opacity="0.6"
+    stroke-width="0.8"
+  />
+</svg>

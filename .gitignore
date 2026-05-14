@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+.npm/
+
+# Build outputs
+.next/
+.turbo/
+.vercel/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Foundry (solidity toolkit)
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/lib/
+
+# Python eval
+eval/.venv/
+eval/__pycache__/
+eval/.pytest_cache/
+eval/.ruff_cache/
+eval/.mypy_cache/
+*.pyc
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+
+# Local artifacts
+*.local
+.cache/
+
+# Secrets — never commit
+*.pem
+*.key
+secrets/

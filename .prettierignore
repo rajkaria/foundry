@@ -1,0 +1,13 @@
+node_modules
+.next
+.turbo
+.vercel
+dist
+build
+out
+contracts/lib
+contracts/out
+contracts/cache
+eval/.venv
+*.lock
+pnpm-lock.yaml

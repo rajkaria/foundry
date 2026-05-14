@@ -1,0 +1,69 @@
+:root {
+  /* ===== Ink — cool dark, the stage ===== */
+  --ink-950: #07080a;
+  --ink-900: #0c0e12;
+  --ink-800: #14171d;
+  --ink-700: #1d2129;
+  --ink-600: #2a2f3a;
+  --ink-500: #424857;
+  --ink-400: #6c7384;
+  --ink-300: #8d94a3;
+
+  /* ===== Platinum — cool light, the type ===== */
+  --platinum-100: #f3f4f6;
+  --platinum-200: #e3e5ea;
+  --platinum-300: #c8ccd4;
+  --platinum-400: #a0a6b2;
+  --platinum-50: #fafbfc;
+  --platinum-0: #ffffff;
+
+  /* ===== Ember — the focal warm. Molten metal. ===== */
+  --ember-300: #ffd9a6;
+  --ember-400: #ffb260;
+  --ember-500: #ff8a1a;
+  --ember-600: #e26a00;
+  --ember-700: #a64a00;
+  --ember-900: #4a1f00;
+
+  /* ===== Signal — single semantic chain ===== */
+  --signal-positive: #2bd07c;
+  --signal-warn: #f5b400;
+  --signal-danger: #ff5a5a;
+  --signal-info: #6fa7ff;
+
+  /* ===== Semantic mappings ===== */
+  --bg-page: var(--ink-950);
+  --bg-surface: var(--ink-900);
+  --bg-elevated: var(--ink-800);
+  --bg-hairline: var(--ink-600);
+
+  --text-primary: var(--platinum-100);
+  --text-secondary: var(--platinum-300);
+  --text-muted: var(--ink-400);
+  --text-accent: var(--ember-500);
+
+  --ring-focus: var(--ember-400);
+
+  /* Elevation */
+  --elev-1:
+    0 1px 0 0 rgb(255 255 255 / 0.04) inset,
+    0 0 0 1px rgb(255 255 255 / 0.04);
+
+  --elev-2:
+    0 1px 0 0 rgb(255 255 255 / 0.06) inset,
+    0 0 0 1px rgb(255 255 255 / 0.06),
+    0 24px 48px -16px rgb(0 0 0 / 0.6);
+
+  /* Ambient washes */
+  --wash-ember: radial-gradient(
+    60% 80% at 50% 0%,
+    color-mix(in oklab, var(--ember-900) 22%, transparent) 0%,
+    transparent 65%
+  );
+
+  --wash-platinum: radial-gradient(
+    50% 70% at 50% 100%,
+    color-mix(in oklab, var(--platinum-100) 4%, transparent) 0%,
+    transparent 70%
+  );
+}

@@ -1,0 +1,85 @@
+@import "tailwindcss";
+@import "@foundryprotocol/design-tokens/css";
+
+/* Tailwind 4 — register design tokens as theme tokens so utilities resolve
+   to our CSS variables. Single source of truth. */
+@theme {
+  --color-ink-950: var(--ink-950);
+  --color-ink-900: var(--ink-900);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-600: var(--ink-600);
+  --color-ink-500: var(--ink-500);
+  --color-ink-400: var(--ink-400);
+  --color-ink-300: var(--ink-300);
+
+  --color-platinum-100: var(--platinum-100);
+  --color-platinum-200: var(--platinum-200);
+  --color-platinum-300: var(--platinum-300);
+  --color-platinum-400: var(--platinum-400);
+
+  --color-ember-300: var(--ember-300);
+  --color-ember-400: var(--ember-400);
+  --color-ember-500: var(--ember-500);
+  --color-ember-600: var(--ember-600);
+  --color-ember-700: var(--ember-700);
+  --color-ember-900: var(--ember-900);
+
+  --color-signal-positive: var(--signal-positive);
+  --color-signal-warn: var(--signal-warn);
+  --color-signal-danger: var(--signal-danger);
+  --color-signal-info: var(--signal-info);
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --radius-pill: var(--radius-pill);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --ease-standard: var(--ease-standard);
+  --ease-decel: var(--ease-decel);
+  --ease-accel: var(--ease-accel);
+}
+
+/* Page-level ambient washes */
+.bg-stage {
+  background:
+    var(--wash-ember),
+    var(--bg-page);
+}
+
+/* Hairline utility */
+.border-hairline {
+  border: 1px solid color-mix(in oklab, var(--bg-hairline) 80%, transparent);
+}
+.divide-hairline > * + * {
+  border-top: 1px solid color-mix(in oklab, var(--bg-hairline) 80%, transparent);
+}
+
+/* Elevation utilities */
+.elev-1 {
+  box-shadow: var(--elev-1);
+}
+.elev-2 {
+  box-shadow: var(--elev-2);
+}
+
+/* Smooth scroll for anchor nav */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Grain — barely perceptible texture on hero */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+}

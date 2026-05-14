@@ -1,0 +1,21 @@
+{
+  "name": "@foundryprotocol/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Foundry design tokens — color, type, motion, spacing.",
+  "main": "./src/tokens.ts",
+  "exports": {
+    ".": "./src/tokens.ts",
+    "./css": "./src/index.css",
+    "./marks/*": "./marks/*"
+  },
+  "files": ["src", "marks"],
+  "scripts": {
+    "lint": "echo 'design-tokens has no lint'",
+    "typecheck": "tsc --noEmit",
+    "build": "echo 'design-tokens is source-only'"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

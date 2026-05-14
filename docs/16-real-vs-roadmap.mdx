@@ -1,0 +1,92 @@
+---
+title: Real vs Roadmap
+description: Every Foundry feature is either ✅ Real on mainnet or 🔜 Roadmap. We refuse to blur the line.
+---
+
+# Real vs Roadmap
+
+Honesty is a feature. This table is the source of truth and is mirrored on the [dashboard](https://foundryprotocol.xyz/dashboard) and the README. Updated on every release.
+
+## Protocol & contracts
+
+| Item | Status | Notes |
+|---|---|---|
+| `FORGEToken` deployed on 0G Aristotle mainnet | ✅ Real | Address: _filled on deploy_ |
+| `ForgeFactory` deployed | ✅ Real | — |
+| `Forge` state machine (OPEN → EVALUATING → MINTING → TRAINING → LIVE) | ✅ Real | — |
+| `Ingot` cap table with packed-mapping shares | ✅ Real | — |
+| `ContributionRegistry` append-only log | ✅ Real | — |
+| `RevenueSplitter` with pull-payment claims | ✅ Real | — |
+| Multi-round reforging | 🔜 Roadmap | Single-round only at hackathon. |
+| Forge governance via $FORGE | 🔜 Roadmap | Post-hackathon Month 1. |
+| Secondary market for Ingot shares | 🔜 Roadmap | Post-hackathon Month 3. |
+| Reputation-weighted contribution caps | 🔜 Roadmap | Per-wallet absolute caps only at hackathon. |
+| Audited contracts | 🔜 Roadmap | Informal third-party review at submission; full audit Month 1. |
+
+## Attribution & eval
+
+| Item | Status | Notes |
+|---|---|---|
+| Baseline + LOO marginal-contribution attribution | ✅ Real | The honest v1 method. |
+| TEE-executed attribution eval on 0G Compute | ✅ Real / 🔜 | TEE if integration-ready by Week 2; otherwise non-TEE on 0G Compute, labeled, with TEE as immediate next step. **Current status: _live-updated_.** |
+| Hardware-signed attestation verified on-chain | ✅ Real | Mirrors the TEE status above. |
+| Shapley / influence-function attribution | 🔜 Roadmap | Documented research direction. |
+| FHE-light encrypted contributions | 🔜 Roadmap | TEE-only at hackathon. |
+| Reproducible eval via `make eval FORGE_ID=…` | ✅ Real | — |
+
+## SDK
+
+| Item | Status | Notes |
+|---|---|---|
+| `@foundryprotocol/sdk` on npm | ✅ Real | Public, MIT. |
+| `forge.*` and `ingot.*` read methods | ✅ Real | — |
+| `forge.create / contributeData / contributeCompute / fundForge` | ✅ Real | — |
+| `inference.run()` with three-line invocation | ✅ Real | — |
+| `revenue.claim()` | ✅ Real | — |
+| `lineage.get()` | ✅ Real | — |
+| Vercel AI SDK adapter | ✅ Real | `@foundryprotocol/sdk/adapters/vercel-ai` |
+| LangChain adapter | ✅ Real | `@foundryprotocol/sdk/adapters/langchain` |
+| OpenAI-compatible HTTP proxy | ✅ Real | `api.foundryprotocol.xyz/v1/chat/completions` |
+| Foundry CLI (`npx create-foundry-forge`) | ✅ Real | Scaffolds a starter project. |
+
+## Web
+
+| Item | Status | Notes |
+|---|---|---|
+| Landing page with Metal Pour animation | ✅ Real | foundryprotocol.xyz |
+| App routes (Forge explorer, Forge detail, Ingot detail, Smith profile) | ✅ Real | — |
+| Lineage Graph | ✅ Real | — |
+| Forge in Public dashboard with live mainnet stats | ✅ Real | — |
+| Build-on-Foundry page with adapter examples | ✅ Real | — |
+| Docs site | ✅ Real | Rendered from `/docs/*.mdx` |
+| AI-assisted Forge creation wizard | ✅ Real | Sprint 2 deliverable. |
+| Live TEE attestation viewer | ✅ Real | — |
+| Auto-generated lineage SVG NFT | ✅ Real | Mintable on every Ingot page. |
+| Mobile-native app | 🔜 Roadmap | Web is fully responsive; native app is later. |
+| Multi-language UI | 🔜 Roadmap | English only. |
+
+## Traction (per Addition 1 & 2)
+
+| Item | Status | Target |
+|---|---|---|
+| Forges live on mainnet | _live-updated_ | ≥ 5 at submission |
+| Ingots minted | _live-updated_ | ≥ 7 at submission |
+| Contributions logged | _live-updated_ | ≥ 40 at submission |
+| External (non-team) contributors | _live-updated_ | 5–10 at submission |
+| Other teams consuming a Foundry Ingot | _live-updated_ | ≥ 1 at submission |
+| $FORGE-denominated revenue distributed | _live-updated_ | Real, growing |
+| Weekly building-in-public X updates | ✅ Real | Started Week 1 |
+
+## What we do not build (anti-scope)
+
+These are *intentionally* not on the roadmap. Stated to remove ambiguity:
+
+- A token sale or presale for $FORGE — shares mint to contributors only.
+- An exchange / DEX / launchpad — out of scope; Foundry is a protocol, not a venue.
+- A GPU marketplace — Foundry consumes 0G Compute; it does not compete with hardware providers.
+- A general-purpose chat assistant — Foundry exposes Ingots into other agent surfaces via adapters.
+- Cross-chain bridges this year — 0G-native; bridges are a Month-6+ consideration.
+
+---
+
+*This table is reviewed at every release. Any feature that becomes Real promotes from 🔜 to ✅. Any feature on this list is either implemented in code or explicitly declared. We do not maintain a third bucket.*

@@ -1,0 +1,43 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 320 64"
+  fill="none"
+  role="img"
+  aria-label="Foundry"
+>
+  <defs>
+    <linearGradient id="lockup-ember" x1="32" y1="6" x2="32" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffd9a6" />
+      <stop offset="38%" stop-color="#ff8a1a" />
+      <stop offset="100%" stop-color="#a64a00" />
+    </linearGradient>
+    <linearGradient id="lockup-specular" x1="32" y1="6" x2="32" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff8e8" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#fff8e8" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Mark on the left -->
+  <g>
+    <path d="M18 8 L46 8 L54 54 L10 54 Z" fill="url(#lockup-ember)" />
+    <path d="M18 8 L46 8 L44 14 L20 14 Z" fill="url(#lockup-specular)" />
+    <path
+      d="M18 8 L46 8 L54 54 L10 54 Z"
+      fill="none"
+      stroke="#4a1f00"
+      stroke-opacity="0.6"
+      stroke-width="0.8"
+    />
+  </g>
+
+  <!-- Wordmark to the right -->
+  <text
+    x="76"
+    y="40"
+    font-family="'PP Editorial New','EB Garamond',Tiempos,serif"
+    font-weight="200"
+    font-size="32"
+    letter-spacing="3.84"
+    fill="#f3f4f6"
+  >FOUNDRY</text>
+</svg>
