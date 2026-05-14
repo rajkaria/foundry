@@ -4,8 +4,8 @@ import { LinkButton } from "@/components/ui/Button";
 
 const nav = [
   { href: "/forges", label: "Forges" },
+  { href: "/smiths", label: "Smiths" },
   { href: "/lineage", label: "Lineage" },
-  { href: "/build-on-foundry", label: "Build on Foundry" },
   { href: "/docs", label: "Docs" },
   { href: "/dashboard", label: "Live" },
 ];
