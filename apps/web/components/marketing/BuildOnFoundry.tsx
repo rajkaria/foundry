@@ -7,13 +7,14 @@ const code = `import { Foundry } from '@foundryprotocol/sdk';
 
 const foundry = new Foundry({ contracts: 'aristotle' });
 
-const { output } = await foundry.inference.run(
+const { output, receipt } = await foundry.inference.run(
   'ingot:0x8e2…f4a',
   { input: 'Translate to Konkani: …' }
 );
 //        ▲
 //        revenue routes back to the Ingot's
-//        co-owners on-chain, automatically.`;
+//        co-owners on-chain, automatically.
+// receipt.inferenceTxHash · receipt.revenueTxHash`;
 
 const adapters = [
   {

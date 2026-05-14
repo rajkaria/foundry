@@ -86,6 +86,17 @@ That's it. Your call is routed to the Ingot via 0G Compute. Revenue routes back 
 
 For agent-framework integration, see the [Vercel AI SDK adapter](https://foundryprotocol.xyz/docs/sdk-reference#vercel-ai), the [LangChain adapter](https://foundryprotocol.xyz/docs/sdk-reference#langchain), or our [OpenAI-compatible proxy](https://foundryprotocol.xyz/docs/sdk-reference#openai-compat).
 
+### OpenAI-compatible — zero-friction integration
+
+Any tool that speaks OpenAI's API can call a Foundry Ingot:
+
+```bash
+curl https://foundryprotocol.xyz/api/v1/chat/completions \
+  -H "content-type: application/json" \
+  -H "x-foundry-ingot-id: 0x8e2…f4a" \
+  -d '{"messages":[{"role":"user","content":"Translate to Konkani: …"}]}'
+```
+
 ## Live mainnet status
 
 | | |
