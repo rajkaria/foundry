@@ -1,23 +1,22 @@
 /**
- * OpenAI-compatible inference proxy.
+ * OpenAI-compatible inference proxy for Foundry Ingots.
  *
- * Any tool that speaks OpenAI's API can call a Foundry Ingot by changing the
- * base URL and passing the Ingot ID as `x-foundry-ingot-id` (or as `model`).
- * Revenue routes back to the Ingot's co-owners on-chain through the
- * RevenueSplitter.
+ * Any client speaking OpenAI's chat-completions API can call a Foundry
+ * Ingot by changing the base URL and passing the Ingot ID as
+ * `x-foundry-ingot-id` (or as `model: "ingot:0x…"`). The proxy delegates
+ * the actual model call to 0G Compute via the serving-broker SDK
+ * (see lib/zg-compute.ts), and the broker reserves the fee on-chain —
+ * which is the revenue stream that flows into the Ingot's RevenueSplitter.
  *
- * POST /api/v1/chat/completions
- *   headers: x-foundry-ingot-id: 0x… (optional if `model` is set to ingot:0x…)
- *   body:    { messages, temperature?, max_tokens?, stream? }
- *
- * Sprint 2 shipped the contract; Sprint 3 adds streaming, model resolution
- * via the `model` field, and richer receipts. The backend remains a
- * deterministic stub until 0G Compute is wired in.
+ * When ZG_BROKER_KEY / ZG_INFERENCE_PROVIDER aren't set, the proxy returns
+ * an honestly-labeled stub response with `x-foundry-stub: 1`.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
+import { chatCompletion, isLive } from "@/lib/zg-compute";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 interface ChatRequest {
   model?: string;
@@ -46,20 +45,29 @@ export async function POST(req: NextRequest): Promise<Response> {
     return jsonError("messages array required", 400);
   }
 
-  const lastUser = [...body.messages].reverse().find((m) => m.role === "user");
-  const output = stubOutput(ingotId, lastUser?.content ?? "");
-  const promptTokens = approxTokens(body.messages.map((m) => m.content).join(" "));
-  const completionTokens = approxTokens(output);
+  const result = await chatCompletion({
+    messages: body.messages,
+    temperature: body.temperature,
+    maxTokens: body.max_tokens,
+  });
+
   const requestId = `chatcmpl-foundry-${cryptoRandom()}`;
   const created = Math.floor(Date.now() / 1000);
   const model = `ingot:${ingotId}`;
 
-  // Streaming branch — Server-Sent Events in the OpenAI delta format.
   if (body.stream) {
-    return sseStream({ requestId, created, model, output, ingotId });
+    return sseStream({
+      requestId,
+      created,
+      model,
+      output: result.output,
+      ingotId,
+      attestation: result.attestation,
+      inferenceTxHash: result.inferenceTxHash,
+      mode: result.mode,
+    });
   }
 
-  // Non-streaming JSON response.
   const response = {
     id: requestId,
     object: "chat.completion" as const,
@@ -68,29 +76,38 @@ export async function POST(req: NextRequest): Promise<Response> {
     choices: [
       {
         index: 0,
-        message: { role: "assistant" as const, content: output },
+        message: { role: "assistant" as const, content: result.output },
         finish_reason: "stop" as const,
       },
     ],
     usage: {
-      prompt_tokens: promptTokens,
-      completion_tokens: completionTokens,
-      total_tokens: promptTokens + completionTokens,
+      prompt_tokens: result.usage?.promptTokens ?? approxTokens(joined(body)),
+      completion_tokens: result.usage?.completionTokens ?? approxTokens(result.output),
+      total_tokens:
+        result.usage?.totalTokens ??
+        approxTokens(joined(body)) + approxTokens(result.output),
     },
     foundry: {
       ingotId,
-      inferenceTxHash: null,
-      revenueTxHash: null,
-      proxy: "edge",
-      note: "Stub backend — response shape is the stable v1 contract. 0G Compute dispatch + on-chain revenue routing land when the eval coordinator goes live on mainnet.",
+      mode: result.mode,
+      provider: result.provider ?? null,
+      providerModel: result.model,
+      attestation: result.attestation ?? null,
+      inferenceTxHash: result.inferenceTxHash ?? null,
+      revenueTxHash: null, // populated by Forge.RevenueSplitter.receivePayment in v2
+      note:
+        result.mode === "stub"
+          ? "Stub response — set ZG_BROKER_KEY + ZG_INFERENCE_PROVIDER to route through real 0G Compute."
+          : "Routed through 0G Compute via the serving broker. The inference fee is reserved on-chain.",
     },
   };
 
   return NextResponse.json(response, {
     headers: {
       "access-control-allow-origin": "*",
-      "x-foundry-stub": "1",
+      "x-foundry-mode": result.mode,
       "x-foundry-ingot-id": ingotId,
+      ...(result.mode === "stub" ? { "x-foundry-stub": "1" } : {}),
     },
   });
 }
@@ -107,6 +124,13 @@ export async function OPTIONS(): Promise<NextResponse> {
   });
 }
 
+export async function GET(): Promise<NextResponse> {
+  return NextResponse.json({
+    proxy: "foundry-inference",
+    mode: isLive() ? "live" : "stub",
+  });
+}
+
 function resolveIngotId(req: NextRequest): string | null {
   const fromHeader = req.headers.get("x-foundry-ingot-id");
   if (fromHeader && fromHeader.startsWith("0x")) return fromHeader;
@@ -116,10 +140,7 @@ function resolveIngotId(req: NextRequest): string | null {
 function jsonError(message: string, status: number): NextResponse {
   return NextResponse.json(
     { error: { message, type: "invalid_request_error" } },
-    {
-      status,
-      headers: { "access-control-allow-origin": "*" },
-    }
+    { status, headers: { "access-control-allow-origin": "*" } }
   );
 }
 
@@ -129,13 +150,15 @@ function sseStream(args: {
   model: string;
   output: string;
   ingotId: string;
+  attestation?: string;
+  inferenceTxHash?: string;
+  mode: "live" | "stub";
 }): Response {
   const encoder = new TextEncoder();
   const chunks = chunkBySpace(args.output, 6);
 
   const stream = new ReadableStream({
     async start(controller) {
-      // First delta — role marker.
       controller.enqueue(
         encoder.encode(
           sseFrame({
@@ -148,7 +171,6 @@ function sseStream(args: {
         )
       );
 
-      // Content deltas — emit chunks with a tiny delay to mimic generation.
       for (const piece of chunks) {
         await sleep(18);
         controller.enqueue(
@@ -164,7 +186,6 @@ function sseStream(args: {
         );
       }
 
-      // Final frame — stop reason + foundry receipt.
       controller.enqueue(
         encoder.encode(
           sseFrame({
@@ -175,7 +196,9 @@ function sseStream(args: {
             choices: [{ index: 0, delta: {}, finish_reason: "stop" }],
             foundry: {
               ingotId: args.ingotId,
-              inferenceTxHash: null,
+              mode: args.mode,
+              attestation: args.attestation ?? null,
+              inferenceTxHash: args.inferenceTxHash ?? null,
               revenueTxHash: null,
             },
           })
@@ -192,8 +215,9 @@ function sseStream(args: {
       "cache-control": "no-cache, no-transform",
       connection: "keep-alive",
       "access-control-allow-origin": "*",
-      "x-foundry-stub": "1",
+      "x-foundry-mode": args.mode,
       "x-foundry-ingot-id": args.ingotId,
+      ...(args.mode === "stub" ? { "x-foundry-stub": "1" } : {}),
     },
   });
 }
@@ -224,13 +248,12 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-function stubOutput(ingotId: string, prompt: string): string {
-  const short = ingotId.slice(0, 10) + "…";
-  return `[Foundry Ingot ${short}] Stub response for: "${prompt}". Once 0G Compute dispatch is live, this proxy will route to the real model and stream tokens here, with the inference + revenue tx hashes attached in the final frame.`;
-}
-
 function approxTokens(s: string): number {
   return Math.max(1, Math.ceil(s.length / 4));
+}
+
+function joined(body: ChatRequest): string {
+  return body.messages.map((m) => m.content).join(" ");
 }
 
 function cryptoRandom(): string {

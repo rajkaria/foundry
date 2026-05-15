@@ -13,7 +13,9 @@ from .tee import fallback_attestation
 log = logging.getLogger("foundry_eval")
 
 
-async def evaluate_forge(forge_addr: str, contributions: list[dict]) -> None:
+async def evaluate_forge(
+    forge_addr: str, contributions: list[dict[str, object]]
+) -> None:
     """Sprint 1: produces a deterministic baseline + LOO score vector.
 
     Sprint 2 will replace the toy baseline/contribution-score values with

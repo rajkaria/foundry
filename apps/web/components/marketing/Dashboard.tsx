@@ -15,43 +15,53 @@ interface Stat {
   unit?: string;
 }
 
-const stats: Stat[] = [
-  {
-    label: "Forges live",
-    value: 5,
-    delta: "+1 this week",
-    trend: [1, 1, 2, 2, 3, 3, 4, 4, 5],
-  },
-  {
-    label: "Ingots minted",
-    value: 7,
-    delta: "+2 this week",
-    trend: [0, 0, 1, 1, 2, 3, 4, 5, 7],
-  },
-  {
-    label: "Total contributions",
-    value: 47,
-    delta: "+12 this week",
-    trend: [2, 5, 8, 14, 19, 23, 30, 38, 47],
-  },
-  {
-    label: "External Smiths",
-    value: 9,
-    delta: "+3 this week",
-    trend: [0, 1, 1, 2, 3, 4, 6, 7, 9],
-  },
-  {
-    label: "Revenue distributed",
-    value: 0.42,
-    format: (n) => n.toFixed(2),
-    decimals: 2,
-    unit: "OG",
-    delta: "+0.18 this week",
-    trend: [0.01, 0.03, 0.06, 0.1, 0.14, 0.2, 0.27, 0.34, 0.42],
-  },
-];
+export interface DashboardProps {
+  /** Pre-fetched protocol stats from the server. */
+  stats: {
+    forges: number;
+    ingots: number;
+    contributions: number;
+    externalSmiths: number;
+    totalRevenueOG: number;
+    totalClaimedOG: number;
+    isLive: boolean;
+    network: string;
+  };
+}
 
-export function Dashboard() {
+function buildRows(s: DashboardProps["stats"]): Stat[] {
+  // Sparklines are tail-pads of the current value — once the indexer grows
+  // per-day buckets, we'll thread them in. Until then, the live integer is
+  // honest and the visual remains intact.
+  const trendOf = (v: number): number[] =>
+    Array.from({ length: 9 }, (_, i) => Math.max(0, Math.round((v * (i + 1)) / 9)));
+  return [
+    { label: "Forges live", value: s.forges, trend: trendOf(s.forges) },
+    { label: "Ingots minted", value: s.ingots, trend: trendOf(s.ingots) },
+    {
+      label: "Total contributions",
+      value: s.contributions,
+      trend: trendOf(s.contributions),
+    },
+    {
+      label: "External Smiths",
+      value: s.externalSmiths,
+      trend: trendOf(s.externalSmiths),
+    },
+    {
+      label: "Revenue distributed",
+      value: s.totalRevenueOG,
+      format: (n) => n.toFixed(2),
+      decimals: 2,
+      unit: "OG",
+      trend: trendOf(s.totalRevenueOG),
+    },
+  ];
+}
+
+export function Dashboard({ stats }: DashboardProps) {
+  const rows = buildRows(stats);
+
   return (
     <section className="border-hairline relative border-t py-28">
       <div
@@ -68,21 +78,27 @@ export function Dashboard() {
           <div>
             <p className="text-caption text-ember-400">Forge in Public</p>
             <h2 className="text-display-lg text-platinum-100 mt-3 max-w-[24ch]">
-              No fake counters. Just live mainnet activity.
+              {stats.isLive
+                ? "No fake counters. Just live mainnet activity."
+                : "Live numbers ship the moment contracts deploy."}
             </h2>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <Pill tone="positive" dot>
-              On-chain · 0G Aristotle
+            <Pill tone={stats.isLive ? "positive" : "warn"} dot>
+              {stats.isLive
+                ? `On-chain · 0G ${stats.network}`
+                : "Contracts pending deploy"}
             </Pill>
             <p className="text-caption text-platinum-400">
-              Updated &lt; 4s after every event
+              {stats.isLive
+                ? "Updated < 4s after every event"
+                : "Counts will populate from chain logs"}
             </p>
           </div>
         </div>
 
         <div className="border-hairline mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-lg md:grid-cols-5">
-          {stats.map((s, i) => (
+          {rows.map((s, i) => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 16 }}
@@ -108,12 +124,6 @@ export function Dashboard() {
                     <span className="text-title-md text-platinum-400">{s.unit}</span>
                   )}
                 </p>
-                {s.delta && (
-                  <p className="text-body-sm text-signal-positive tabular mt-2 flex items-center gap-1.5">
-                    <Arrow />
-                    {s.delta}
-                  </p>
-                )}
               </div>
               <Sparkline values={s.trend} width={140} height={36} className="-mb-1" />
             </motion.div>
@@ -128,8 +138,9 @@ export function Dashboard() {
           className="mt-8 flex flex-wrap items-center justify-between gap-3"
         >
           <p className="text-body-sm text-platinum-400">
-            Indexed live from 0G Aristotle events. Sparklines show 9-day rolling
-            history; refreshes within four seconds of every on-chain event.
+            {stats.isLive
+              ? "Indexed live from 0G mainnet events. Sparklines stretch toward the current value until per-day buckets ship."
+              : "These tiles surface counts from the contract event logs. Deploy the protocol to populate them."}
           </p>
           <a
             href="/dashboard"
@@ -140,19 +151,5 @@ export function Dashboard() {
         </motion.div>
       </div>
     </section>
-  );
-}
-
-function Arrow() {
-  return (
-    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-      <path
-        d="M2 7 L7 2 M4 2 L7 2 L7 5"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

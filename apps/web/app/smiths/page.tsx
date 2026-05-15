@@ -2,7 +2,9 @@ import Link from "next/link";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Pill } from "@/components/ui/Pill";
-import { listSmiths, smithTotals, shortAddr } from "@/lib/smiths";
+import { EmptyChainState } from "@/components/app/EmptyChainState";
+import { listSmiths } from "@/lib/smiths-data";
+import { getChain, shortAddr } from "@/lib/chain";
 
 export const metadata = {
   title: "Smiths — every Foundry contributor",
@@ -10,8 +12,12 @@ export const metadata = {
     "Browse data Smiths, compute Smiths, and eval coordinators contributing to Foundry Ingots.",
 };
 
-export default function SmithsIndexPage() {
-  const smiths = listSmiths();
+export const revalidate = 10;
+
+export default async function SmithsIndexPage() {
+  const chain = getChain();
+  const smiths = await listSmiths().catch(() => []);
+
   return (
     <main>
       <Header />
@@ -34,10 +40,26 @@ export default function SmithsIndexPage() {
             </Pill>
           </div>
 
-          <div className="border-hairline mt-12 grid grid-cols-1 gap-px overflow-hidden rounded-lg md:grid-cols-2 lg:grid-cols-3">
-            {smiths.map((s) => {
-              const totals = smithTotals(s);
-              return (
+          {!chain.isLive ? (
+            <div className="mt-12">
+              <EmptyChainState
+                network={chain.network}
+                title={`Smith data is derived from on-chain events.`}
+                body="Smith profiles aggregate ContributionLogged + ShareMinted + RevenueClaimed events. Once contracts deploy on this network, this page populates automatically — there are no hardcoded profiles."
+              />
+            </div>
+          ) : smiths.length === 0 ? (
+            <div className="mt-12">
+              <EmptyChainState
+                network={chain.network}
+                title="No Smiths yet on this network."
+                body="No contributions have been logged. The first Smith profile appears here as soon as someone calls Forge.contributeData / contributeCompute / fundForge."
+                cta={{ href: "/forges", label: "Browse Forges to contribute" }}
+              />
+            </div>
+          ) : (
+            <div className="border-hairline mt-12 grid grid-cols-1 gap-px overflow-hidden rounded-lg md:grid-cols-2 lg:grid-cols-3">
+              {smiths.map((s) => (
                 <Link
                   key={s.address}
                   href={`/smiths/${s.address}`}
@@ -45,21 +67,25 @@ export default function SmithsIndexPage() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-title-md text-platinum-100">{s.handle}</p>
-                      <p className="text-caption text-platinum-400 mt-1 font-mono">
+                      <p className="text-title-md text-platinum-100 font-mono">
                         {shortAddr(s.address)}
                       </p>
+                      <p className="text-caption text-platinum-400 mt-1">
+                        {s.contributions.length} contributions
+                      </p>
                     </div>
-                    <Pill tone="ember">{totals.ingotsHeld} Ingots</Pill>
+                    <Pill tone="ember">{s.shares.length} Ingots</Pill>
                   </div>
-                  <p className="text-body-sm text-platinum-300 mt-4 line-clamp-2">
-                    {s.bio}
+                  <p className="text-body-sm text-platinum-300 mt-4">
+                    {s.contributions[0]
+                      ? `Latest: ${s.contributions[0].type} contribution`
+                      : "Awaiting first contribution"}
                   </p>
                   <div className="border-hairline mt-6 flex items-end justify-between border-t pt-4">
                     <div>
-                      <p className="text-caption text-platinum-400">Earned</p>
+                      <p className="text-caption text-platinum-400">Claimable</p>
                       <p className="text-title-lg tabular text-platinum-100 mt-1">
-                        {totals.totalEarnedOG.toFixed(3)} OG
+                        {s.totalClaimableOG.toFixed(3)} OG
                       </p>
                     </div>
                     <span className="text-caption text-platinum-400 group-hover:text-ember-300 transition-colors">
@@ -67,9 +93,9 @@ export default function SmithsIndexPage() {
                     </span>
                   </div>
                 </Link>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
       <Footer />

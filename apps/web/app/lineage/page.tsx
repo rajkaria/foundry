@@ -2,6 +2,9 @@ import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { LineageGraph, type LineageNode } from "@/components/app/LineageGraph";
 import { Pill } from "@/components/ui/Pill";
+import { EmptyChainState } from "@/components/app/EmptyChainState";
+import { listIngots } from "@/lib/lineage-data";
+import { getChain } from "@/lib/chain";
 
 export const metadata = {
   title: "Lineage — every Ingot, every parent",
@@ -9,150 +12,125 @@ export const metadata = {
     "The on-chain family tree of every Foundry Ingot. Forks, reforges, and contributions trace back to origin.",
 };
 
-const sample: LineageNode[] = [
-  {
-    id: "k0",
-    name: "Konkani v1",
-    contributors: 9,
-    ingotId: "0x8e2a…0001",
-    mintedAt: "2026-05-24",
-  },
-  {
-    id: "k1",
-    name: "Konkani · news",
-    parent: "k0",
-    contributors: 6,
-    ingotId: "0x8e2a…0002",
-    mintedAt: "2026-05-28",
-  },
-  {
-    id: "k2",
-    name: "Konkani · conversation",
-    parent: "k0",
-    contributors: 5,
-    ingotId: "0x8e2a…0006",
-    mintedAt: "2026-05-29",
-  },
-  {
-    id: "k3",
-    name: "Konkani · legal",
-    parent: "k1",
-    contributors: 4,
-    ingotId: "0x8e2a…0007",
-    mintedAt: "2026-06-02",
-  },
-  {
-    id: "k4",
-    name: "Konkani · medical",
-    parent: "k1",
-    contributors: 3,
-    ingotId: "0x8e2a…0009",
-    mintedAt: "2026-06-04",
-  },
+export const revalidate = 15;
 
-  {
-    id: "t0",
-    name: "Tulu v1",
-    contributors: 4,
-    ingotId: "0x8e2a…0003",
-    mintedAt: "2026-05-26",
-  },
-  {
-    id: "t1",
-    name: "Tulu · news",
-    parent: "t0",
-    contributors: 3,
-    ingotId: "0x8e2a…0008",
-    mintedAt: "2026-06-01",
-  },
+export default async function LineagePage() {
+  const chain = getChain();
+  const ingots = await listIngots().catch(() => []);
 
-  {
-    id: "c0",
-    name: "Clause Classifier",
-    contributors: 7,
-    ingotId: "0x8e2a…0004",
-    mintedAt: "2026-05-30",
-  },
-  {
-    id: "c1",
-    name: "Clause · MSA",
-    parent: "c0",
-    contributors: 5,
-    ingotId: "0x8e2a…0005",
-    mintedAt: "2026-06-03",
-  },
-  {
-    id: "c2",
-    name: "Clause · NDA",
-    parent: "c0",
-    contributors: 4,
-    ingotId: "0x8e2a…000a",
-    mintedAt: "2026-06-05",
-  },
-  {
-    id: "c3",
-    name: "Clause · SaaS Order Form",
-    parent: "c1",
-    contributors: 3,
-    ingotId: "0x8e2a…000b",
-    mintedAt: "2026-06-07",
-  },
-];
+  // Map on-chain parent (bytes32) to graph parent (token-id string).
+  // The Ingot contract stores parents as bytes32 of (uint256 parentTokenId)
+  // when reforging, or 0x0 for root. We decode that on the fly.
+  const idByHash = new Map<string, string>();
+  for (const i of ingots) {
+    const tokenHashKey = "0x" + i.tokenId.toString(16).padStart(64, "0");
+    idByHash.set(tokenHashKey, i.tokenId.toString());
+  }
+  const ZERO_HASH = "0x" + "0".repeat(64);
 
-export default function LineagePage() {
+  const nodes: LineageNode[] = ingots.map((i) => ({
+    id: i.tokenId.toString(),
+    name: `Ingot #${i.tokenId.toString()}`,
+    parent:
+      i.lineageParent && i.lineageParent !== ZERO_HASH
+        ? idByHash.get(i.lineageParent.toLowerCase())
+        : undefined,
+    ingotId: i.tokenId.toString(),
+    contributors: i.contributors,
+    mintedAt: i.mintedAt
+      ? new Date(i.mintedAt * 1000).toISOString().slice(0, 10)
+      : undefined,
+  }));
+
+  const roots = nodes.filter((n) => !n.parent).length;
+  const maxDepth = computeMaxDepth(nodes);
+  const totalContributors = ingots.reduce((a, i) => a + i.contributors, 0);
+
   return (
     <main>
       <Header />
       <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="text-caption text-ember-400">Lineage Graph</p>
-              <h1 className="text-display-xl text-platinum-100 mt-3 max-w-[24ch]">
-                Every Ingot, every parent, every fork.
+              <p className="text-caption text-ember-400">Lineage</p>
+              <h1 className="text-display-xl text-platinum-100 mt-3 max-w-[28ch]">
+                Every Ingot remembers every parent.
               </h1>
               <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
-                Each node is an Ingot. Each edge is a reforging or fork. Click any node
-                to focus its lineage — ancestors light up along the path, descendants
-                downstream. Click again to clear.
+                Reforging an Ingot mints a new one, on-chain, with the parent hash
+                committed in the {""}
+                <span className="text-platinum-100">Ingot.meta()</span> struct. Parent
+                shareholders keep earning from descendants because the RevenueSplitter
+                routes a slice up the chain.
               </p>
             </div>
-            <div className="flex flex-col items-end gap-2">
-              <Pill tone="positive" dot>
-                On-chain via 0G Storage lineage refs
-              </Pill>
-              <Pill tone="ember">
-                {sample.length} Ingots · {sample.filter((n) => n.parent).length} forks
-              </Pill>
+            <Pill tone="positive" dot>
+              0G · {chain.network}
+            </Pill>
+          </div>
+
+          {!chain.isLive ? (
+            <div className="mt-12">
+              <EmptyChainState
+                network={chain.network}
+                title="The lineage graph is generated from on-chain Ingot.meta() reads."
+                body="Once contracts deploy and Ingots mint, parent links materialise here automatically — no curation."
+              />
             </div>
-          </div>
-
-          <div className="mt-12">
-            <LineageGraph nodes={sample} height={620} width={1100} />
-          </div>
-
-          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-            <FactCard
-              label="Lineage depth"
-              value="4"
-              note="Konkani v1 → news → legal is currently the deepest chain."
-            />
-            <FactCard
-              label="Total contributors"
-              value="53"
-              note="Cumulative across all Ingots — Smiths often hold shares in multiple."
-            />
-            <FactCard
-              label="Reforging events"
-              value="8"
-              note="Each one re-runs LOO attribution; parent shareholders earn from every descendant call."
-            />
-          </div>
+          ) : nodes.length === 0 ? (
+            <div className="mt-12">
+              <EmptyChainState
+                network={chain.network}
+                title="No Ingots minted yet on this network."
+                body="The first Ingot creates the first lineage root. Forks and reforges branch from there."
+                cta={{ href: "/forges", label: "Browse Forges" }}
+              />
+            </div>
+          ) : (
+            <>
+              <div className="mt-12">
+                <LineageGraph nodes={nodes} />
+              </div>
+              <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+                <FactCard
+                  label="Roots"
+                  value={String(roots)}
+                  note="Independent training lineages — no parent."
+                />
+                <FactCard
+                  label="Lineage depth"
+                  value={String(maxDepth)}
+                  note="Longest chain of reforges in the graph."
+                />
+                <FactCard
+                  label="Total contributors"
+                  value={String(totalContributors)}
+                  note="Cumulative across all Ingots — Smiths often hold shares in multiple."
+                />
+              </div>
+            </>
+          )}
         </div>
       </section>
       <Footer />
     </main>
   );
+}
+
+function computeMaxDepth(nodes: LineageNode[]): number {
+  const byId = new Map(nodes.map((n) => [n.id, n] as const));
+  const memo = new Map<string, number>();
+  function depth(id: string): number {
+    if (memo.has(id)) return memo.get(id)!;
+    const n = byId.get(id);
+    const d = n?.parent ? 1 + depth(n.parent) : 0;
+    memo.set(id, d);
+    return d;
+  }
+  let max = 0;
+  for (const n of nodes) max = Math.max(max, depth(n.id));
+  return max;
 }
 
 function FactCard({

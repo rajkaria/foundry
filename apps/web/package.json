@@ -12,13 +12,17 @@
     "clean": "rimraf .next .turbo"
   },
   "dependencies": {
+    "@0glabs/0g-serving-broker": "^0.7.8",
     "@foundryprotocol/design-tokens": "workspace:*",
+    "@foundryprotocol/sdk": "workspace:*",
     "clsx": "^2.1.1",
+    "ethers": "^6.16.0",
     "motion": "^11.15.0",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "viem": "^2.21.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

@@ -3,43 +3,17 @@ import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Pill } from "@/components/ui/Pill";
 import { Card, CardEyebrow, CardTitle, CardBody } from "@/components/ui/Card";
+import { EmptyChainState } from "@/components/app/EmptyChainState";
+import { listForges } from "@/lib/forges-data";
+import { getChain, shortAddr } from "@/lib/chain";
 
 export const metadata = { title: "Forges" };
+export const revalidate = 10;
 
-// Placeholder list — replaced by indexer-fed data in Sprint 1.
-const sampleForges = [
-  {
-    id: "0x42…81",
-    name: "Konkani Translator",
-    state: "OPEN" as const,
-    contributors: 12,
-    escrowed: "0.47 OG",
-    closes: "in 38h",
-    summary:
-      "A low-resource-language translation LoRA — Konkani ↔ English. Native speakers welcome.",
-  },
-  {
-    id: "0x39…04",
-    name: "Contract-Clause Classifier",
-    state: "EVALUATING" as const,
-    contributors: 8,
-    escrowed: "0.21 OG",
-    closes: "scoring",
-    summary: "Classifies risk in MSA / NDA clauses. Capital + counsel-grade data sets.",
-  },
-  {
-    id: "0x21…b0",
-    name: "Tulu ↔ English",
-    state: "MINTING" as const,
-    contributors: 6,
-    escrowed: "0.12 OG",
-    closes: "shares about to mint",
-    summary:
-      "Public-goods Forge for a language with no Big-Tech support. Treasury-funded.",
-  },
-];
+export default async function ForgesPage() {
+  const chain = getChain();
+  const forges = await listForges().catch(() => []);
 
-export default function ForgesPage() {
   return (
     <main>
       <Header />
@@ -65,60 +39,55 @@ export default function ForgesPage() {
             </Link>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {sampleForges.map((f) => (
-              <Link
-                key={f.id}
-                href={`/forges/${f.id.replace("0x", "").split("…")[0]}`}
-                className="block"
-              >
-                <Card>
-                  <div className="flex items-start justify-between gap-3">
-                    <CardEyebrow>{f.id}</CardEyebrow>
-                    <Pill
-                      tone={
-                        f.state === "OPEN"
-                          ? "positive"
-                          : f.state === "EVALUATING"
-                            ? "ember"
-                            : "warn"
-                      }
-                      dot
-                    >
-                      {f.state}
-                    </Pill>
-                  </div>
-                  <CardTitle>{f.name}</CardTitle>
-                  <CardBody>{f.summary}</CardBody>
-                  <div className="border-hairline text-caption text-platinum-400 mt-6 grid grid-cols-3 gap-2 border-t pt-5">
-                    <div>
-                      <span className="text-platinum-200 tabular text-title-md block">
-                        {f.contributors}
-                      </span>
-                      Smiths
+          {!chain.isLive ? (
+            <div className="mt-12">
+              <EmptyChainState
+                network={chain.network}
+                title={`No Forge contracts deployed on 0G ${chain.network} yet.`}
+                body="The protocol contracts compile and pass full tests locally. Deploy them with `make deploy-aristotle` (or `deploy-galileo` / `deploy-local`) and addresses will sync automatically. Until then, this page is intentionally empty rather than mocked."
+              />
+            </div>
+          ) : forges.length === 0 ? (
+            <div className="mt-12">
+              <EmptyChainState
+                network={chain.network}
+                title="No Forges yet on this network."
+                body="Contracts are deployed but no Forge has been created. Spin up the first one — it'll appear here within the next block."
+                cta={{ href: "/forges/new", label: "Create the first Forge" }}
+              />
+            </div>
+          ) : (
+            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {forges.map((f) => (
+                <Link key={f.address} href={`/forges/${f.address}`} className="block">
+                  <Card>
+                    <div className="flex items-start justify-between gap-3">
+                      <CardEyebrow>{shortAddr(f.address)}</CardEyebrow>
+                      <Pill
+                        tone={
+                          f.state === "OPEN" || f.state === "LIVE"
+                            ? "positive"
+                            : f.state === "EVALUATING"
+                              ? "ember"
+                              : f.state === "MINTING"
+                                ? "warn"
+                                : "neutral"
+                        }
+                        dot
+                      >
+                        {f.state}
+                      </Pill>
                     </div>
-                    <div>
-                      <span className="text-platinum-200 tabular text-title-md block">
-                        {f.escrowed}
-                      </span>
-                      escrowed
-                    </div>
-                    <div>
-                      <span className="text-platinum-200 text-title-md block">
-                        {f.closes}
-                      </span>
-                      state
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
-          </div>
-
-          <p className="text-body-sm text-platinum-400 mt-12">
-            Live data wired in Sprint 1 — these cards render from the indexer once
-            contracts are deployed.
-          </p>
+                    <CardTitle className="mt-4">Forge {shortAddr(f.address)}</CardTitle>
+                    <CardBody>
+                      Creator {shortAddr(f.creator)} · {f.contributionsCount}{" "}
+                      contributions
+                    </CardBody>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
       <Footer />

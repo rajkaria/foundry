@@ -24,7 +24,13 @@ import {
   parseEther,
 } from "viem";
 import { forgeAbi, forgeFactoryAbi, ingotAbi, revenueSplitterAbi } from "./abis.js";
-import { getDeployment, type Deployment } from "./deployments.js";
+import {
+  getDeployment,
+  deployments,
+  isDeployed,
+  type Deployment,
+  type NetworkName,
+} from "./deployments.js";
 import {
   InferenceClient,
   type InferenceParams,
@@ -35,7 +41,9 @@ export type IngotId = `ingot:0x${string}`;
 export type ForgeId = `forge:0x${string}`;
 export type { Address, Hex };
 export type { InferenceParams, InferenceResult };
+export type { Deployment, NetworkName };
 export { InferenceClient } from "./inference.js";
+export { deployments, getDeployment, isDeployed };
 
 const ARISTOTLE_DEFAULT_RPC = "https://rpc.0g.network";
 
