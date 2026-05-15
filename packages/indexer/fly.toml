@@ -1,0 +1,26 @@
+app = "foundry-indexer"
+primary_region = "sjc"
+
+[build]
+  dockerfile = "Dockerfile"
+  ignorefile = "../../.gitignore"
+
+[env]
+  FOUNDRY_NETWORK = "aristotle"
+  INDEXER_PORT = "4000"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
+
+# Secrets (set via `fly secrets set`):
+#   RPC_URL                         RPC URL for 0G chain
+#   INDEXER_PG_URL (optional)       Postgres for durability across restarts

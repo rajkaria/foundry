@@ -27,20 +27,22 @@ interface ChatRequest {
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
-  const ingotId = resolveIngotId(req);
-  if (!ingotId) {
-    return jsonError(
-      "missing ingot id — pass `x-foundry-ingot-id: 0x…` header or set `model` to `ingot:0x…`",
-      400
-    );
-  }
-
   let body: ChatRequest;
   try {
     body = (await req.json()) as ChatRequest;
   } catch {
     return jsonError("invalid JSON body", 400);
   }
+
+  const resolved = resolveIngotIdAndToken(req, body);
+  if (!resolved) {
+    return jsonError(
+      "missing ingot id — pass `x-foundry-ingot-id: 0x…` header or set `model` to `ingot:0x…/<tokenId>`",
+      400
+    );
+  }
+  const { ingotId, tokenId } = resolved;
+
   if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
     return jsonError("messages array required", 400);
   }
@@ -49,6 +51,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     messages: body.messages,
     temperature: body.temperature,
     maxTokens: body.max_tokens,
+    ingotTokenId: tokenId,
   });
 
   const requestId = `chatcmpl-foundry-${cryptoRandom()}`;
@@ -64,6 +67,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       ingotId,
       attestation: result.attestation,
       inferenceTxHash: result.inferenceTxHash,
+      revenueTxHash: result.revenueTxHash,
       mode: result.mode,
     });
   }
@@ -94,7 +98,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       providerModel: result.model,
       attestation: result.attestation ?? null,
       inferenceTxHash: result.inferenceTxHash ?? null,
-      revenueTxHash: null,
+      revenueTxHash: result.revenueTxHash ?? null,
       note:
         result.mode === "stub"
           ? "Stub response — set ZG_BROKER_KEY + ZG_INFERENCE_PROVIDER to route through real 0G Compute."
@@ -131,10 +135,45 @@ export async function GET(): Promise<NextResponse> {
   });
 }
 
-function resolveIngotId(req: NextRequest): string | null {
-  const fromHeader = req.headers.get("x-foundry-ingot-id");
-  if (fromHeader && fromHeader.startsWith("0x")) return fromHeader;
+/**
+ * Resolve the Ingot identifier + tokenId from the request.
+ *
+ * Accepted forms:
+ *   - `x-foundry-ingot-id: 0x<ingot-addr>/<tokenId>` header
+ *   - `x-foundry-ingot-id: 0x<ingot-addr>` header + `x-foundry-token-id: <n>`
+ *   - body `{ model: "ingot:0x<ingot-addr>/<tokenId>" }`
+ */
+function resolveIngotIdAndToken(
+  req: NextRequest,
+  body: ChatRequest
+): { ingotId: string; tokenId?: bigint } | null {
+  const hdr = req.headers.get("x-foundry-ingot-id");
+  if (hdr && hdr.startsWith("0x")) {
+    const [addr, tokenStr] = hdr.split("/");
+    const tokenHdr = req.headers.get("x-foundry-token-id");
+    const token = tokenStr ?? tokenHdr ?? undefined;
+    return {
+      ingotId: addr!,
+      tokenId: token !== undefined && token !== "" ? safeBigInt(token) : undefined,
+    };
+  }
+  if (body.model?.startsWith("ingot:0x")) {
+    const stripped = body.model.replace(/^ingot:/, "");
+    const [addr, tokenStr] = stripped.split("/");
+    return {
+      ingotId: addr!,
+      tokenId: tokenStr ? safeBigInt(tokenStr) : undefined,
+    };
+  }
   return null;
+}
+
+function safeBigInt(s: string): bigint | undefined {
+  try {
+    return BigInt(s);
+  } catch {
+    return undefined;
+  }
 }
 
 function jsonError(message: string, status: number): NextResponse {
@@ -152,6 +191,7 @@ function sseStream(args: {
   ingotId: string;
   attestation?: string;
   inferenceTxHash?: string;
+  revenueTxHash?: string;
   mode: "live" | "stub";
 }): Response {
   const encoder = new TextEncoder();
@@ -199,7 +239,7 @@ function sseStream(args: {
               mode: args.mode,
               attestation: args.attestation ?? null,
               inferenceTxHash: args.inferenceTxHash ?? null,
-              revenueTxHash: null,
+              revenueTxHash: args.revenueTxHash ?? null,
             },
           })
         )

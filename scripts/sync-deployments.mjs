@@ -25,6 +25,7 @@ const KEYS = [
   "Ingot",
   "RevenueSplitter",
   "ForgeFactory",
+  "IngotRegistry",
 ];
 
 const arg = process.argv[2];

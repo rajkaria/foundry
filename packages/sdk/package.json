@@ -1,7 +1,7 @@
 {
   "name": "@foundryprotocol/sdk",
   "version": "1.0.0-rc.1",
-  "description": "Foundry SDK — call any Foundry Ingot in three lines.",
+  "description": "Foundry SDK — pool data, compute, and capital to co-train AI models on 0G. Mint a verifiable, revenue-generating share. Three-line inference, full lifecycle.",
   "license": "MIT",
   "homepage": "https://foundryprotocol.xyz",
   "repository": {
@@ -9,6 +9,10 @@
     "url": "https://github.com/rajkaria/foundry.git",
     "directory": "packages/sdk"
   },
+  "bugs": {
+    "url": "https://github.com/rajkaria/foundry/issues"
+  },
+  "author": "Foundry Protocol",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -17,6 +21,26 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./storage": {
+      "types": "./dist/storage.d.ts",
+      "import": "./dist/storage.js"
+    },
+    "./da": {
+      "types": "./dist/da.d.ts",
+      "import": "./dist/da.js"
+    },
+    "./attestation": {
+      "types": "./dist/attestation.d.ts",
+      "import": "./dist/attestation.js"
+    },
+    "./inference": {
+      "types": "./dist/inference.d.ts",
+      "import": "./dist/inference.js"
+    },
+    "./abis": {
+      "types": "./dist/abis.d.ts",
+      "import": "./dist/abis.js"
     },
     "./adapters/vercel-ai": {
       "types": "./dist/adapters/vercel-ai.d.ts",
@@ -29,7 +53,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
@@ -37,9 +62,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "echo 'lint pending'",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "devDependencies": {
+    "@types/node": "^22.10.2",
     "rimraf": "^6.0.1",
     "tsup": "^8.3.5",
     "typescript": "^5.6.3",
@@ -47,10 +74,18 @@
   },
   "peerDependencies": {
     "viem": "^2.21.0",
+    "@0gfoundation/0g-storage-ts-sdk": "^1.2.0",
+    "ethers": "^6.13.0",
     "@langchain/core": ">=0.3.0",
     "ai": ">=3.0.0"
   },
   "peerDependenciesMeta": {
+    "@0gfoundation/0g-storage-ts-sdk": {
+      "optional": true
+    },
+    "ethers": {
+      "optional": true
+    },
     "@langchain/core": {
       "optional": true
     },
@@ -64,13 +99,20 @@
   "keywords": [
     "0g",
     "0g-network",
+    "0g-storage",
+    "0g-compute",
+    "0g-da",
     "foundry",
     "ai",
     "llm",
     "attribution",
     "model-ownership",
     "ingot",
+    "tee",
     "langchain",
     "vercel-ai-sdk"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

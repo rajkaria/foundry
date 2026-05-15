@@ -1,0 +1,22 @@
+# Skip on Railway / Docker context — keep upload + build fast.
+node_modules
+**/node_modules
+.next
+**/.next
+dist
+**/dist
+.turbo
+**/.turbo
+.git
+.github
+**/.cache
+contracts/out
+contracts/cache
+contracts/broadcast
+contracts/lib
+**/coverage
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store

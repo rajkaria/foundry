@@ -14,6 +14,7 @@ export interface Deployment {
   Ingot: `0x${string}`;
   RevenueSplitter: `0x${string}`;
   ForgeFactory: `0x${string}`;
+  IngotRegistry: `0x${string}`;
 }
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as const;
@@ -26,6 +27,7 @@ export const aristotle: Deployment = {
   Ingot: ZERO_ADDRESS,
   RevenueSplitter: ZERO_ADDRESS,
   ForgeFactory: ZERO_ADDRESS,
+  IngotRegistry: ZERO_ADDRESS,
 };
 
 export const galileo: Deployment = {
@@ -34,6 +36,7 @@ export const galileo: Deployment = {
   Ingot: ZERO_ADDRESS,
   RevenueSplitter: ZERO_ADDRESS,
   ForgeFactory: ZERO_ADDRESS,
+  IngotRegistry: ZERO_ADDRESS,
 };
 
 export const local: Deployment = {
@@ -42,6 +45,7 @@ export const local: Deployment = {
   Ingot: ZERO_ADDRESS,
   RevenueSplitter: ZERO_ADDRESS,
   ForgeFactory: ZERO_ADDRESS,
+  IngotRegistry: ZERO_ADDRESS,
 };
 // ─── /SYNCED ADDRESSES ──────────────────────────────────────────────────
 
