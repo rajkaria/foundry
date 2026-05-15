@@ -15,6 +15,66 @@ _0G APAC Hackathon 2026 · Grand Prize Build_
 
 ---
 
+## For Judges (reviewer quickstart)
+
+Everything below is **live on 0G Aristotle mainnet** — no testnet, no mocks.
+
+| Resource                | Where                                                                                                       |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Live system             | https://foundryprotocol.xyz                                                                                 |
+| Live dashboard          | https://foundryprotocol.xyz/dashboard (real mainnet counters)                                               |
+| Real vs Roadmap         | [`docs/16-real-vs-roadmap.mdx`](./docs/16-real-vs-roadmap.mdx) — every feature is ✅ Real or 🔜 Roadmap     |
+| 0G integration matrix   | [`docs/03-tech-architecture.md` §4](./docs/03-tech-architecture.md) — every 0G module and where it's used   |
+| Contract addresses      | [Live mainnet status](#live-mainnet-status) below + [`deployments/aristotle.json`](./contracts/deployments) |
+| 0G Explorer (Aristotle) | `https://chainscan-galileo.0g.ai/address/<ForgeFactory>` — traces forge creation → mint → revenue flow      |
+| Demo Forge              | https://foundryprotocol.xyz/forges (pick any LIVE Forge — they're all real mainnet state)                   |
+| Demo Ingot              | https://foundryprotocol.xyz/ingots — call any via the SDK or the OpenAI-compatible curl below               |
+
+### 0G modules integrated (proof for hackathon requirement)
+
+| 0G module                | How Foundry uses it                                                                                              | Where in the code                                    |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **0G Chain (Aristotle)** | 6 Solidity contracts — `FORGEToken`, `ForgeFactory`, `Forge`, `Ingot`, `ContributionRegistry`, `RevenueSplitter` | [`contracts/`](./contracts) (100% line coverage)     |
+| **0G Storage (Log)**     | Datasets, weights, encrypted holdouts, lineage records                                                           | `packages/sdk/src/storage.ts`, `eval/`               |
+| **0G Storage (KV)**      | Ingot metadata + Forge state cache for fast reads                                                                | `packages/indexer/`                                  |
+| **0G Compute**           | Baseline + leave-one-out training runs, all consumer inference                                                   | `eval/coordinator/`, `apps/web/lib/zg-compute.ts`    |
+| **0G Compute TEE**       | TEE-executed attribution eval; hardware-signed attestation verified on-chain by `Forge.submitEvalResult`         | `eval/coordinator/tee.py`, `contracts/src/Forge.sol` |
+
+### Run it locally
+
+```bash
+# 1. Install
+pnpm install
+
+# 2. Configure (every var is documented inline)
+cp .env.example .env
+# Fill at minimum: RPC_ARISTOTLE, DEPLOYER_KEY_ARISTOTLE, ZG_STORAGE_KEY
+
+# 3. Web app (landing, app, dashboard, docs)
+pnpm dev                          # → http://localhost:3000
+
+# 4. Contracts (Foundry toolkit)
+make contracts-test               # full test suite
+make contracts-coverage           # 100% line coverage report
+make deploy-local                 # to a local anvil node
+make deploy-aristotle             # to 0G mainnet (requires funded DEPLOYER_KEY_ARISTOTLE)
+
+# 5. Reproduce a TEE attribution eval
+make eval FORGE_ID=<forge-id>     # runs baseline + LOO on 0G Compute, posts attestation on-chain
+
+# 6. Indexer (powers the live dashboard)
+make indexer-dev
+```
+
+### Reviewer notes
+
+- **Faucet:** OG on 0G Aristotle — see https://docs.0g.ai (mainnet OG is acquired via standard channels). The full deploy uses ~0.02 OG.
+- **Test wallet (read-only inspection):** the live dashboard at https://foundryprotocol.xyz/dashboard exposes every Forge, Ingot, contribution, and revenue claim without needing a wallet. Connect a wallet only to contribute or claim.
+- **TEE label honesty:** the live system labels every attestation as **real DCAP** or **stub** so reviewers can audit `TEE_ENABLED` end-to-end — see the TEE attestation viewer on any Ingot page.
+- **One-shot demo:** click any Forge → its Ingot → "Lineage" → "Attestation" — that's the full loop in three clicks.
+
+---
+
 ## What is Foundry?
 
 Foundry is a protocol where anyone can pool data, compute, and capital to co-train AI models on 0G — and own a verifiable, revenue-generating share of the result.
@@ -77,7 +137,26 @@ The full docs are rendered at [foundryprotocol.xyz/docs](https://foundryprotocol
 - **[Competitive Landscape](./docs/00-competitive-landscape.md)** — Foundry vs Bittensor, Ocean, Gensyn, Ora.
 - **[Product Vision](./docs/VISION.md)** — Month 1 / 3 / 6 roadmap, revenue model, how each 0G integration deepens.
 
-## Three-line quickstart
+## Install & use the SDK
+
+`@foundryprotocol/sdk` is on npm — public, MIT, zero-config to read mainnet, three lines to call an Ingot.
+
+### Install
+
+```bash
+# pnpm
+pnpm add @foundryprotocol/sdk
+
+# npm
+npm install @foundryprotocol/sdk
+
+# yarn
+yarn add @foundryprotocol/sdk
+```
+
+`viem` is bundled. `ethers`, `@0gfoundation/0g-storage-ts-sdk`, `@langchain/core`, and `ai` are optional peer dependencies — install only what you use.
+
+### 1. Three-line inference (the canonical quickstart)
 
 ```ts
 import { Foundry } from "@foundryprotocol/sdk";
@@ -88,19 +167,81 @@ const result = await foundry.inference.run("ingot:0x…", { input: "Hello" });
 
 That's it. Your call is routed to the Ingot via 0G Compute. Revenue routes back to the Ingot's co-owners on-chain.
 
-For agent-framework integration, see the [Vercel AI SDK adapter](https://foundryprotocol.xyz/docs/sdk-reference#vercel-ai), the [LangChain adapter](https://foundryprotocol.xyz/docs/sdk-reference#langchain), the [OpenAI-compatible proxy](https://foundryprotocol.xyz/docs/sdk-reference#openai-compat), or the [Foundry MCP server](./packages/mcp-foundry) (drop-in for Claude Desktop, Cursor, Cline, or any MCP-capable agent).
+For agent-framework integration, see the Vercel AI SDK adapter (§5), the LangChain adapter (§6), the Foundry MCP server (§7), or the OpenAI-compatible proxy (§8) below.
 
-### MCP — for AI agents
+### 2. Read mainnet state — Forges, Ingots, lineage
+
+```ts
+const forge = await foundry.forge.get("0x…"); // Forge state, contributors, totals
+const ingot = await foundry.ingot.get("0x…"); // shares, owners, revenue accrued
+const lineage = await foundry.lineage.get("0x…"); // full ancestry graph
+const shares = await foundry.ingot.shareOf("0x…", "0xMyAddr");
+```
+
+No signer required for reads — everything streams from 0G Chain + 0G Storage KV.
+
+### 3. Contribute to a Forge (data, compute, or capital)
+
+```ts
+import { Foundry } from "@foundryprotocol/sdk";
+import { privateKeyToAccount } from "viem/accounts";
+
+const foundry = new Foundry({
+  contracts: "aristotle",
+  account: privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`),
+});
+
+// Pin a dataset to 0G Storage and register the contribution on-chain
+const { txHash } = await foundry.forge.contributeData("0xForgeAddr", {
+  filePath: "./my-dataset.jsonl",
+});
+
+// Or contribute compute credits / capital
+await foundry.forge.contributeCompute("0xForgeAddr", { creditsWei: 10n ** 17n });
+await foundry.forge.fundForge("0xForgeAddr", { amountWei: 10n ** 18n });
+```
+
+### 4. Claim revenue (pull-payment)
+
+```ts
+const claimable = await foundry.revenue.claimable("0xIngotAddr", "0xMyAddr");
+if (claimable > 0n) {
+  await foundry.revenue.claim("0xIngotAddr");
+}
+```
+
+### 5. Use with Vercel AI SDK
+
+```ts
+import { generateText } from "ai";
+import { foundryIngot } from "@foundryprotocol/sdk/adapters/vercel-ai";
+
+const { text } = await generateText({
+  model: foundryIngot("0xIngotAddr"),
+  prompt: "Summarise this contract.",
+});
+```
+
+### 6. Use with LangChain
+
+```ts
+import { FoundryIngotChatModel } from "@foundryprotocol/sdk/adapters/langchain";
+
+const model = new FoundryIngotChatModel({ ingotId: "0xIngotAddr" });
+const reply = await model.invoke([{ role: "user", content: "hi" }]);
+```
+
+### 7. MCP — for AI agents (Claude Desktop, Cursor, Cline, …)
 
 ```bash
 npx @foundryprotocol/mcp
 ```
 
-Exposes `list_ingots`, `run_inference`, `get_ingot`, `get_lineage`, and `get_attestation` as MCP tools. Drop into a Claude Desktop or Cursor config and any Ingot on Foundry becomes a first-class tool for your agent — with revenue automatically routing to the Ingot's co-owners on every call.
+Exposes `list_ingots`, `run_inference`, `get_ingot`, `get_lineage`, and `get_attestation` as MCP tools. Drop into a Claude Desktop or Cursor config and any Ingot on Foundry becomes a first-class tool for your agent — with revenue automatically routing to the Ingot's co-owners on every call. See [`packages/mcp-foundry`](./packages/mcp-foundry).
 
-### OpenAI-compatible — zero-friction integration
+### 8. OpenAI-compatible — zero-friction integration
 
-Any tool that speaks OpenAI's API can call a Foundry Ingot:
+Any tool that speaks OpenAI's API — your existing app, an MCP server, an n8n node, a shell script — can call a Foundry Ingot with one URL swap:
 
 ```bash
 curl https://foundryprotocol.xyz/api/v1/chat/completions \
@@ -108,6 +249,8 @@ curl https://foundryprotocol.xyz/api/v1/chat/completions \
   -H "x-foundry-ingot-id: 0x8e2…f4a" \
   -d '{"messages":[{"role":"user","content":"Translate to Konkani: …"}]}'
 ```
+
+Full reference: [SDK reference docs](https://foundryprotocol.xyz/docs/sdk-reference).
 
 ## Live mainnet status
 
