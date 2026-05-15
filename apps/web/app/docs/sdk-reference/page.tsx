@@ -13,7 +13,7 @@ import {
 
 export const metadata = {
   title: "SDK reference — Foundry docs",
-  description: "Every public method in @foundryprotocol/sdk v1.0.0-rc.1.",
+  description: "Every public method in @foundryprotocol/sdk v1.0.0.",
 };
 
 const toc = [

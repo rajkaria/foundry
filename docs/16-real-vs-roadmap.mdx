@@ -25,29 +25,30 @@ Honesty is a feature. This table is the source of truth and is mirrored on the [
 
 ## Attribution & eval
 
-| Item                                             | Status       | Notes                                                                                                                                              |
-| ------------------------------------------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Baseline + LOO marginal-contribution attribution | ✅ Real      | The honest v1 method.                                                                                                                              |
-| TEE-executed attribution eval on 0G Compute      | ✅ Real / 🔜 | TEE if integration-ready by Week 2; otherwise non-TEE on 0G Compute, labeled, with TEE as immediate next step. **Current status: _live-updated_.** |
-| Hardware-signed attestation verified on-chain    | ✅ Real      | Mirrors the TEE status above.                                                                                                                      |
-| Shapley / influence-function attribution         | 🔜 Roadmap   | Documented research direction.                                                                                                                     |
-| FHE-light encrypted contributions                | 🔜 Roadmap   | TEE-only at hackathon.                                                                                                                             |
-| Reproducible eval via `make eval FORGE_ID=…`     | ✅ Real      | —                                                                                                                                                  |
+| Item                                             | Status       | Notes                                                                                                                                                                                                                                                                                      |
+| ------------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Baseline + LOO marginal-contribution attribution | ✅ Real      | The honest v1 method.                                                                                                                                                                                                                                                                      |
+| TEE-executed attribution eval on 0G Compute      | ✅ Real / 🔜 | TEE attestation envelope wired end-to-end; coordinator signs and submits via `Forge.submitEvalResult`. **Current status:** attestation parser live on every Ingot page; labeled non-TEE fallback runs when 0G TEE attestation chain is unavailable. Mode flag returned on every inference. |
+| Hardware-signed attestation verified on-chain    | ✅ Real      | Mirrors the TEE status above.                                                                                                                                                                                                                                                              |
+| Shapley / influence-function attribution         | 🔜 Roadmap   | Documented research direction.                                                                                                                                                                                                                                                             |
+| FHE-light encrypted contributions                | 🔜 Roadmap   | TEE-only at hackathon.                                                                                                                                                                                                                                                                     |
+| Reproducible eval via `make eval FORGE_ID=…`     | ✅ Real      | —                                                                                                                                                                                                                                                                                          |
 
 ## SDK
 
-| Item                                                            | Status  | Notes                                         |
-| --------------------------------------------------------------- | ------- | --------------------------------------------- |
-| `@foundryprotocol/sdk` on npm                                   | ✅ Real | Public, MIT.                                  |
-| `forge.*` and `ingot.*` read methods                            | ✅ Real | —                                             |
-| `forge.create / contributeData / contributeCompute / fundForge` | ✅ Real | —                                             |
-| `inference.run()` with three-line invocation                    | ✅ Real | —                                             |
-| `revenue.claim()`                                               | ✅ Real | —                                             |
-| `lineage.get()`                                                 | ✅ Real | —                                             |
-| Vercel AI SDK adapter                                           | ✅ Real | `@foundryprotocol/sdk/adapters/vercel-ai`     |
-| LangChain adapter                                               | ✅ Real | `@foundryprotocol/sdk/adapters/langchain`     |
-| OpenAI-compatible HTTP proxy                                    | ✅ Real | `api.foundryprotocol.xyz/v1/chat/completions` |
-| Foundry CLI (`npx create-foundry-forge`)                        | ✅ Real | Scaffolds a starter project.                  |
+| Item                                                            | Status  | Notes                                                                                     |
+| --------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------- |
+| `@foundryprotocol/sdk` on npm                                   | ✅ Real | Public, MIT.                                                                              |
+| `forge.*` and `ingot.*` read methods                            | ✅ Real | —                                                                                         |
+| `forge.create / contributeData / contributeCompute / fundForge` | ✅ Real | —                                                                                         |
+| `inference.run()` with three-line invocation                    | ✅ Real | —                                                                                         |
+| `revenue.claim()`                                               | ✅ Real | —                                                                                         |
+| `lineage.get()`                                                 | ✅ Real | —                                                                                         |
+| Vercel AI SDK adapter                                           | ✅ Real | `@foundryprotocol/sdk/adapters/vercel-ai`                                                 |
+| LangChain adapter                                               | ✅ Real | `@foundryprotocol/sdk/adapters/langchain`                                                 |
+| OpenAI-compatible HTTP proxy                                    | ✅ Real | `api.foundryprotocol.xyz/v1/chat/completions`                                             |
+| MCP server (`@foundryprotocol/mcp`)                             | ✅ Real | `npx @foundryprotocol/mcp` — five tools, Claude Desktop / Cursor / Cline / any MCP client |
+| Foundry CLI (`npx create-foundry-forge`)                        | ✅ Real | Scaffolds a starter project.                                                              |
 
 ## Web
 
@@ -67,15 +68,15 @@ Honesty is a feature. This table is the source of truth and is mirrored on the [
 
 ## Traction (per Addition 1 & 2)
 
-| Item                                   | Status         | Target             |
-| -------------------------------------- | -------------- | ------------------ |
-| Forges live on mainnet                 | _live-updated_ | ≥ 5 at submission  |
-| Ingots minted                          | _live-updated_ | ≥ 7 at submission  |
-| Contributions logged                   | _live-updated_ | ≥ 40 at submission |
-| External (non-team) contributors       | _live-updated_ | 5–10 at submission |
-| Other teams consuming a Foundry Ingot  | _live-updated_ | ≥ 1 at submission  |
-| $FORGE-denominated revenue distributed | _live-updated_ | Real, growing      |
-| Weekly building-in-public X updates    | ✅ Real        | Started Week 1     |
+| Item                                   | Status                                                     | Target             |
+| -------------------------------------- | ---------------------------------------------------------- | ------------------ |
+| Forges live on mainnet                 | Live on [dashboard](https://foundryprotocol.xyz/dashboard) | ≥ 5 at submission  |
+| Ingots minted                          | Live on [dashboard](https://foundryprotocol.xyz/dashboard) | ≥ 7 at submission  |
+| Contributions logged                   | Live on [dashboard](https://foundryprotocol.xyz/dashboard) | ≥ 40 at submission |
+| External (non-team) contributors       | Live on [dashboard](https://foundryprotocol.xyz/dashboard) | 5–10 at submission |
+| Other teams consuming a Foundry Ingot  | Live on [dashboard](https://foundryprotocol.xyz/dashboard) | ≥ 1 at submission  |
+| $FORGE-denominated revenue distributed | Live on [dashboard](https://foundryprotocol.xyz/dashboard) | Real, growing      |
+| Weekly building-in-public X updates    | ✅ Real                                                    | Started Week 1     |
 
 ## What we do not build (anti-scope)
 

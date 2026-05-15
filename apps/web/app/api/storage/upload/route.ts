@@ -51,7 +51,8 @@ export async function POST(req: NextRequest): Promise<Response> {
     const form = await req.formData();
     const file = form.get("file");
     if (!(file instanceof File)) return jsonError("missing 'file' field", 400);
-    if (file.size > MAX_BYTES) return jsonError(`file too large (>${MAX_BYTES} bytes)`, 413);
+    if (file.size > MAX_BYTES)
+      return jsonError(`file too large (>${MAX_BYTES} bytes)`, 413);
     bytes = new Uint8Array(await file.arrayBuffer());
     mime = file.type || mime;
   } else if (contentType.startsWith("application/json")) {
@@ -69,10 +70,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     const { ethers } = await import("ethers");
     const rpc = process.env.ZG_BROKER_RPC ?? "https://evmrpc.0g.ai";
     const provider = new ethers.JsonRpcProvider(rpc);
-    const wallet = new ethers.Wallet(
-      key.startsWith("0x") ? key : `0x${key}`,
-      provider
-    );
+    const wallet = new ethers.Wallet(key.startsWith("0x") ? key : `0x${key}`, provider);
 
     const storage = new StorageClient({
       indexerUrl: process.env.ZG_STORAGE_INDEXER,

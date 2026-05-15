@@ -6,7 +6,7 @@ import { Card, CardEyebrow, CardTitle } from "@/components/ui/Card";
 export const metadata = {
   title: "Build on Foundry",
   description:
-    "Three lines of code to call a co-owned model. Adapters for Vercel AI SDK, LangChain, and OpenAI-compatible APIs.",
+    "Three lines of code to call a co-owned model. Adapters for Vercel AI SDK, LangChain, OpenAI-compatible APIs, and an MCP server for Claude Desktop, Cursor, and Cline.",
 };
 
 const adapters = [
@@ -40,6 +40,25 @@ fetch('https://api.foundryprotocol.xyz/v1/chat/completions', {
   body: JSON.stringify({ messages: [{ role: 'user', content: '…' }] }),
 });`,
   },
+  {
+    title: "MCP — for Claude Desktop, Cursor, Cline",
+    code: `// 1. install
+npx @foundryprotocol/mcp
+
+// 2. wire into Claude Desktop / Cursor (claude_desktop_config.json)
+{
+  "mcpServers": {
+    "foundry": {
+      "command": "npx",
+      "args": ["-y", "@foundryprotocol/mcp"]
+    }
+  }
+}
+
+// 3. ask your agent — it now has five Foundry tools:
+//    list_ingots · run_inference · get_ingot
+//    · get_lineage · get_attestation`,
+  },
 ];
 
 export default function BuildOnFoundryPage() {
@@ -55,8 +74,10 @@ export default function BuildOnFoundryPage() {
           </h1>
           <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
             The Foundry SDK ships with adapters for the agent frameworks your project
-            already uses. Revenue routes back to the Ingot&rsquo;s co-owners
-            automatically, on-chain.
+            already uses — Vercel AI SDK, LangChain, OpenAI-compatible HTTP — and an MCP
+            server so Claude Desktop, Cursor, Cline, or any MCP-capable agent picks up
+            Foundry Ingots as first-class tools. Revenue routes back to the
+            Ingot&rsquo;s co-owners automatically, on-chain.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-3">

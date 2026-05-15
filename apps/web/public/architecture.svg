@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Foundry Protocol Architecture</title>
+  <desc id="desc">Foundry's five engineered surfaces (contracts, eval coordinator, SDK, web app, indexer) connected to 0G's six runtime services (Chain, Storage Log, Storage KV, Compute, Compute TEE, Agent ID).</desc>
+
+  <defs>
+    <linearGradient id="ember" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <linearGradient id="platinum" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a1f"/>
+      <stop offset="100%" stop-color="#0c0c10"/>
+    </linearGradient>
+    <linearGradient id="og" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#a78bfa"/>
+    </marker>
+    <marker id="arrow-ember" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f97316"/>
+    </marker>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="720" fill="#08080b"/>
+
+  <!-- Grid backdrop -->
+  <g stroke="#1a1a22" stroke-width="0.5" opacity="0.4">
+    <path d="M 0 60 L 1200 60 M 0 120 L 1200 120 M 0 180 L 1200 180 M 0 240 L 1200 240 M 0 300 L 1200 300 M 0 360 L 1200 360 M 0 420 L 1200 420 M 0 480 L 1200 480 M 0 540 L 1200 540 M 0 600 L 1200 600 M 0 660 L 1200 660"/>
+    <path d="M 60 0 L 60 720 M 120 0 L 120 720 M 180 0 L 180 720 M 240 0 L 240 720 M 300 0 L 300 720 M 360 0 L 360 720 M 420 0 L 420 720 M 480 0 L 480 720 M 540 0 L 540 720 M 600 0 L 600 720 M 660 0 L 660 720 M 720 0 L 720 720 M 780 0 L 780 720 M 840 0 L 840 720 M 900 0 L 900 720 M 960 0 L 960 720 M 1020 0 L 1020 720 M 1080 0 L 1080 720 M 1140 0 L 1140 720"/>
+  </g>
+
+  <!-- Title -->
+  <text x="60" y="50" fill="#f3f4f6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="700">Foundry Protocol — System Architecture</text>
+  <text x="60" y="74" fill="#9ca3af" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">Five engineered surfaces · Six 0G runtime services · One supply-side loop</text>
+
+  <!-- 0G layer (top) -->
+  <g>
+    <rect x="60" y="110" width="1080" height="120" rx="14" fill="url(#og)" stroke="#4338ca" stroke-width="1.5"/>
+    <text x="80" y="140" fill="#c7d2fe" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12" font-weight="700" letter-spacing="2">0G NETWORK · ARISTOTLE MAINNET</text>
+
+    <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#e0e7ff">
+      <rect x="80" y="155" width="160" height="58" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+      <text x="160" y="180" text-anchor="middle" font-weight="600">0G Chain</text>
+      <text x="160" y="200" text-anchor="middle" fill="#a5b4fc" font-size="11">EVM · 6 contracts</text>
+
+      <rect x="260" y="155" width="160" height="58" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+      <text x="340" y="180" text-anchor="middle" font-weight="600">0G Storage · Log</text>
+      <text x="340" y="200" text-anchor="middle" fill="#a5b4fc" font-size="11">datasets · weights</text>
+
+      <rect x="440" y="155" width="160" height="58" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+      <text x="520" y="180" text-anchor="middle" font-weight="600">0G Storage · KV</text>
+      <text x="520" y="200" text-anchor="middle" fill="#a5b4fc" font-size="11">metadata · indices</text>
+
+      <rect x="620" y="155" width="160" height="58" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+      <text x="700" y="180" text-anchor="middle" font-weight="600">0G Compute</text>
+      <text x="700" y="200" text-anchor="middle" fill="#a5b4fc" font-size="11">training · inference</text>
+
+      <rect x="800" y="155" width="160" height="58" rx="8" fill="#1e1b4b" stroke="#f97316" stroke-width="1.5"/>
+      <text x="880" y="180" text-anchor="middle" font-weight="600" fill="#fed7aa">0G Compute · TEE</text>
+      <text x="880" y="200" text-anchor="middle" fill="#fdba74" font-size="11">attribution eval</text>
+
+      <rect x="980" y="155" width="140" height="58" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1"/>
+      <text x="1050" y="180" text-anchor="middle" font-weight="600">Agent ID</text>
+      <text x="1050" y="200" text-anchor="middle" fill="#a5b4fc" font-size="11">per Ingot</text>
+    </g>
+  </g>
+
+  <!-- Foundry surfaces -->
+  <!-- Contracts -->
+  <g>
+    <rect x="60" y="290" width="280" height="140" rx="12" fill="url(#platinum)" stroke="#f97316" stroke-width="1.5"/>
+    <text x="80" y="320" fill="#f97316" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" font-weight="700" letter-spacing="2">contracts/ · SOLIDITY</text>
+    <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#f3f4f6">
+      <text x="80" y="346">ForgeFactory · Forge</text>
+      <text x="80" y="368">Ingot · ContributionRegistry</text>
+      <text x="80" y="390">RevenueSplitter · FORGEToken</text>
+      <text x="80" y="412">IngotRegistry</text>
+    </g>
+  </g>
+
+  <!-- Eval coordinator -->
+  <g>
+    <rect x="380" y="290" width="280" height="140" rx="12" fill="url(#platinum)" stroke="#f97316" stroke-width="1.5"/>
+    <text x="400" y="320" fill="#f97316" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" font-weight="700" letter-spacing="2">eval/ · PYTHON</text>
+    <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#f3f4f6">
+      <text x="400" y="346">Watcher · Trainer · TEE Dispatch</text>
+      <text x="400" y="368">LOO attribution scoring</text>
+      <text x="400" y="390">Signed-envelope submission</text>
+      <text x="400" y="412">deployed: Fly.io / Railway</text>
+    </g>
+  </g>
+
+  <!-- SDK -->
+  <g>
+    <rect x="700" y="290" width="280" height="140" rx="12" fill="url(#platinum)" stroke="#f97316" stroke-width="1.5"/>
+    <text x="720" y="320" fill="#f97316" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" font-weight="700" letter-spacing="2">packages/sdk · TYPESCRIPT</text>
+    <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#f3f4f6">
+      <text x="720" y="346">@foundryprotocol/sdk · npm</text>
+      <text x="720" y="368">forge · ingot · inference · revenue</text>
+      <text x="720" y="390">Adapters: Vercel AI · LangChain</text>
+      <text x="720" y="412">OpenAI-compat HTTP proxy</text>
+    </g>
+  </g>
+
+  <!-- MCP Server -->
+  <g>
+    <rect x="1000" y="290" width="140" height="140" rx="12" fill="url(#platinum)" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="1015" y="320" fill="#a78bfa" font-family="ui-monospace, SFMono-Regular, monospace" font-size="10" font-weight="700" letter-spacing="1">MCP SERVER</text>
+    <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#f3f4f6">
+      <text x="1015" y="346">list_ingots</text>
+      <text x="1015" y="364">run_inference</text>
+      <text x="1015" y="382">get_lineage</text>
+      <text x="1015" y="400">get_attestation</text>
+      <text x="1015" y="418">for any AI agent</text>
+    </g>
+  </g>
+
+  <!-- Web app -->
+  <g>
+    <rect x="60" y="470" width="600" height="120" rx="12" fill="url(#platinum)" stroke="#f97316" stroke-width="1.5"/>
+    <text x="80" y="500" fill="#f97316" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" font-weight="700" letter-spacing="2">apps/web · NEXT.JS 16</text>
+    <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#f3f4f6">
+      <text x="80" y="526">Landing · Forge explorer · Ingot pages · Lineage graph</text>
+      <text x="80" y="548">Dashboard (live mainnet) · Docs · Smith profiles · /judges</text>
+      <text x="80" y="570">OpenAI-compat proxy · OG-card ImageResponse · WS counters</text>
+    </g>
+  </g>
+
+  <!-- Indexer -->
+  <g>
+    <rect x="700" y="470" width="440" height="120" rx="12" fill="url(#platinum)" stroke="#f97316" stroke-width="1.5"/>
+    <text x="720" y="500" fill="#f97316" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" font-weight="700" letter-spacing="2">packages/indexer · NODE</text>
+    <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#f3f4f6">
+      <text x="720" y="526">viem watchEvent → Postgres → tRPC</text>
+      <text x="720" y="548">Live aggregates for the dashboard</text>
+      <text x="720" y="570">Cached, paginated, type-safe reads</text>
+    </g>
+  </g>
+
+  <!-- Consumers -->
+  <g>
+    <rect x="60" y="630" width="1080" height="60" rx="10" fill="#0f0f14" stroke="#3f3f46" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="600" y="655" text-anchor="middle" fill="#9ca3af" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">Consumers: other 0G dApps · AI agent frameworks · MCP clients · SDK users · cURL via OpenAI-compat</text>
+    <text x="600" y="675" text-anchor="middle" fill="#f97316" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-style="italic">Every inference call routes revenue back through RevenueSplitter → Ingot co-owners</text>
+  </g>
+
+  <!-- Arrows -->
+  <!-- contracts ↔ 0G Chain -->
+  <line x1="200" y1="290" x2="160" y2="213" stroke="#f97316" stroke-width="1.5" marker-end="url(#arrow-ember)" filter="url(#glow)"/>
+  <!-- eval ↔ 0G Compute + TEE -->
+  <line x1="540" y1="290" x2="700" y2="213" stroke="#f97316" stroke-width="1.5" marker-end="url(#arrow-ember)"/>
+  <line x1="600" y1="290" x2="870" y2="213" stroke="#f97316" stroke-width="1.5" marker-end="url(#arrow-ember)"/>
+  <!-- eval ↔ Storage (holdout) -->
+  <line x1="470" y1="290" x2="400" y2="213" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+  <!-- contracts ↔ Agent ID -->
+  <line x1="300" y1="290" x2="1020" y2="213" stroke="#a78bfa" stroke-width="0.8" marker-end="url(#arrow)" stroke-dasharray="3 3" opacity="0.6"/>
+  <!-- SDK ↔ Storage, Compute, Chain -->
+  <line x1="800" y1="290" x2="520" y2="213" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+  <line x1="830" y1="290" x2="700" y2="213" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="780" y1="290" x2="160" y2="213" stroke="#a78bfa" stroke-width="1.0" marker-end="url(#arrow)" stroke-dasharray="3 3" opacity="0.55"/>
+
+  <!-- Eval submits attestation back to contracts -->
+  <line x1="450" y1="430" x2="240" y2="430" stroke="#f97316" stroke-width="1.5" marker-end="url(#arrow-ember)"/>
+  <text x="305" y="424" fill="#fdba74" font-family="ui-monospace, monospace" font-size="10">submitEvalResult(attestation)</text>
+
+  <!-- SDK reads contracts -->
+  <line x1="780" y1="430" x2="320" y2="430" stroke="#a78bfa" stroke-width="1" marker-end="url(#arrow)" stroke-dasharray="3 3" opacity="0.5"/>
+
+  <!-- Web → SDK -->
+  <line x1="660" y1="525" x2="780" y2="430" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <!-- Indexer → contracts -->
+  <line x1="780" y1="470" x2="240" y2="430" stroke="#a78bfa" stroke-width="1" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+  <!-- Web → Indexer -->
+  <line x1="660" y1="550" x2="700" y2="550" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+  <!-- Consumers → web/sdk/mcp -->
+  <line x1="200" y1="630" x2="200" y2="590" stroke="#9ca3af" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="800" y1="630" x2="800" y2="430" stroke="#9ca3af" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="1070" y1="630" x2="1070" y2="430" stroke="#9ca3af" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+
+  <!-- Legend -->
+  <g transform="translate(60, 700)">
+    <line x1="0" y1="0" x2="24" y2="0" stroke="#f97316" stroke-width="2"/>
+    <text x="32" y="4" fill="#9ca3af" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">value-moving writes</text>
+    <line x1="190" y1="0" x2="214" y2="0" stroke="#a78bfa" stroke-width="2" stroke-dasharray="3 3"/>
+    <text x="222" y="4" fill="#9ca3af" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">reads · subscribes</text>
+  </g>
+</svg>

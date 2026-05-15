@@ -36,9 +36,7 @@ describe("DAClient", () => {
   });
 
   it("publish throws on encoder non-2xx", async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(
-      new Response("nope", { status: 500 })
-    );
+    const fetchImpl = vi.fn().mockResolvedValue(new Response("nope", { status: 500 }));
     const c = new DAClient({
       encoderUrl: "https://da.example.com",
       fetch: fetchImpl as unknown as typeof fetch,

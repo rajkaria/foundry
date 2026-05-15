@@ -33,10 +33,12 @@ Foundry makes "a share of a model" a real, on-chain asset.
 
 ## The protocol in one diagram
 
+![Foundry Protocol architecture: five engineered surfaces wired to six 0G runtime services](./apps/web/public/architecture.svg)
+
 ```
         SMITHS                       THE FORGE                      CONSUMERS
        data → compute → capital      OPEN → EVAL (TEE) → MINTING       0G dApps
-                                     → TRAINING → LIVE                 agents
+                                     → TRAINING → LIVE                 agents · MCP
                                                                        SDK users
                                               │
                                               ▼
@@ -55,6 +57,7 @@ Detailed architecture: [`docs/03-tech-architecture.md`](./docs/03-tech-architect
 | [`docs/`](./docs)                                     | The build spec, the brand, the design system, the architecture, the sprint plan, the enhancements menu, the real-vs-roadmap honesty table |
 | [`apps/web/`](./apps/web)                             | Next.js 16 — landing, app, dashboard, lineage graph, docs                                                                                 |
 | [`packages/sdk/`](./packages/sdk)                     | `@foundryprotocol/sdk` — install via `pnpm add @foundryprotocol/sdk`                                                                      |
+| [`packages/mcp-foundry/`](./packages/mcp-foundry)     | `@foundryprotocol/mcp` — MCP server, run via `npx @foundryprotocol/mcp` (Claude Desktop / Cursor / any MCP-capable agent)                 |
 | [`packages/indexer/`](./packages/indexer)             | TypeScript indexer feeding the dashboard                                                                                                  |
 | [`packages/design-tokens/`](./packages/design-tokens) | Color, type, motion, spacing tokens                                                                                                       |
 | [`contracts/`](./contracts)                           | Solidity (Foundry toolkit). 6 contracts. 100% line coverage.                                                                              |
@@ -71,7 +74,8 @@ The full docs are rendered at [foundryprotocol.xyz/docs](https://foundryprotocol
 - **[Sprint Plan](./docs/04-sprint-plan.md)** — 5 sprints, 6 workstreams, dated milestones.
 - **[Enhancements](./docs/05-enhancements.md)** — beyond-spec features prioritized for the grand prize.
 - **[Real vs Roadmap](./docs/16-real-vs-roadmap.mdx)** — what's live on mainnet vs what's coming.
-- **[Competitive Landscape](./docs/00-competitive-landscape.md)** — master submission list and analysis.
+- **[Competitive Landscape](./docs/00-competitive-landscape.md)** — Foundry vs Bittensor, Ocean, Gensyn, Ora.
+- **[Product Vision](./docs/VISION.md)** — Month 1 / 3 / 6 roadmap, revenue model, how each 0G integration deepens.
 
 ## Three-line quickstart
 
@@ -84,7 +88,15 @@ const result = await foundry.inference.run("ingot:0x…", { input: "Hello" });
 
 That's it. Your call is routed to the Ingot via 0G Compute. Revenue routes back to the Ingot's co-owners on-chain.
 
-For agent-framework integration, see the [Vercel AI SDK adapter](https://foundryprotocol.xyz/docs/sdk-reference#vercel-ai), the [LangChain adapter](https://foundryprotocol.xyz/docs/sdk-reference#langchain), or our [OpenAI-compatible proxy](https://foundryprotocol.xyz/docs/sdk-reference#openai-compat).
+For agent-framework integration, see the [Vercel AI SDK adapter](https://foundryprotocol.xyz/docs/sdk-reference#vercel-ai), the [LangChain adapter](https://foundryprotocol.xyz/docs/sdk-reference#langchain), the [OpenAI-compatible proxy](https://foundryprotocol.xyz/docs/sdk-reference#openai-compat), or the [Foundry MCP server](./packages/mcp-foundry) (drop-in for Claude Desktop, Cursor, Cline, or any MCP-capable agent).
+
+### MCP — for AI agents
+
+```bash
+npx @foundryprotocol/mcp
+```
+
+Exposes `list_ingots`, `run_inference`, `get_ingot`, `get_lineage`, and `get_attestation` as MCP tools. Drop into a Claude Desktop or Cursor config and any Ingot on Foundry becomes a first-class tool for your agent — with revenue automatically routing to the Ingot's co-owners on every call.
 
 ### OpenAI-compatible — zero-friction integration
 
@@ -99,16 +111,18 @@ curl https://foundryprotocol.xyz/api/v1/chat/completions \
 
 ## Live mainnet status
 
-|                     |                             |
-| ------------------- | --------------------------- |
-| Network             | 0G Aristotle mainnet        |
-| Deployed contracts  | _populated on first deploy_ |
-| Forges live         | _live-updated_              |
-| Ingots minted       | _live-updated_              |
-| Total contributions | _live-updated_              |
-| Revenue distributed | _live-updated_              |
+| Contract               | Address (0G Aristotle, chain id 16661)                                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `FORGEToken`           | [`0xE716B0260f462b2A1789cB6cfCBd825736b920Ca`](https://chainscan.0g.ai/address/0xE716B0260f462b2A1789cB6cfCBd825736b920Ca) |
+| `ContributionRegistry` | [`0x05235Ba0F2a77bcaB87371E4d797D6830ddC2d86`](https://chainscan.0g.ai/address/0x05235Ba0F2a77bcaB87371E4d797D6830ddC2d86) |
+| `Ingot`                | [`0x39B736f424754d05a0da186d89015b74d1DDe1d3`](https://chainscan.0g.ai/address/0x39B736f424754d05a0da186d89015b74d1DDe1d3) |
+| `RevenueSplitter`      | [`0xC58E0F32BD43e43153D3CA8ee8F25C8198789289`](https://chainscan.0g.ai/address/0xC58E0F32BD43e43153D3CA8ee8F25C8198789289) |
+| `ForgeFactory`         | [`0x636109264EBF6cFD18CC38bD43eDf9cCad7ae23D`](https://chainscan.0g.ai/address/0x636109264EBF6cFD18CC38bD43eDf9cCad7ae23D) |
+| `IngotRegistry`        | [`0xF8f3fAE648A8d7ee4Df0A7b10a0F759938aab7e1`](https://chainscan.0g.ai/address/0xF8f3fAE648A8d7ee4Df0A7b10a0F759938aab7e1) |
 
-The [dashboard](https://foundryprotocol.xyz/dashboard) shows real-time figures.
+Live protocol counters (Forges, Ingots, contributions, revenue distributed) are rendered server-side from on-chain events on the [Forge in Public dashboard](https://foundryprotocol.xyz/dashboard).
+
+**Judges**: wallet-less, pre-funded demo at [`/judges`](https://foundryprotocol.xyz/judges) — one-click inference against a live Ingot, no setup.
 
 ## License
 

@@ -125,8 +125,8 @@ function writeEnvExample(dir: string, a: Answers): void {
     a.network === "aristotle"
       ? "RPC_URL=https://evmrpc.0g.ai"
       : a.network === "galileo"
-      ? "RPC_URL=https://evmrpc-testnet.0g.ai"
-      : "RPC_URL=http://127.0.0.1:8545",
+        ? "RPC_URL=https://evmrpc-testnet.0g.ai"
+        : "RPC_URL=http://127.0.0.1:8545",
     "",
     "# Private key of the wallet that signs transactions",
     "PRIVATE_KEY=0x...",
@@ -252,11 +252,17 @@ function writeTsconfig(dir: string): void {
     },
     include: ["index.ts"],
   };
-  writeFileSync(resolve(dir, "tsconfig.json"), JSON.stringify(tsconfig, null, 2) + "\n");
+  writeFileSync(
+    resolve(dir, "tsconfig.json"),
+    JSON.stringify(tsconfig, null, 2) + "\n"
+  );
 }
 
 function writeGitignore(dir: string): void {
-  writeFileSync(resolve(dir, ".gitignore"), ["node_modules", ".env", "dist", ""].join("\n"));
+  writeFileSync(
+    resolve(dir, ".gitignore"),
+    ["node_modules", ".env", "dist", ""].join("\n")
+  );
 }
 
 main().catch((err) => {

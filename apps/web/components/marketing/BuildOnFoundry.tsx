@@ -77,6 +77,27 @@ x-foundry-ingot-id: 0x8e2…f4a
 }
 # Drop-in for any OpenAI client.`,
   },
+  {
+    key: "mcp",
+    label: "MCP",
+    filename: "claude_desktop_config.json",
+    code: `// Wire Foundry into Claude Desktop, Cursor, or any MCP-capable
+// agent. Five tools appear: list_ingots, run_inference, get_ingot,
+// get_lineage, get_attestation — all backed by live mainnet Ingots.
+
+{
+  "mcpServers": {
+    "foundry": {
+      "command": "npx",
+      "args": ["-y", "@foundryprotocol/mcp"],
+      "env": {
+        "FOUNDRY_DEFAULT_INGOT_ID": "0x8e2…f4a"
+      }
+    }
+  }
+}
+# Agents call run_inference, co-owners earn on-chain.`,
+  },
 ];
 
 function highlight(code: string) {
@@ -116,8 +137,8 @@ const features = [
     body: "Native plugins for Vercel AI SDK, LangChain, and the OpenAI proxy. CLI included.",
   },
   {
-    title: "Streaming, tools, JSON-mode",
-    body: "Full feature parity — Ingots behave like any modern chat model.",
+    title: "MCP for agents",
+    body: "npx @foundryprotocol/mcp gives Claude Desktop, Cursor, and Cline a co-owned model as a tool.",
   },
 ];
 

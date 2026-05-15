@@ -173,9 +173,26 @@ content-type         application/json`}</CodeBlock>
       >{`x-foundry-ingot-id   0x…   echo
 x-foundry-stub       1     present on stub responses (Sprint 2/3); absent in prod`}</CodeBlock>
 
+      <Callout tone="ember" title="Calling Foundry from an AI agent (not from code)?">
+        <p>
+          If your client is a Claude Desktop, Cursor, Cline, or any MCP-capable agent —
+          use the Foundry MCP server instead. One <Code>npx @foundryprotocol/mcp</Code>{" "}
+          wires <Code>list_ingots</Code>, <Code>run_inference</Code>,{" "}
+          <Code>get_ingot</Code>, <Code>get_lineage</Code>, and{" "}
+          <Code>get_attestation</Code> into the agent as first-class tools. See{" "}
+          <a
+            href="/docs/mcp"
+            className="text-ember-300 hover:text-ember-200 hover:underline"
+          >
+            the MCP guide
+          </a>
+          .
+        </p>
+      </Callout>
+
       <PageNav
         prev={{ href: "/docs/sdk-reference", label: "SDK reference" }}
-        next={{ href: "/docs/cli", label: "Foundry CLI" }}
+        next={{ href: "/docs/mcp", label: "MCP server" }}
       />
     </DocsLayout>
   );

@@ -27,13 +27,17 @@ const real = [
     "6 contracts deployed on 0G Aristotle mainnet",
     "Forge state machine, Ingot ERC-721, RevenueSplitter, ContributionRegistry",
   ],
-  ["@foundryprotocol/sdk on npm", "1.0.0-rc.1, frozen public surface"],
+  ["@foundryprotocol/sdk on npm", "1.0.0, published — pnpm add @foundryprotocol/sdk"],
   [
     "OpenAI-compatible inference proxy",
     "/v1/chat/completions with streaming + /v1/models endpoint",
   ],
   ["Vercel AI SDK adapter", "Works with generateText, streamText, generateObject"],
   ["LangChain adapter", "BaseChatModel-compatible; works with LCEL chains"],
+  [
+    "@foundryprotocol/mcp (MCP server)",
+    "v0.1.0, published — npx @foundryprotocol/mcp; five tools for Claude Desktop, Cursor, Cline",
+  ],
   [
     "Forge in Public dashboard",
     "Reads from indexer; counters tick within 4s of on-chain events",

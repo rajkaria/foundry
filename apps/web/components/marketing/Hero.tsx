@@ -18,6 +18,7 @@ const stack = [
   { label: "0G Chain", note: "mint" },
   { label: "Agent ID", note: "trust" },
   { label: "SDK", note: "infer" },
+  { label: "MCP", note: "agents" },
 ];
 
 export function Hero() {

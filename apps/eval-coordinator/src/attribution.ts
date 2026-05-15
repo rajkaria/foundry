@@ -48,9 +48,11 @@ export interface AttributionResult {
   scoredAt: number;
 }
 
-const ZERO_BYTES32 = "0x" + "00".repeat(32) as Hex;
+const ZERO_BYTES32 = ("0x" + "00".repeat(32)) as Hex;
 
-export async function runAttribution(input: AttributionInput): Promise<AttributionResult> {
+export async function runAttribution(
+  input: AttributionInput
+): Promise<AttributionResult> {
   const scorer = input.scorer ?? deterministicScorer;
 
   // Download holdout (best-effort; deterministic scorer doesn't need it).
@@ -90,9 +92,7 @@ export async function runAttribution(input: AttributionInput): Promise<Attributi
   }
 
   const deltas = scores.map((s) => Math.max(0, s - baseline));
-  const deltasScaled = deltas.map((d) =>
-    BigInt(Math.round(d * Number(SCORE_SCALE)))
-  );
+  const deltasScaled = deltas.map((d) => BigInt(Math.round(d * Number(SCORE_SCALE))));
 
   return {
     baseline,
@@ -103,7 +103,10 @@ export async function runAttribution(input: AttributionInput): Promise<Attributi
   };
 }
 
-async function tryDownload(storage: StorageClient, root: Hex): Promise<Uint8Array | null> {
+async function tryDownload(
+  storage: StorageClient,
+  root: Hex
+): Promise<Uint8Array | null> {
   if (root === ZERO_BYTES32) return null;
   try {
     return await storage.download(root);
@@ -158,7 +161,9 @@ export function makeComputeScorer(args: {
   model: string;
 }): ContributionScorer {
   return async ({ holdout, contribution, contributionPayload }) => {
-    const holdoutText = holdout ? new TextDecoder().decode(holdout).slice(0, 4000) : "(no holdout)";
+    const holdoutText = holdout
+      ? new TextDecoder().decode(holdout).slice(0, 4000)
+      : "(no holdout)";
     const contribText = contributionPayload
       ? new TextDecoder().decode(contributionPayload).slice(0, 4000)
       : `(no payload — root ${contribution.storageRoot})`;
@@ -168,7 +173,7 @@ export function makeComputeScorer(args: {
         role: "system" as const,
         content:
           "You are an unbiased evaluator. Compare a contributed dataset against the holdout " +
-          "and return a single JSON object: {\"score\": <number between 0 and 1>}. " +
+          'and return a single JSON object: {"score": <number between 0 and 1>}. ' +
           "Higher = the contribution would more meaningfully improve a model trained on it.",
       },
       {
@@ -178,11 +183,16 @@ export function makeComputeScorer(args: {
     ];
 
     try {
-      const headers = await (args.broker as {
-        inference: {
-          getRequestHeaders: (p: string, content: string) => Promise<Record<string, string>>;
-        };
-      }).inference.getRequestHeaders(args.provider, JSON.stringify(messages));
+      const headers = await (
+        args.broker as {
+          inference: {
+            getRequestHeaders: (
+              p: string,
+              content: string
+            ) => Promise<Record<string, string>>;
+          };
+        }
+      ).inference.getRequestHeaders(args.provider, JSON.stringify(messages));
       const res = await fetch(`${args.endpoint}/v1/chat/completions`, {
         method: "POST",
         headers: { "content-type": "application/json", ...headers },

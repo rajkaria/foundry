@@ -41,13 +41,24 @@ import { privateKeyToAccount } from "viem/accounts";
 import { Wallet, JsonRpcProvider } from "ethers";
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
-const walletClient = createWalletClient({ account, transport: http(process.env.RPC_URL) });
+const walletClient = createWalletClient({
+  account,
+  transport: http(process.env.RPC_URL),
+});
 const foundry = new Foundry({ contracts: "aristotle", walletClient });
 
 // 1. Upload a dataset to 0G Storage.
-const ethersSigner = new Wallet(process.env.PRIVATE_KEY!, new JsonRpcProvider(process.env.RPC_URL));
+const ethersSigner = new Wallet(
+  process.env.PRIVATE_KEY!,
+  new JsonRpcProvider(process.env.RPC_URL)
+);
 const { rootHash } = await foundry.storage.uploadJson(
-  { kind: "dataset", rows: [/* ... */] },
+  {
+    kind: "dataset",
+    rows: [
+      /* ... */
+    ],
+  },
   { signer: ethersSigner }
 );
 
@@ -55,14 +66,14 @@ const { rootHash } = await foundry.storage.uploadJson(
 const { forgeId } = await foundry.forge.create({
   modelSpec: rootHash,
   evalSpec: rootHash,
-  evalCoordinator: "0x…",                              // your registered coordinator
+  evalCoordinator: "0x…", // your registered coordinator
   contributionWindowEnds: BigInt(Math.floor(Date.now() / 1000) + 86_400),
 });
 
 // 3. Contribute data / compute / capital.
 await foundry.forge.contributeData(forgeId!, rootHash);
-await foundry.forge.contributeCompute(forgeId!, "0.5");  // 0.5 OG
-await foundry.forge.fundForge(forgeId!, "1");            // 1 OG
+await foundry.forge.contributeCompute(forgeId!, "0.5"); // 0.5 OG
+await foundry.forge.fundForge(forgeId!, "1"); // 1 OG
 
 // 4. (off-chain) eval coordinator runs attribution, calls submitEvalResult
 // 5. Anyone calls mintOwnership() — Ingot mints with proportional shares.
@@ -72,22 +83,24 @@ await foundry.forge.mintOwnership(forgeId!);
 await foundry.forge.setWeightsAndGoLive(forgeId!, weightsRoot);
 
 // 7. Inference + revenue (closes the loop).
-const { output } = await foundry.inference.run(`ingot:${ingotAddr}/${tokenId}`, { input: "Hi" });
+const { output } = await foundry.inference.run(`ingot:${ingotAddr}/${tokenId}`, {
+  input: "Hi",
+});
 await foundry.revenue.claim(tokenId);
 ```
 
 ## Modules
 
-| Import                                      | What it does                                                                                                                |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `Foundry`                                   | One client, all surfaces — forge, ingot, contribution, inference, revenue, storage, da, registry, attestation, lineage      |
-| `@foundryprotocol/sdk/storage`              | 0G Storage upload/download with Merkle roots (`@0gfoundation/0g-storage-ts-sdk` under the hood)                             |
-| `@foundryprotocol/sdk/da`                   | 0G DA receipt publishing + canonical-JSON digest                                                                            |
-| `@foundryprotocol/sdk/attestation`          | TEE envelope sign/verify (ECDSA over canonical-JSON keccak256)                                                              |
-| `@foundryprotocol/sdk/inference`            | OpenAI-compatible inference client (used by `Foundry.inference.run`)                                                        |
-| `@foundryprotocol/sdk/abis`                 | viem-typed const ABIs for every Foundry contract                                                                            |
-| `@foundryprotocol/sdk/adapters/vercel-ai`   | Vercel AI SDK `LanguageModelV2` adapter                                                                                     |
-| `@foundryprotocol/sdk/adapters/langchain`   | LangChain `LLM` adapter                                                                                                     |
+| Import                                    | What it does                                                                                                           |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `Foundry`                                 | One client, all surfaces — forge, ingot, contribution, inference, revenue, storage, da, registry, attestation, lineage |
+| `@foundryprotocol/sdk/storage`            | 0G Storage upload/download with Merkle roots (`@0gfoundation/0g-storage-ts-sdk` under the hood)                        |
+| `@foundryprotocol/sdk/da`                 | 0G DA receipt publishing + canonical-JSON digest                                                                       |
+| `@foundryprotocol/sdk/attestation`        | TEE envelope sign/verify (ECDSA over canonical-JSON keccak256)                                                         |
+| `@foundryprotocol/sdk/inference`          | OpenAI-compatible inference client (used by `Foundry.inference.run`)                                                   |
+| `@foundryprotocol/sdk/abis`               | viem-typed const ABIs for every Foundry contract                                                                       |
+| `@foundryprotocol/sdk/adapters/vercel-ai` | Vercel AI SDK `LanguageModelV2` adapter                                                                                |
+| `@foundryprotocol/sdk/adapters/langchain` | LangChain `LLM` adapter                                                                                                |
 
 ## Adapters
 
@@ -148,10 +161,10 @@ console.log(deployments.aristotle.ForgeFactory);
 
 ## Networks
 
-| Name        | Chain ID  | RPC                              | Storage indexer                            |
-| ----------- | --------- | -------------------------------- | ------------------------------------------ |
-| `aristotle` | 16661     | `https://evmrpc.0g.ai`           | `https://indexer-storage.0g.network`       |
-| `galileo`   | 16601     | `https://evmrpc-testnet.0g.ai`   | `https://indexer-storage-testnet.0g.ai`    |
+| Name        | Chain ID | RPC                            | Storage indexer                         |
+| ----------- | -------- | ------------------------------ | --------------------------------------- |
+| `aristotle` | 16661    | `https://evmrpc.0g.ai`         | `https://indexer-storage.0g.network`    |
+| `galileo`   | 16601    | `https://evmrpc-testnet.0g.ai` | `https://indexer-storage-testnet.0g.ai` |
 
 ## License
 

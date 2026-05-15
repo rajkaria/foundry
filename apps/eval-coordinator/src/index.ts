@@ -37,7 +37,10 @@ import {
 
 const log = pino({
   transport: process.stdout.isTTY
-    ? { target: "pino-pretty", options: { translateTime: "HH:MM:ss", ignore: "pid,hostname" } }
+    ? {
+        target: "pino-pretty",
+        options: { translateTime: "HH:MM:ss", ignore: "pid,hostname" },
+      }
     : undefined,
 });
 
@@ -110,7 +113,9 @@ async function main(): Promise<void> {
   }
 }
 
-async function buildScorer(cfg: ReturnType<typeof loadConfig>): Promise<ContributionScorer | undefined> {
+async function buildScorer(
+  cfg: ReturnType<typeof loadConfig>
+): Promise<ContributionScorer | undefined> {
   if (!cfg.zgBrokerKey || !cfg.zgInferenceProvider) {
     log.warn(
       "ZG_BROKER_KEY / ZG_INFERENCE_PROVIDER not set — using deterministic content-hash scorer."
@@ -124,18 +129,25 @@ async function buildScorer(cfg: ReturnType<typeof loadConfig>): Promise<Contribu
     ]);
     const ethProvider = new ethers.JsonRpcProvider(cfg.rpcUrl);
     const ethWallet = new ethers.Wallet(cfg.zgBrokerKey, ethProvider);
-    const broker = await (brokerMod as { createZGComputeNetworkBroker: Function })
-      .createZGComputeNetworkBroker(ethWallet);
+    const broker = await (
+      brokerMod as { createZGComputeNetworkBroker: Function }
+    ).createZGComputeNetworkBroker(ethWallet);
     try {
-      await (broker as {
-        inference: { acknowledgeProviderSigner: (p: string) => Promise<void> };
-      }).inference.acknowledgeProviderSigner(cfg.zgInferenceProvider);
+      await (
+        broker as {
+          inference: { acknowledgeProviderSigner: (p: string) => Promise<void> };
+        }
+      ).inference.acknowledgeProviderSigner(cfg.zgInferenceProvider);
     } catch {}
-    const { endpoint, model } = await (broker as {
-      inference: {
-        getServiceMetadata: (p: string) => Promise<{ endpoint: string; model: string }>;
-      };
-    }).inference.getServiceMetadata(cfg.zgInferenceProvider);
+    const { endpoint, model } = await (
+      broker as {
+        inference: {
+          getServiceMetadata: (
+            p: string
+          ) => Promise<{ endpoint: string; model: string }>;
+        };
+      }
+    ).inference.getServiceMetadata(cfg.zgInferenceProvider);
     log.info({ provider: cfg.zgInferenceProvider, model }, "0G Compute scorer ready");
     return makeComputeScorer({
       broker,
@@ -144,7 +156,10 @@ async function buildScorer(cfg: ReturnType<typeof loadConfig>): Promise<Contribu
       model,
     });
   } catch (err) {
-    log.error({ err: errMsg(err) }, "compute scorer init failed — falling back to deterministic");
+    log.error(
+      { err: errMsg(err) },
+      "compute scorer init failed — falling back to deterministic"
+    );
     return undefined;
   }
 }
@@ -172,7 +187,10 @@ async function maybeEvaluate(args: {
       const { txHash } = await foundry.forge.startEvaluating(forgeId);
       log.info({ forgeId, txHash }, "startEvaluating");
     } catch (err) {
-      log.warn({ forgeId, err: errMsg(err) }, "startEvaluating failed (maybe already transitioned)");
+      log.warn(
+        { forgeId, err: errMsg(err) },
+        "startEvaluating failed (maybe already transitioned)"
+      );
     }
   }
 
@@ -209,7 +227,7 @@ async function maybeEvaluate(args: {
     baseline: result.baseline,
     teeAttestation: args.teeEnabled
       ? syntheticTeeAttestation(refreshed.address, result.deltasScaled)
-      : ("0x" + "00".repeat(32)) as `0x${string}`,
+      : (("0x" + "00".repeat(32)) as `0x${string}`),
     coordinator: coordinatorAddr,
     timestamp: result.scoredAt,
   };
@@ -217,7 +235,10 @@ async function maybeEvaluate(args: {
   // Post the receipt to 0G DA (degrades to local digest if no encoder configured).
   const daResult = await foundry.da.publish(envelope);
   if (daResult.daRef) envelope.daRef = daResult.daRef;
-  log.info({ forgeId, daMode: daResult.mode, daRef: daResult.daRef }, "envelope published");
+  log.info(
+    { forgeId, daMode: daResult.mode, daRef: daResult.daRef },
+    "envelope published"
+  );
 
   // Sign the envelope so off-chain verifiers can match the on-chain attestation.
   const signed = await signEnvelope(envelope, args.coordinatorKey);
@@ -245,9 +266,12 @@ function syntheticTeeAttestation(forge: Address, scaled: bigint[]): `0x${string}
   // boundary where the real TEE quote becomes available.
   const enc = new TextEncoder();
   const tag = enc.encode(`tee-stub|${forge}|${scaled.join(",")}`);
-  return ("0x" + Array.from(tag).map((b) => b.toString(16).padStart(2, "0")).join("")
-    .slice(0, 64)
-    .padEnd(64, "0")) as `0x${string}`;
+  return ("0x" +
+    Array.from(tag)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+      .slice(0, 64)
+      .padEnd(64, "0")) as `0x${string}`;
 }
 
 function forgeAddr(forgeId: ForgeId): Address {

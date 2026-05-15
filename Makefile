@@ -88,7 +88,7 @@ deploy-local:
 	cd contracts && \
 	  DEPLOYER_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
 	  TREASURY_ADDR=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 \
-	  FOUNDRY_NETWORK=local \
+	  FOUNDRY_NET=local \
 	  forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast
 	node scripts/sync-deployments.mjs local
 
@@ -101,7 +101,7 @@ deploy-galileo:
 	cd contracts && \
 	  DEPLOYER_KEY=$$DEPLOYER_KEY_GALILEO \
 	  TREASURY_ADDR=$$TREASURY_ADDR \
-	  FOUNDRY_NETWORK=galileo \
+	  FOUNDRY_NET=galileo \
 	  forge script script/Deploy.s.sol --rpc-url $$RPC_GALILEO --broadcast
 	node scripts/sync-deployments.mjs galileo
 
@@ -116,7 +116,7 @@ deploy-aristotle:
 	cd contracts && \
 	  DEPLOYER_KEY=$$DEPLOYER_KEY_ARISTOTLE \
 	  TREASURY_ADDR=$$TREASURY_ADDR \
-	  FOUNDRY_NETWORK=aristotle \
+	  FOUNDRY_NET=aristotle \
 	  forge script script/Deploy.s.sol --rpc-url $$RPC_ARISTOTLE --broadcast
 	node scripts/sync-deployments.mjs aristotle
 
@@ -128,7 +128,7 @@ deploy-dry:
 	cd contracts && \
 	  DEPLOYER_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
 	  TREASURY_ADDR=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 \
-	  FOUNDRY_NETWORK=local \
+	  FOUNDRY_NET=local \
 	  forge script script/Deploy.s.sol --fork-url $$RPC
 
 .PHONY: sync-deployments

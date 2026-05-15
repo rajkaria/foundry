@@ -1,5 +1,6 @@
 import { Header } from "@/components/marketing/Header";
 import { Hero } from "@/components/marketing/Hero";
+import { TryIngot } from "@/components/marketing/TryIngot";
 import { Problem } from "@/components/marketing/Problem";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
 import { Dashboard } from "@/components/marketing/Dashboard";
@@ -29,6 +30,7 @@ export default async function HomePage() {
     <main>
       <Header />
       <Hero />
+      <TryIngot />
       <Problem />
       <HowItWorks />
       <Dashboard stats={{ ...stats, network: chain.network }} />

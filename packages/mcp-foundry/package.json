@@ -1,0 +1,62 @@
+{
+  "name": "@foundryprotocol/mcp",
+  "version": "0.1.0",
+  "description": "MCP (Model Context Protocol) server for Foundry — expose co-owned AI Ingots on 0G to any MCP-capable AI agent in one command.",
+  "license": "MIT",
+  "homepage": "https://foundryprotocol.xyz",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rajkaria/foundry.git",
+    "directory": "packages/mcp-foundry"
+  },
+  "author": "Foundry Protocol",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "mcp-foundry": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/cli.js",
+    "clean": "rimraf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "foundry",
+    "0g",
+    "ai",
+    "ingot",
+    "decentralized-ai"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@foundryprotocol/sdk": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
