@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "corepack pnpm --filter @foundryprotocol/web build",
+  "buildCommand": "corepack pnpm turbo run build --filter=@foundryprotocol/web...",
   "installCommand": "corepack enable && corepack pnpm install --no-frozen-lockfile",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
