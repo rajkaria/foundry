@@ -37,6 +37,7 @@ export const DOC_NAV: DocGroup[] = [
     items: [
       { href: "/docs/sdk-reference", label: "SDK reference" },
       { href: "/docs/adapters", label: "Adapters" },
+      { href: "/docs/mcp", label: "MCP server" },
       { href: "/docs/cli", label: "Foundry CLI" },
     ],
   },

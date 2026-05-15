@@ -51,7 +51,7 @@ foundry --help`}</CodeBlock>
       <Callout tone="warn" title="CLI status">
         <p>
           The CLI ships in v1.0.0. The commands below are the locked public surface; the{" "}
-          <Code>--help</Code> output in the v1.0.0-rc.1 pre-release matches this page
+          <Code>--help</Code> output in the v1.0.0 pre-release matches this page
           exactly.
         </p>
       </Callout>
@@ -143,7 +143,7 @@ jobs:
       - run: jq .receipt.latencyMs out.json | xargs -I{} test {} -lt 2000`}</CodeBlock>
 
       <PageNav
-        prev={{ href: "/docs/adapters", label: "Adapters" }}
+        prev={{ href: "/docs/mcp", label: "MCP server" }}
         next={{ href: "/docs/real-vs-roadmap", label: "Real vs Roadmap" }}
       />
     </DocsLayout>
