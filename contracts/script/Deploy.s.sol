@@ -14,7 +14,10 @@ import {IngotRegistry} from "../src/IngotRegistry.sol";
 /// Env required:
 ///   - DEPLOYER_KEY     uint        private key of the funded deployer
 ///   - TREASURY_ADDR    address     receives the FORGE supply + protocol fee
-///   - FOUNDRY_NETWORK  string      one of: local | galileo | aristotle
+///   - FOUNDRY_NET      string      one of: local | galileo | aristotle
+///                                  (renamed from FOUNDRY_NETWORK because
+///                                  forge reserves that key for its built-in
+///                                  network config and rejects unknown values)
 ///                                  (controls the deployments/<name>.json path)
 ///
 /// Run:
@@ -23,7 +26,7 @@ contract Deploy is Script {
     function run() external {
         address treasury = vm.envAddress("TREASURY_ADDR");
         uint256 deployerKey = vm.envUint("DEPLOYER_KEY");
-        string memory network = vm.envOr("FOUNDRY_NETWORK", string("aristotle"));
+        string memory network = vm.envOr("FOUNDRY_NET", string("aristotle"));
 
         vm.startBroadcast(deployerKey);
 

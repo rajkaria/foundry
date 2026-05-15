@@ -104,8 +104,11 @@ async function getBroker(): Promise<BrokerContext | null> {
     const rpc = process.env.ZG_BROKER_RPC ?? "https://evmrpc.0g.ai";
     const ethProvider = new ethers.JsonRpcProvider(rpc);
     const ethWallet = new ethers.Wallet(key, ethProvider);
-    const createBroker = (brokerMod as { createZGComputeNetworkBroker: Function })
-      .createZGComputeNetworkBroker;
+    const createBroker = (
+      brokerMod as {
+        createZGComputeNetworkBroker: (wallet: unknown) => Promise<unknown>;
+      }
+    ).createZGComputeNetworkBroker;
     const broker = await createBroker(ethWallet);
 
     try {
