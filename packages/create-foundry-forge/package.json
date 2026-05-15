@@ -1,6 +1,6 @@
 {
   "name": "create-foundry-forge",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Scaffold a starter Foundry project — create a Forge, contribute data, mint an Ingot, run inference.",
   "license": "MIT",
   "homepage": "https://foundryprotocol.xyz",

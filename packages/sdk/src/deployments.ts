@@ -22,12 +22,12 @@ const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as const;
 // ─── SYNCED ADDRESSES — DO NOT EDIT BY HAND ─────────────────────────────
 // scripts/sync-deployments.mjs writes between these markers.
 export const aristotle: Deployment = {
-  FORGEToken: ZERO_ADDRESS,
-  ContributionRegistry: ZERO_ADDRESS,
-  Ingot: ZERO_ADDRESS,
-  RevenueSplitter: ZERO_ADDRESS,
-  ForgeFactory: ZERO_ADDRESS,
-  IngotRegistry: ZERO_ADDRESS,
+  FORGEToken: "0xE716B0260f462b2A1789cB6cfCBd825736b920Ca",
+  ContributionRegistry: "0x05235Ba0F2a77bcaB87371E4d797D6830ddC2d86",
+  Ingot: "0x39B736f424754d05a0da186d89015b74d1DDe1d3",
+  RevenueSplitter: "0xC58E0F32BD43e43153D3CA8ee8F25C8198789289",
+  ForgeFactory: "0x636109264EBF6cFD18CC38bD43eDf9cCad7ae23D",
+  IngotRegistry: "0xF8f3fAE648A8d7ee4Df0A7b10a0F759938aab7e1",
 };
 
 export const galileo: Deployment = {

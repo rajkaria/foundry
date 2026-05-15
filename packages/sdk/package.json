@@ -1,6 +1,6 @@
 {
   "name": "@foundryprotocol/sdk",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Foundry SDK — pool data, compute, and capital to co-train AI models on 0G. Mint a verifiable, revenue-generating share. Three-line inference, full lifecycle.",
   "license": "MIT",
   "homepage": "https://foundryprotocol.xyz",
