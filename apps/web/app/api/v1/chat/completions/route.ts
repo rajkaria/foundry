@@ -94,7 +94,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       providerModel: result.model,
       attestation: result.attestation ?? null,
       inferenceTxHash: result.inferenceTxHash ?? null,
-      revenueTxHash: null, // populated by Forge.RevenueSplitter.receivePayment in v2
+      revenueTxHash: null,
       note:
         result.mode === "stub"
           ? "Stub response — set ZG_BROKER_KEY + ZG_INFERENCE_PROVIDER to route through real 0G Compute."
