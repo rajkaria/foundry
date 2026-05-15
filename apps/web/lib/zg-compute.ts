@@ -1,22 +1,39 @@
 /**
- * 0G Compute client — wraps @0glabs/0g-serving-broker for OpenAI-compatible
- * chat completions, with revenue routing back to the Foundry Ingot's
- * co-owners on-chain.
+ * 0G Compute client — wraps the canonical 0G serving broker for
+ * OpenAI-compatible chat completions, with revenue routing back to the
+ * Foundry Ingot's co-owners on-chain.
  *
  * Server-side only (Node runtime — depends on ethers + native crypto).
  *
  * Env:
  *   ZG_BROKER_RPC          0G chain RPC for the broker wallet (default: 0G mainnet)
  *   ZG_BROKER_KEY          private key of the funded broker wallet (required)
- *   ZG_INFERENCE_PROVIDER  on-chain provider address (required)
+ *   ZG_INFERENCE_PROVIDER  fallback on-chain provider address (used if no per-Ingot mapping)
  *   ZG_INFERENCE_MODEL     optional model name override
+ *   ZG_REVENUE_FEE_WEI     per-call fee deposited into RevenueSplitter (default 0.0001 OG)
  *
- * When env is missing, the client returns `{ mode: 'stub' }` and the caller
- * is expected to surface the stub state honestly (rather than silently
- * faking real output).
+ * Resolution order for the provider/model that serves a given Ingot:
+ *   1. on-chain IngotRegistry.providerOf(tokenId)   ← per-Ingot mapping
+ *   2. ZG_INFERENCE_PROVIDER env                    ← canonical fallback
+ *
+ * After a successful inference call, the broker fee plus a configurable
+ * revenue allocation is deposited into RevenueSplitter.receivePayment(tokenId)
+ * — that's the on-chain settlement the dashboard reports.
+ *
+ * When env is missing (no broker key), the client returns `{ mode: 'stub' }`
+ * and the caller is expected to surface the stub state honestly.
  */
 
 import "server-only";
+import { Foundry } from "@foundryprotocol/sdk";
+import {
+  createWalletClient,
+  http,
+  type Address,
+  type Hex,
+  type WalletClient,
+} from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 
 export interface ZGChatMessage {
   role: "system" | "user" | "assistant";
@@ -28,6 +45,8 @@ export interface ZGChatParams {
   temperature?: number;
   maxTokens?: number;
   responseFormat?: "text" | "json_object";
+  /** Optional Ingot tokenId so we can look up the provider + deposit revenue. */
+  ingotTokenId?: bigint;
 }
 
 export interface ZGChatResult {
@@ -39,6 +58,8 @@ export interface ZGChatResult {
   attestation?: string;
   /** On-chain transaction hash for the inference fee transfer (broker writes). */
   inferenceTxHash?: string;
+  /** On-chain tx hash for the RevenueSplitter.receivePayment call. */
+  revenueTxHash?: Hex;
   /** Provider address that served the request. */
   provider?: string;
   usage?: {
@@ -50,9 +71,13 @@ export interface ZGChatResult {
 
 interface BrokerContext {
   broker: unknown; // ZGComputeNetworkBroker
-  provider: string;
-  endpoint: string;
-  model: string;
+  walletClient: WalletClient;
+  walletAddress: Address;
+  foundry: Foundry;
+  fallbackProvider: string;
+  fallbackEndpoint: string;
+  fallbackModel: string;
+  feeWei: bigint;
 }
 
 let cached: BrokerContext | null = null;
@@ -62,38 +87,70 @@ async function getBroker(): Promise<BrokerContext | null> {
   if (cached) return cached;
   if (initError) return null;
   const key = process.env.ZG_BROKER_KEY;
-  const providerAddr = process.env.ZG_INFERENCE_PROVIDER;
-  if (!key || !providerAddr) {
+  const fallbackProviderAddr = process.env.ZG_INFERENCE_PROVIDER;
+  if (!key || !fallbackProviderAddr) {
     initError = "ZG_BROKER_KEY / ZG_INFERENCE_PROVIDER not set";
     return null;
   }
 
   try {
-    // Dynamic imports so missing optional deps don't break the build.
-    const [{ ethers }, { createZGComputeNetworkBroker }] = await Promise.all([
+    const [{ ethers }, brokerMod] = await Promise.all([
       import("ethers"),
-      import("@0glabs/0g-serving-broker"),
+      import("@0gfoundation/0g-compute-ts-sdk").catch(() =>
+        import("@0glabs/0g-serving-broker")
+      ),
     ]);
 
     const rpc = process.env.ZG_BROKER_RPC ?? "https://evmrpc.0g.ai";
-    const provider = new ethers.JsonRpcProvider(rpc);
-    const wallet = new ethers.Wallet(key, provider);
-    const broker = await createZGComputeNetworkBroker(wallet);
+    const ethProvider = new ethers.JsonRpcProvider(rpc);
+    const ethWallet = new ethers.Wallet(key, ethProvider);
+    const createBroker = (brokerMod as { createZGComputeNetworkBroker: Function })
+      .createZGComputeNetworkBroker;
+    const broker = await createBroker(ethWallet);
 
-    // Ack the provider's terms-of-service once per broker (idempotent on the SDK side).
     try {
-      await broker.inference.acknowledgeProviderSigner(providerAddr);
+      await (
+        broker as {
+          inference: { acknowledgeProviderSigner: (p: string) => Promise<void> };
+        }
+      ).inference.acknowledgeProviderSigner(fallbackProviderAddr);
     } catch {
-      // Already acknowledged or provider doesn't require it.
+      // already acknowledged or provider doesn't require it
     }
 
-    const { endpoint, model } = await broker.inference.getServiceMetadata(providerAddr);
+    const { endpoint, model } = await (
+      broker as {
+        inference: {
+          getServiceMetadata: (
+            p: string
+          ) => Promise<{ endpoint: string; model: string }>;
+        };
+      }
+    ).inference.getServiceMetadata(fallbackProviderAddr);
+
+    // viem wallet client for the revenue deposit + any chain reads.
+    const account = privateKeyToAccount(
+      (key.startsWith("0x") ? key : `0x${key}`) as Hex
+    );
+    const walletClient = createWalletClient({
+      account,
+      transport: http(rpc),
+    });
+    const foundry = new Foundry({
+      contracts: "aristotle",
+      rpcUrl: rpc,
+      walletClient,
+    });
 
     cached = {
       broker,
-      provider: providerAddr,
-      endpoint,
-      model: process.env.ZG_INFERENCE_MODEL ?? model,
+      walletClient,
+      walletAddress: account.address,
+      foundry,
+      fallbackProvider: fallbackProviderAddr,
+      fallbackEndpoint: endpoint,
+      fallbackModel: process.env.ZG_INFERENCE_MODEL ?? model,
+      feeWei: BigInt(process.env.ZG_REVENUE_FEE_WEI ?? "100000000000000"), // 0.0001 OG
     };
     return cached;
   } catch (err) {
@@ -103,6 +160,60 @@ async function getBroker(): Promise<BrokerContext | null> {
   }
 }
 
+/**
+ * Resolve the provider for a given Ingot tokenId. Falls back to the env
+ * `ZG_INFERENCE_PROVIDER` when the on-chain registry has no entry.
+ */
+async function resolveProvider(
+  ctx: BrokerContext,
+  ingotTokenId?: bigint
+): Promise<{ provider: string; endpoint: string; model: string }> {
+  if (ingotTokenId !== undefined) {
+    try {
+      const entry = await ctx.foundry.registry.providerOf(ingotTokenId);
+      if (entry) {
+        // We need the live endpoint + model — re-fetch service metadata from
+        // the broker for the on-chain provider unless the registry cached it.
+        const meta = await (
+          ctx.broker as {
+            inference: {
+              getServiceMetadata: (
+                p: string
+              ) => Promise<{ endpoint: string; model: string }>;
+              acknowledgeProviderSigner: (p: string) => Promise<void>;
+            };
+          }
+        ).inference.getServiceMetadata(entry.provider);
+        try {
+          await (
+            ctx.broker as {
+              inference: { acknowledgeProviderSigner: (p: string) => Promise<void> };
+            }
+          ).inference.acknowledgeProviderSigner(entry.provider);
+        } catch {
+          // already acknowledged
+        }
+        return {
+          provider: entry.provider,
+          endpoint: entry.endpoint || meta.endpoint,
+          model: entry.model || meta.model,
+        };
+      }
+    } catch (err) {
+      console.warn("[zg-compute] registry lookup failed, falling back to env", err);
+    }
+  }
+  return {
+    provider: ctx.fallbackProvider,
+    endpoint: ctx.fallbackEndpoint,
+    model: ctx.fallbackModel,
+  };
+}
+
+export function isLive(): boolean {
+  return !!process.env.ZG_BROKER_KEY && !!process.env.ZG_INFERENCE_PROVIDER;
+}
+
 export async function chatCompletion(params: ZGChatParams): Promise<ZGChatResult> {
   const ctx = await getBroker();
   if (!ctx) {
@@ -110,6 +221,8 @@ export async function chatCompletion(params: ZGChatParams): Promise<ZGChatResult
   }
 
   try {
+    const { provider, endpoint, model } = await resolveProvider(ctx, params.ingotTokenId);
+
     // Compute the signed request headers (broker reserves prepaid balance for this call).
     const headers = await (
       ctx.broker as {
@@ -120,13 +233,13 @@ export async function chatCompletion(params: ZGChatParams): Promise<ZGChatResult
           ) => Promise<Record<string, string>>;
         };
       }
-    ).inference.getRequestHeaders(ctx.provider, JSON.stringify(params.messages));
+    ).inference.getRequestHeaders(provider, JSON.stringify(params.messages));
 
-    const res = await fetch(`${ctx.endpoint}/v1/chat/completions`, {
+    const res = await fetch(`${endpoint}/v1/chat/completions`, {
       method: "POST",
       headers: { "content-type": "application/json", ...headers },
       body: JSON.stringify({
-        model: ctx.model,
+        model,
         messages: params.messages,
         temperature: params.temperature ?? 0.7,
         max_tokens: params.maxTokens,
@@ -163,16 +276,36 @@ export async function chatCompletion(params: ZGChatParams): Promise<ZGChatResult
         };
       }
     ).inference
-      .processResponse(ctx.provider, output)
+      .processResponse(provider, output)
       .catch(() => ({ valid: true }) as { attestation?: string; txHash?: string });
+
+    // Route a per-call fee into the Ingot's RevenueSplitter so co-owners
+    // can claim their share. Best-effort: failures here don't block the
+    // response — we surface the error and let the caller retry settlement.
+    let revenueTxHash: Hex | undefined;
+    if (params.ingotTokenId !== undefined && ctx.feeWei > 0n) {
+      try {
+        const result = await ctx.foundry.revenue.deposit(
+          params.ingotTokenId,
+          ctx.feeWei
+        );
+        revenueTxHash = result.txHash;
+      } catch (err) {
+        console.warn(
+          `[zg-compute] revenue deposit failed for token ${params.ingotTokenId}:`,
+          err
+        );
+      }
+    }
 
     return {
       mode: "live",
       output,
-      model: ctx.model,
+      model,
       attestation: verifyMeta.attestation,
       inferenceTxHash: verifyMeta.txHash,
-      provider: ctx.provider,
+      revenueTxHash,
+      provider,
       usage: data.usage
         ? {
             promptTokens: data.usage.prompt_tokens,
@@ -210,19 +343,12 @@ export async function chatStructured<T>(
     ...params,
     responseFormat: "json_object",
   });
-  let parsed: T | null = null;
-  try {
-    const start = result.output.indexOf("{");
-    const end = result.output.lastIndexOf("}");
-    if (start >= 0 && end > start) {
-      parsed = JSON.parse(result.output.slice(start, end + 1)) as T;
-    }
-  } catch {
-    parsed = null;
+  if (result.mode === "stub") {
+    return { ...result, parsed: null };
   }
-  return { ...result, parsed };
-}
-
-export function isLive(): boolean {
-  return Boolean(process.env.ZG_BROKER_KEY && process.env.ZG_INFERENCE_PROVIDER);
+  try {
+    return { ...result, parsed: JSON.parse(result.output) as T };
+  } catch {
+    return { ...result, parsed: null };
+  }
 }

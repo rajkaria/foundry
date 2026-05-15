@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@0glabs/0g-serving-broker": "^0.7.8",
+    "@0gfoundation/0g-compute-ts-sdk": "^0.8.3",
+    "@0gfoundation/0g-storage-ts-sdk": "^1.2.9",
     "@foundryprotocol/design-tokens": "workspace:*",
     "@foundryprotocol/sdk": "workspace:*",
     "clsx": "^2.1.1",

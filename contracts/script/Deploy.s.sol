@@ -7,6 +7,7 @@ import {ContributionRegistry} from "../src/ContributionRegistry.sol";
 import {Ingot} from "../src/Ingot.sol";
 import {RevenueSplitter} from "../src/RevenueSplitter.sol";
 import {ForgeFactory} from "../src/ForgeFactory.sol";
+import {IngotRegistry} from "../src/IngotRegistry.sol";
 
 /// @notice Deploys the full Foundry suite to a 0G network.
 ///
@@ -33,6 +34,7 @@ contract Deploy is Script {
         ForgeFactory factory =
             new ForgeFactory(address(registry), address(ingot), address(splitter));
         ingot.setFactory(address(factory));
+        IngotRegistry ingotRegistry = new IngotRegistry(address(ingot));
 
         vm.stopBroadcast();
 
@@ -43,6 +45,7 @@ contract Deploy is Script {
         console.log("Ingot                %s", address(ingot));
         console.log("RevenueSplitter      %s", address(splitter));
         console.log("ForgeFactory         %s", address(factory));
+        console.log("IngotRegistry        %s", address(ingotRegistry));
 
         string memory json = string.concat(
             "{",
@@ -69,6 +72,9 @@ contract Deploy is Script {
             '",',
             '"ForgeFactory":"',
             vm.toString(address(factory)),
+            '",',
+            '"IngotRegistry":"',
+            vm.toString(address(ingotRegistry)),
             '"',
             "}"
         );

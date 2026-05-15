@@ -1,0 +1,26 @@
+app = "foundry-eval-coordinator"
+primary_region = "sjc"
+
+[build]
+  dockerfile = "Dockerfile"
+  ignorefile = "../../.gitignore"
+
+[env]
+  FOUNDRY_NETWORK = "aristotle"
+  POLL_INTERVAL_SECS = "12"
+  TEE_ENABLED = "true"
+  COORDINATOR_STATE_PATH = "/data/state.json"
+
+[mounts]
+  source = "coordinator_state"
+  destination = "/data"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 1024
+
+# Secrets (set via `fly secrets set`):
+#   COORDINATOR_KEY, RPC_ARISTOTLE,
+#   ZG_BROKER_KEY (optional), ZG_INFERENCE_PROVIDER (optional),
+#   ZG_DA_ENCODER_URL (optional), ZG_DA_API_KEY (optional)
