@@ -1,6 +1,8 @@
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Dashboard } from "@/components/marketing/Dashboard";
+import { getStats } from "@/lib/stats-data";
+import { getChain } from "@/lib/chain";
 
 export const metadata = {
   title: "Forge in Public — live mainnet activity",
@@ -8,7 +10,21 @@ export const metadata = {
     "Real-time on-chain numbers from Foundry on 0G Aristotle mainnet. No simulated counters.",
 };
 
-export default function DashboardPage() {
+export const revalidate = 10;
+
+export default async function DashboardPage() {
+  const chain = getChain();
+  const stats = await getStats().catch(() => ({
+    forges: 0,
+    ingots: 0,
+    contributions: 0,
+    externalSmiths: 0,
+    totalRevenueOG: 0,
+    totalClaimedOG: 0,
+    lastBlock: 0n,
+    isLive: false,
+  }));
+
   return (
     <main>
       <Header />
@@ -19,12 +35,18 @@ export default function DashboardPage() {
             Real numbers, on mainnet, ticking live.
           </h1>
           <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
-            Every figure below comes from 0G Aristotle. The indexer pushes updates via
-            websocket — usually within four seconds of an on-chain event.
+            Every figure below comes from 0G {chain.network}. Pages revalidate every 10
+            seconds via Next&apos;s ISR cache; an indexer-fed websocket stream lands
+            when traffic justifies it.
           </p>
+          {stats.isLive && (
+            <p className="text-mono-sm text-platinum-400 tabular mt-4">
+              chain head: block {stats.lastBlock.toString()}
+            </p>
+          )}
         </div>
       </section>
-      <Dashboard />
+      <Dashboard stats={{ ...stats, network: chain.network }} />
       <Footer />
     </main>
   );

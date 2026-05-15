@@ -1,3 +1,13 @@
+/**
+ * Deployment registry.
+ *
+ * Addresses are synced from `contracts/deployments/<network>.json` by
+ * `scripts/sync-deployments.mjs`, run automatically by `make deploy-*`.
+ *
+ * Treat the zero-address as a sentinel meaning "not deployed yet". The SDK
+ * throws a clear error if any caller tries to use an undeployed network.
+ */
+
 export interface Deployment {
   FORGEToken: `0x${string}`;
   ContributionRegistry: `0x${string}`;
@@ -6,24 +16,49 @@ export interface Deployment {
   ForgeFactory: `0x${string}`;
 }
 
-// Populated by Sprint 1 mainnet deploy. The zero values are sentinels; the
-// SDK throws clearly if used before deployments land.
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as const;
+
+// ─── SYNCED ADDRESSES — DO NOT EDIT BY HAND ─────────────────────────────
+// scripts/sync-deployments.mjs writes between these markers.
 export const aristotle: Deployment = {
-  FORGEToken: "0x0000000000000000000000000000000000000000",
-  ContributionRegistry: "0x0000000000000000000000000000000000000000",
-  Ingot: "0x0000000000000000000000000000000000000000",
-  RevenueSplitter: "0x0000000000000000000000000000000000000000",
-  ForgeFactory: "0x0000000000000000000000000000000000000000",
+  FORGEToken: ZERO_ADDRESS,
+  ContributionRegistry: ZERO_ADDRESS,
+  Ingot: ZERO_ADDRESS,
+  RevenueSplitter: ZERO_ADDRESS,
+  ForgeFactory: ZERO_ADDRESS,
 };
 
-export const deployments = { aristotle } as const;
+export const galileo: Deployment = {
+  FORGEToken: ZERO_ADDRESS,
+  ContributionRegistry: ZERO_ADDRESS,
+  Ingot: ZERO_ADDRESS,
+  RevenueSplitter: ZERO_ADDRESS,
+  ForgeFactory: ZERO_ADDRESS,
+};
 
-export function getDeployment(network: keyof typeof deployments): Deployment {
+export const local: Deployment = {
+  FORGEToken: ZERO_ADDRESS,
+  ContributionRegistry: ZERO_ADDRESS,
+  Ingot: ZERO_ADDRESS,
+  RevenueSplitter: ZERO_ADDRESS,
+  ForgeFactory: ZERO_ADDRESS,
+};
+// ─── /SYNCED ADDRESSES ──────────────────────────────────────────────────
+
+export const deployments = { aristotle, galileo, local } as const;
+export type NetworkName = keyof typeof deployments;
+
+export function isDeployed(d: Deployment): boolean {
+  return d.ForgeFactory !== ZERO_ADDRESS;
+}
+
+export function getDeployment(network: NetworkName): Deployment {
   const d = deployments[network];
-  if (d.ForgeFactory === "0x0000000000000000000000000000000000000000") {
+  if (!isDeployed(d)) {
     throw new Error(
       `[foundry-sdk] No contract addresses for '${network}' yet. ` +
-        `Mainnet deploy lands Sprint 1 (Tue May 19) — see docs/04-sprint-plan.md.`
+        `Run \`make deploy-${network}\` from the repo root, or pass an explicit ` +
+        `\`{ rpcUrl, contracts }\` config to the Foundry constructor.`
     );
   }
   return d;

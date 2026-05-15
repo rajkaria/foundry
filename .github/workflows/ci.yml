@@ -72,6 +72,47 @@ jobs:
         run: forge coverage --report summary
         continue-on-error: true
 
+  deploy-dry-run:
+    name: contracts · deploy script dry-run
+    runs-on: ubuntu-latest
+    needs: contracts
+    defaults:
+      run:
+        working-directory: contracts
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: forge install deps
+        run: |
+          git config --global user.email "ci@foundry.test"
+          git config --global user.name "ci"
+          forge install \
+            foundry-rs/forge-std \
+            OpenZeppelin/openzeppelin-contracts \
+            Vectorized/solady
+
+      # Spin up Anvil in the background and dry-run the deploy script.
+      # This verifies the deploy actually executes end-to-end against a
+      # live JSON-RPC, catching any vm.envXxx + writeFile regressions
+      # before they hit mainnet.
+      - name: anvil + deploy-dry-run
+        run: |
+          anvil --port 8545 --silent &
+          ANVIL_PID=$!
+          sleep 2
+          export DEPLOYER_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+          export TREASURY_ADDR=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+          export FOUNDRY_NETWORK=local
+          forge script script/Deploy.s.sol \
+            --rpc-url http://127.0.0.1:8545 \
+            --broadcast
+          test -f deployments/local.json
+          kill $ANVIL_PID || true
+
   eval:
     name: eval · lint · type · test
     runs-on: ubuntu-latest
@@ -84,17 +125,13 @@ jobs:
       - uses: astral-sh/setup-uv@v3
 
       - name: uv sync
-        run: uv sync --frozen
-        continue-on-error: true
+        run: uv sync --extra dev
 
       - name: ruff
         run: uv run ruff check .
-        continue-on-error: true
 
       - name: mypy
         run: uv run mypy src
-        continue-on-error: true
 
       - name: pytest
         run: uv run pytest -q
-        continue-on-error: true

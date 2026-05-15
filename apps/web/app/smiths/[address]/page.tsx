@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { isAddress } from "viem";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Pill } from "@/components/ui/Pill";
-import { Card, CardEyebrow, CardTitle } from "@/components/ui/Card";
-import { getSmith, listSmiths, smithTotals, shortAddr } from "@/lib/smiths";
+import { Card, CardEyebrow, CardTitle, CardBody } from "@/components/ui/Card";
+import { getSmith } from "@/lib/smiths-data";
+import { explorerAddress, getChain, shortAddr, shortHash } from "@/lib/chain";
 
-export async function generateStaticParams() {
-  return listSmiths().map((s) => ({ address: s.address }));
-}
+export const revalidate = 10;
 
 export async function generateMetadata({
   params,
@@ -16,18 +16,10 @@ export async function generateMetadata({
   params: Promise<{ address: string }>;
 }) {
   const { address } = await params;
-  const smith = getSmith(address);
-  if (!smith) return { title: "Smith not found" };
+  if (!isAddress(address)) return { title: "Smith not found" };
   return {
-    title: `${smith.handle} — Foundry Smith`,
-    description: smith.bio,
-    openGraph: {
-      images: [
-        {
-          url: `/api/og?title=${encodeURIComponent(smith.handle)}&eyebrow=${encodeURIComponent("SMITH · " + shortAddr(smith.address))}&stats=${encodeURIComponent(smith.shares.length + " Ingots held · " + smithTotals(smith).totalEarnedOG.toFixed(3) + " OG earned")}`,
-        },
-      ],
-    },
+    title: `${shortAddr(address)} — Foundry Smith`,
+    description: `On-chain activity for Smith ${shortAddr(address)} — Ingots held, contributions, claimable revenue.`,
   };
 }
 
@@ -37,16 +29,17 @@ export default async function SmithProfilePage({
   params: Promise<{ address: string }>;
 }) {
   const { address } = await params;
-  const smith = getSmith(address);
-  if (!smith) notFound();
+  if (!isAddress(address)) notFound();
+  const chain = getChain();
+  if (!chain.isLive) notFound();
 
-  const totals = smithTotals(smith);
+  const smith = await getSmith(address);
+  if (!smith) notFound();
 
   return (
     <main>
       <Header />
 
-      {/* Hero */}
       <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-6">
@@ -58,131 +51,95 @@ export default async function SmithProfilePage({
                 ← All Smiths
               </Link>
               <p className="text-caption text-ember-400 mt-4">Smith</p>
-              <h1 className="text-display-xl text-platinum-100 mt-3">{smith.handle}</h1>
+              <h1 className="text-display-xl text-platinum-100 mt-3 font-mono">
+                {shortAddr(smith.address)}
+              </h1>
               <p className="text-body text-platinum-400 mt-2 font-mono">
                 {smith.address}
               </p>
-              <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
-                {smith.bio}
-              </p>
             </div>
-            <div className="flex flex-col items-end gap-3">
-              <Pill tone="positive" dot>
-                Joined {smith.joinedAt}
-              </Pill>
-              <a
-                href={`https://aristotle.0g.explorer/address/${smith.address}`}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="text-caption text-platinum-400 hover:text-platinum-200 transition-colors"
-              >
-                View on explorer ↗
-              </a>
-            </div>
+            <a
+              href={explorerAddress(smith.address)}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="text-caption text-platinum-400 hover:text-platinum-200 transition-colors"
+            >
+              View on explorer ↗
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Stats */}
       <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-12">
           <div className="border-hairline grid grid-cols-2 gap-px overflow-hidden rounded-lg md:grid-cols-4">
-            <Stat label="Ingots held" value={totals.ingotsHeld.toString()} />
+            <Stat label="Ingots held" value={String(smith.shares.length)} />
             <Stat
-              label="Total earned"
-              value={`${totals.totalEarnedOG.toFixed(3)} OG`}
+              label="Total claimed"
+              value={`${smith.totalClaimedOG.toFixed(3)} OG`}
             />
             <Stat
               label="Claimable now"
-              value={`${totals.totalClaimableOG.toFixed(3)} OG`}
-              accent={totals.totalClaimableOG > 0}
+              value={`${smith.totalClaimableOG.toFixed(3)} OG`}
+              accent={smith.totalClaimableOG > 0}
             />
-            <Stat label="Contributions" value={totals.contributionsCount.toString()} />
+            <Stat label="Contributions" value={String(smith.contributions.length)} />
           </div>
         </div>
       </section>
 
-      {/* Holdings */}
       <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <p className="text-caption text-ember-400">Holdings</p>
           <h2 className="text-display-md text-platinum-100 mt-3">
-            Shares across {totals.ingotsHeld} Ingots
+            Shares across {smith.shares.length} Ingots
           </h2>
-          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {smith.shares.map((share) => (
-              <Card key={share.ingotId} className="hover:bg-ink-800/40">
-                <div className="flex items-start justify-between">
-                  <div className="min-w-0">
-                    <CardEyebrow>
-                      {share.contributionType.toUpperCase()} · {share.contributedAt}
-                    </CardEyebrow>
-                    <CardTitle>
-                      <Link
-                        href={`/ingots/${share.ingotId}`}
-                        className="hover:text-ember-300 transition-colors"
-                      >
-                        {share.ingotName}
-                      </Link>
-                    </CardTitle>
-                    <p className="text-body-sm text-platinum-400 mt-2 font-mono">
-                      {shortAddr(share.ingotId)}
-                    </p>
-                  </div>
-                  <Pill tone="ember">{(share.shareBps / 100).toFixed(1)}%</Pill>
-                </div>
-                <div className="border-hairline mt-6 grid grid-cols-2 gap-4 border-t pt-4">
-                  <div>
-                    <p className="text-caption text-platinum-400">Earned</p>
-                    <p className="text-title-md tabular text-platinum-100 mt-1">
-                      {share.earnedOG.toFixed(3)} OG
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-caption text-platinum-400">Claimable</p>
-                    <p
-                      className={`text-title-md tabular mt-1 ${share.claimableOG > 0 ? "text-signal-positive" : "text-platinum-100"}`}
-                    >
-                      {share.claimableOG.toFixed(3)} OG
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+          {smith.shares.length === 0 ? (
+            <p className="text-body text-platinum-400 mt-6">
+              No Ingot shares yet. Contribute to a Forge to earn one.
+            </p>
+          ) : (
+            <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+              {smith.shares.map((share) => (
+                <Card key={share.tokenId.toString()}>
+                  <CardEyebrow>Ingot #{share.tokenId.toString()}</CardEyebrow>
+                  <CardTitle>{(share.shareBps / 100).toFixed(2)}% share</CardTitle>
+                  <CardBody>Claimable now: {share.claimableOG.toFixed(4)} OG</CardBody>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Activity */}
       <section className="border-hairline border-t">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <p className="text-caption text-ember-400">Activity</p>
           <h2 className="text-display-md text-platinum-100 mt-3">
-            Recent on-chain activity
+            Recent contributions
           </h2>
-          <ol className="divide-ink-800 border-hairline bg-ink-900 mt-8 divide-y rounded-lg">
-            {smith.recentActivity.map((a, i) => (
-              <li key={i} className="flex items-center justify-between gap-6 px-6 py-4">
-                <div className="flex items-center gap-4">
-                  <ActivityDot kind={a.kind} />
-                  <div>
-                    <p className="text-body text-platinum-100">{a.label}</p>
-                    <p className="text-caption text-platinum-400 mt-1">{a.at}</p>
-                  </div>
-                </div>
-                {a.txHash && (
-                  <a
-                    href={`https://aristotle.0g.explorer/tx/${a.txHash}`}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="text-caption text-platinum-400 hover:text-ember-300 font-mono transition-colors"
-                  >
-                    {a.txHash.slice(0, 10)}… ↗
-                  </a>
-                )}
-              </li>
-            ))}
-          </ol>
+          {smith.contributions.length === 0 ? (
+            <p className="text-body text-platinum-400 mt-6">
+              No contributions logged yet.
+            </p>
+          ) : (
+            <ul className="border-hairline mt-8 overflow-hidden rounded-lg">
+              {smith.contributions.slice(0, 25).map((c) => (
+                <li
+                  key={c.txHash}
+                  className="border-hairline bg-ink-900 grid grid-cols-[80px_1fr_auto] items-center gap-4 border-b px-5 py-4 last:border-b-0"
+                >
+                  <Pill tone="ember">{c.type}</Pill>
+                  <span className="text-mono-sm text-platinum-300">
+                    Forge {shortAddr(c.forge)}
+                  </span>
+                  <span className="text-mono-sm text-platinum-400 tabular">
+                    {shortHash(c.txHash)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
 
@@ -194,7 +151,7 @@ export default async function SmithProfilePage({
 function Stat({
   label,
   value,
-  accent,
+  accent = false,
 }: {
   label: string;
   value: string;
@@ -204,20 +161,10 @@ function Stat({
     <div className="bg-ink-900 p-6">
       <p className="text-caption text-platinum-400">{label}</p>
       <p
-        className={`text-display-sm tabular mt-2 ${accent ? "text-signal-positive" : "text-platinum-100"}`}
+        className={`text-display-sm tabular mt-2 ${accent ? "text-ember-400" : "text-platinum-100"}`}
       >
         {value}
       </p>
     </div>
   );
-}
-
-function ActivityDot({ kind }: { kind: "contribute" | "claim" | "vote" }) {
-  const color =
-    kind === "contribute"
-      ? "bg-ember-500"
-      : kind === "claim"
-        ? "bg-signal-positive"
-        : "bg-signal-info";
-  return <span className={`block size-2 rounded-full ${color}`} />;
 }
