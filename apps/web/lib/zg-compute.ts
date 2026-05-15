@@ -96,8 +96,8 @@ async function getBroker(): Promise<BrokerContext | null> {
   try {
     const [{ ethers }, brokerMod] = await Promise.all([
       import("ethers"),
-      import("@0gfoundation/0g-compute-ts-sdk").catch(() =>
-        import("@0glabs/0g-serving-broker")
+      import("@0gfoundation/0g-compute-ts-sdk").catch(
+        () => import("@0glabs/0g-serving-broker")
       ),
     ]);
 
@@ -221,7 +221,10 @@ export async function chatCompletion(params: ZGChatParams): Promise<ZGChatResult
   }
 
   try {
-    const { provider, endpoint, model } = await resolveProvider(ctx, params.ingotTokenId);
+    const { provider, endpoint, model } = await resolveProvider(
+      ctx,
+      params.ingotTokenId
+    );
 
     // Compute the signed request headers (broker reserves prepaid balance for this call).
     const headers = await (

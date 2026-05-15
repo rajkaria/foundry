@@ -96,7 +96,10 @@ export class StorageClient {
   }
 
   /** Upload arbitrary bytes. */
-  async upload(data: Uint8Array | ArrayBuffer, opts: UploadOptions): Promise<UploadResult> {
+  async upload(
+    data: Uint8Array | ArrayBuffer,
+    opts: UploadOptions
+  ): Promise<UploadResult> {
     const mod = await this.load();
     const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
     const file = new mod.MemData(Array.from(bytes));
@@ -157,7 +160,10 @@ export class StorageClient {
   }
 
   /** Download and parse a JSON document. */
-  async downloadJson<T = unknown>(rootHash: Hex, opts: DownloadOptions = {}): Promise<T> {
+  async downloadJson<T = unknown>(
+    rootHash: Hex,
+    opts: DownloadOptions = {}
+  ): Promise<T> {
     return JSON.parse(await this.downloadText(rootHash, opts)) as T;
   }
 
@@ -168,11 +174,12 @@ export class StorageClient {
    */
   async computeRoot(data: Uint8Array | ArrayBuffer | string): Promise<Hex> {
     const mod = await this.load();
-    const bytes = typeof data === "string"
-      ? new TextEncoder().encode(data)
-      : data instanceof Uint8Array
-      ? data
-      : new Uint8Array(data);
+    const bytes =
+      typeof data === "string"
+        ? new TextEncoder().encode(data)
+        : data instanceof Uint8Array
+          ? data
+          : new Uint8Array(data);
     const file = new mod.MemData(Array.from(bytes));
     // The MemData/MerkleTree pair exposed by the SDK exposes `merkleTree()`.
     const fileWithMerkle = file as unknown as {

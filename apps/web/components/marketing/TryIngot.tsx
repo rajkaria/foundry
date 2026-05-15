@@ -5,8 +5,7 @@ import { motion } from "motion/react";
 import { Pill } from "@/components/ui/Pill";
 
 const DEMO_INGOT_ID =
-  process.env.NEXT_PUBLIC_DEMO_INGOT_ID ??
-  "0x8e2af4a000000000000000000000000000000001";
+  process.env.NEXT_PUBLIC_DEMO_INGOT_ID ?? "0x8e2af4a000000000000000000000000000000001";
 
 const SAMPLES = [
   { label: "Konkani → English", input: "Tum kasso assa?" },
@@ -68,7 +67,7 @@ export function TryIngot() {
   return (
     <section
       id="try-an-ingot"
-      className="relative isolate overflow-hidden border-y border-platinum-900/40 bg-ink-950/40 py-24"
+      className="border-platinum-900/40 bg-ink-950/40 relative isolate overflow-hidden border-y py-24"
       aria-labelledby="try-an-ingot-h"
     >
       <div className="mx-auto max-w-[1280px] px-6">
@@ -85,18 +84,17 @@ export function TryIngot() {
               className="text-display-xl text-platinum-100 mt-6 max-w-[18ch]"
             >
               Call a co-owned model.
-              <span className="block text-ember-300 text-serif-display">
+              <span className="text-ember-300 text-serif-display block">
                 Right now.
               </span>
             </h2>
             <p className="text-body-lg text-platinum-300 mt-6 max-w-[48ch]">
-              The request below routes through the OpenAI-compatible Foundry
-              proxy to a live Ingot on 0G Aristotle mainnet. The inference fee
-              is reserved on-chain via the 0G Compute serving broker, and a
-              portion deposits into the Ingot&apos;s <code>RevenueSplitter</code>{" "}
-              — claimable by its co-owners.
+              The request below routes through the OpenAI-compatible Foundry proxy to a
+              live Ingot on 0G Aristotle mainnet. The inference fee is reserved on-chain
+              via the 0G Compute serving broker, and a portion deposits into the
+              Ingot&apos;s <code>RevenueSplitter</code> — claimable by its co-owners.
             </p>
-            <ul className="mt-6 space-y-2 text-body-sm text-platinum-400">
+            <ul className="text-body-sm text-platinum-400 mt-6 space-y-2">
               <li>
                 <span className="text-platinum-200">Ingot:</span>{" "}
                 <code className="text-mono-sm text-ember-300">
@@ -104,8 +102,8 @@ export function TryIngot() {
                 </code>
               </li>
               <li>
-                <span className="text-platinum-200">Adapter:</span> OpenAI-compat
-                · also via{" "}
+                <span className="text-platinum-200">Adapter:</span> OpenAI-compat · also
+                via{" "}
                 <a
                   href="/docs/sdk-reference#vercel-ai"
                   className="text-ember-300 hover:underline"
@@ -121,8 +119,8 @@ export function TryIngot() {
                 </a>
               </li>
               <li>
-                <span className="text-platinum-200">Revenue routed:</span>{" "}
-                pro-rata to share-ledger holders, pull-claim on chain
+                <span className="text-platinum-200">Revenue routed:</span> pro-rata to
+                share-ledger holders, pull-claim on chain
               </li>
             </ul>
           </motion.div>
@@ -132,14 +130,14 @@ export function TryIngot() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="rounded-2xl border-hairline bg-ink-900/60 backdrop-blur p-6 md:p-8"
+            className="border-hairline bg-ink-900/60 rounded-2xl p-6 backdrop-blur md:p-8"
           >
             <div className="flex flex-wrap gap-2">
               {SAMPLES.map((s) => (
                 <button
                   key={s.label}
                   onClick={() => setInput(s.input)}
-                  className="rounded-pill border-hairline bg-ink-800/70 px-3 py-1.5 text-mono-sm text-platinum-300 transition hover:bg-ink-800 hover:text-platinum-100"
+                  className="rounded-pill border-hairline bg-ink-800/70 text-mono-sm text-platinum-300 hover:bg-ink-800 hover:text-platinum-100 px-3 py-1.5 transition"
                   type="button"
                 >
                   {s.label}
@@ -148,14 +146,12 @@ export function TryIngot() {
             </div>
 
             <label className="mt-5 block">
-              <span className="text-caption text-platinum-400">
-                Prompt
-              </span>
+              <span className="text-caption text-platinum-400">Prompt</span>
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 rows={3}
-                className="mt-2 w-full rounded-xl border-hairline bg-ink-950 px-4 py-3 text-body text-platinum-100 placeholder:text-platinum-500 focus:border-ember-400 focus:outline-none"
+                className="border-hairline bg-ink-950 text-body text-platinum-100 placeholder:text-platinum-500 focus:border-ember-400 mt-2 w-full rounded-xl px-4 py-3 focus:outline-none"
                 placeholder="Type something to translate or ask…"
                 disabled={pending}
               />
@@ -168,7 +164,7 @@ export function TryIngot() {
               <button
                 onClick={send}
                 disabled={pending || !input.trim()}
-                className="rounded-pill bg-ember-500 px-5 py-2 text-mono-sm font-semibold text-ink-950 transition hover:bg-ember-400 disabled:opacity-50"
+                className="rounded-pill bg-ember-500 text-mono-sm text-ink-950 hover:bg-ember-400 px-5 py-2 font-semibold transition disabled:opacity-50"
                 type="button"
               >
                 {pending ? "Routing through 0G…" : "Run inference"}
@@ -180,12 +176,10 @@ export function TryIngot() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="mt-6 rounded-xl border-hairline bg-ink-950/80 p-5"
+                className="border-hairline bg-ink-950/80 mt-6 rounded-xl p-5"
               >
                 {error ? (
-                  <p className="text-body-sm text-signal-negative">
-                    Error: {error}
-                  </p>
+                  <p className="text-body-sm text-signal-negative">Error: {error}</p>
                 ) : (
                   <>
                     <p className="text-caption text-platinum-400 mb-2">
@@ -195,12 +189,10 @@ export function TryIngot() {
                       {output}
                     </p>
                     {meta && (
-                      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-platinum-900/40 pt-3 text-mono-sm">
+                      <div className="border-platinum-900/40 text-mono-sm mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t pt-3">
                         <span
                           className={
-                            isReal
-                              ? "text-signal-positive"
-                              : "text-platinum-400"
+                            isReal ? "text-signal-positive" : "text-platinum-400"
                           }
                         >
                           ● {isReal ? "live on 0G Compute" : "stub mode"}
@@ -237,11 +229,11 @@ export function TryIngot() {
               </motion.div>
             )}
 
-            <details className="mt-5 text-mono-sm text-platinum-400">
-              <summary className="cursor-pointer hover:text-platinum-200">
+            <details className="text-mono-sm text-platinum-400 mt-5">
+              <summary className="hover:text-platinum-200 cursor-pointer">
                 Reproduce with curl
               </summary>
-              <pre className="mt-3 overflow-x-auto rounded-lg bg-ink-950 p-4 text-xs leading-relaxed">
+              <pre className="bg-ink-950 mt-3 overflow-x-auto rounded-lg p-4 text-xs leading-relaxed">
                 {`curl https://foundryprotocol.xyz/api/v1/chat/completions \\
   -H "content-type: application/json" \\
   -H "x-foundry-ingot-id: ${DEMO_INGOT_ID}" \\

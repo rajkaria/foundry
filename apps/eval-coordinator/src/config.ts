@@ -46,7 +46,9 @@ const DEFAULT_RPC: Record<NetworkName, string> = {
 export function loadConfig(): Config {
   const network = (process.env.FOUNDRY_NETWORK ?? "aristotle") as NetworkName;
   if (!["aristotle", "galileo", "local"].includes(network)) {
-    throw new Error(`FOUNDRY_NETWORK must be one of aristotle|galileo|local, got "${network}"`);
+    throw new Error(
+      `FOUNDRY_NETWORK must be one of aristotle|galileo|local, got "${network}"`
+    );
   }
 
   const rpcUrl =
@@ -59,7 +61,9 @@ export function loadConfig(): Config {
   if (!rawKey) {
     throw new Error("COORDINATOR_KEY is required (registered eval coordinator key)");
   }
-  const coordinatorKey = (rawKey.startsWith("0x") ? rawKey : `0x${rawKey}`) as `0x${string}`;
+  const coordinatorKey = (
+    rawKey.startsWith("0x") ? rawKey : `0x${rawKey}`
+  ) as `0x${string}`;
   if (coordinatorKey.length !== 66) {
     throw new Error("COORDINATOR_KEY must be a 32-byte hex string");
   }

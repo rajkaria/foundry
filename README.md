@@ -111,8 +111,8 @@ curl https://foundryprotocol.xyz/api/v1/chat/completions \
 
 ## Live mainnet status
 
-| Contract               | Address (0G Aristotle, chain id 16661)                                                                                    |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Contract               | Address (0G Aristotle, chain id 16661)                                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `FORGEToken`           | [`0xE716B0260f462b2A1789cB6cfCBd825736b920Ca`](https://chainscan.0g.ai/address/0xE716B0260f462b2A1789cB6cfCBd825736b920Ca) |
 | `ContributionRegistry` | [`0x05235Ba0F2a77bcaB87371E4d797D6830ddC2d86`](https://chainscan.0g.ai/address/0x05235Ba0F2a77bcaB87371E4d797D6830ddC2d86) |
 | `Ingot`                | [`0x39B736f424754d05a0da186d89015b74d1DDe1d3`](https://chainscan.0g.ai/address/0x39B736f424754d05a0da186d89015b74d1DDe1d3) |

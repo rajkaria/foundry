@@ -161,9 +161,7 @@ function jsonText(payload: unknown): string {
   return JSON.stringify(payload, null, 2);
 }
 
-export function createFoundryMcpServer(
-  options: FoundryMcpOptions = {}
-): Server {
+export function createFoundryMcpServer(options: FoundryMcpOptions = {}): Server {
   const baseUrl = options.baseUrl ?? DEFAULT_BASE;
   const fetchImpl = options.fetch ?? globalThis.fetch;
   const defaultIngotId = options.defaultIngotId;
@@ -213,26 +211,21 @@ export function createFoundryMcpServer(
               ]
             : [{ role: "user", content: parsed.input }];
 
-          const res = await fetchImpl(
-            joinUrl(baseUrl, "/api/v1/chat/completions"),
-            {
-              method: "POST",
-              headers: {
-                "content-type": "application/json",
-                "x-foundry-ingot-id": ingotId,
-              },
-              body: JSON.stringify({
-                messages,
-                max_tokens: parsed.max_tokens,
-                temperature: parsed.temperature,
-              }),
-            }
-          );
+          const res = await fetchImpl(joinUrl(baseUrl, "/api/v1/chat/completions"), {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              "x-foundry-ingot-id": ingotId,
+            },
+            body: JSON.stringify({
+              messages,
+              max_tokens: parsed.max_tokens,
+              temperature: parsed.temperature,
+            }),
+          });
           if (!res.ok) {
             const text = await res.text().catch(() => "");
-            throw new Error(
-              `inference failed: ${res.status} ${text.slice(0, 200)}`
-            );
+            throw new Error(`inference failed: ${res.status} ${text.slice(0, 200)}`);
           }
           const body = (await res.json()) as {
             choices?: Array<{ message?: { content?: string } }>;
@@ -256,10 +249,7 @@ export function createFoundryMcpServer(
         case "get_ingot": {
           const parsed = GetIngotArgs.parse(args);
           const res = await fetchImpl(
-            joinUrl(
-              baseUrl,
-              `/api/v1/models?id=${encodeURIComponent(parsed.ingot_id)}`
-            )
+            joinUrl(baseUrl, `/api/v1/models?id=${encodeURIComponent(parsed.ingot_id)}`)
           );
           if (!res.ok) {
             throw new Error(`get_ingot failed: ${res.status}`);
@@ -331,9 +321,7 @@ export function createFoundryMcpServer(
 
         default:
           return {
-            content: [
-              { type: "text", text: `Unknown tool: ${name}` },
-            ],
+            content: [{ type: "text", text: `Unknown tool: ${name}` }],
             isError: true,
           };
       }

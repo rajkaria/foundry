@@ -76,6 +76,8 @@ describe("attestation envelope", () => {
     const env = makeEnv({ coordinator: account.address });
     const signed = await signEnvelope(env, pk);
     const tampered = { ...signed, envelope: { ...signed.envelope, baseline: 0.99 } };
-    await expect(verifyEnvelope(tampered, account.address)).rejects.toThrow(/digest mismatch/);
+    await expect(verifyEnvelope(tampered, account.address)).rejects.toThrow(
+      /digest mismatch/
+    );
   });
 });

@@ -18,22 +18,22 @@ Or wire into an MCP client config:
       "args": ["-y", "@foundryprotocol/mcp"],
       "env": {
         "FOUNDRY_BASE_URL": "https://foundryprotocol.xyz",
-        "FOUNDRY_DEFAULT_INGOT_ID": "0x8e2af4a000000000000000000000000000000001"
-      }
-    }
-  }
+        "FOUNDRY_DEFAULT_INGOT_ID": "0x8e2af4a000000000000000000000000000000001",
+      },
+    },
+  },
 }
 ```
 
 ## Tools
 
-| Tool | What it does |
-| --- | --- |
-| `list_ingots` | Enumerate live Foundry Ingots. |
-| `run_inference` | Call an Ingot via the OpenAI-compat proxy. **Revenue routes on-chain to co-owners.** |
-| `get_ingot` | Metadata + cap table for an Ingot. |
-| `get_lineage` | Parent Forge + parent Ingot chain. |
-| `get_attestation` | TEE attestation envelope used to mint the Ingot. |
+| Tool              | What it does                                                                         |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| `list_ingots`     | Enumerate live Foundry Ingots.                                                       |
+| `run_inference`   | Call an Ingot via the OpenAI-compat proxy. **Revenue routes on-chain to co-owners.** |
+| `get_ingot`       | Metadata + cap table for an Ingot.                                                   |
+| `get_lineage`     | Parent Forge + parent Ingot chain.                                                   |
+| `get_attestation` | TEE attestation envelope used to mint the Ingot.                                     |
 
 ## Why this exists
 

@@ -25,6 +25,7 @@
 **On screen:** foundryprotocol.xyz landing, Metal-Pour animation playing.
 
 **Voice over:**
+
 > "If your dataset trains the next great AI model, you get nothing. The company that built it keeps the upside forever. Foundry fixes that — on 0G — today."
 
 ---
@@ -34,6 +35,7 @@
 **On screen:** scroll to the "Why this exists" section. Hold for a beat. Then cut to a Linear-style slide that lists "Compute marketplace, Data DAO, Inference network — and the gap nobody fills."
 
 **Voice over:**
+
 > "Every AI×crypto project today picks one lane. Render and Akash sell compute. Ocean sells data. Bittensor and Ritual sell inference. None of them give the contributors permanent ownership in the model they helped create. There is no on-chain way to say: 'I helped train this. I own a share. Every time someone calls it, I earn.'"
 
 ---
@@ -43,6 +45,7 @@
 **On screen:** the architecture SVG (open `apps/web/public/architecture.svg` full-screen).
 
 **Voice over:**
+
 > "Foundry introduces the Forge. A Forge is an LP for an AI model. Smiths pool data, compute, and capital. A Python coordinator runs a Leave-One-Out attribution eval inside a 0G TEE. A hardware-signed attestation comes back on-chain. The Forge mints an Ingot — a co-owned model with an Agent ID. Every inference call routes revenue to the Ingot's cap table, pull-claimable forever. Six 0G surfaces, all load-bearing. Foundry doesn't consume 0G — it supplies it."
 
 ---
@@ -52,16 +55,19 @@
 **On screen:** switch to `/judges` page. Hover over the "0G surfaces used: 6/6" tile. Then scroll to the Try-An-Ingot widget. Click "Konkani → English" sample. Click **Run inference**.
 
 **Voice over (during the inference):**
+
 > "This is a real Ingot on 0G Aristotle mainnet. The prompt routes through our OpenAI-compatible proxy to 0G Compute. The serving broker reserves the fee on-chain — that's a transaction on Aristotle right now."
 
 **On screen:** when the response renders, the tx hash appears. Click it. Chainscan opens.
 
 **Voice over:**
+
 > "There's the inference tx. Here's the revenue split — every co-owner of this Ingot just earned a fraction. They pull-claim it from `RevenueSplitter` whenever they want."
 
 **On screen:** back to the page. Click "Open Forge explorer" → the Forge detail page. Scroll past the contribution list, the eval timeline (OPEN → EVALUATING → MINTING → LIVE), the TEE attestation viewer.
 
 **Voice over:**
+
 > "Every state transition you see is an on-chain event. The TEE attestation hash here is the same one we verified on-chain in `Forge.submitEvalResult`. Pull any 0G surface out and the protocol breaks. None of this is mocked."
 
 ---
@@ -78,6 +84,7 @@ const { output } = await foundry.inference.run("ingot:0x…", { input: "Hello" }
 ```
 
 **Voice over:**
+
 > "Three lines. npm-published. Plus drop-in adapters for the Vercel AI SDK, LangChain, and an MCP server so any Claude- or Cursor-style agent can use a Foundry Ingot natively. Foundry doesn't ask integrators to learn 0G. It just slots in."
 
 ---
@@ -87,6 +94,7 @@ const { output } = await foundry.inference.run("ingot:0x…", { input: "Hello" }
 **On screen:** dashboard with live counters incrementing. Hold for 2 seconds. Then cut to a card showing Month 1 / 3 / 6 milestones.
 
 **Voice over:**
+
 > "Today: six contracts, ten Forges live, real revenue flowing. Month one: Trail of Bits audit. Month three: Shapley attribution, secondary market for shares. Month six: 50 Forges, $50k of inference revenue routed to co-owners — most of whom are anonymous wallets that contributed a dataset or compute or capital and now earn from a model they helped make."
 
 **On screen:** final card — Foundry mark, single line:
@@ -94,6 +102,7 @@ const { output } = await foundry.inference.run("ingot:0x…", { input: "Hello" }
 > **A share of an AI model is now an asset class.**
 
 **Voice over (closing line, slower):**
+
 > "Foundry. The supply-side protocol for 0G. We don't consume 0G — we generate it."
 
 ---

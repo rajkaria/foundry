@@ -110,7 +110,7 @@ export default async function JudgesPage() {
   const stats = await getStats().catch(() => null);
 
   return (
-    <main className="min-h-screen bg-ink-950">
+    <main className="bg-ink-950 min-h-screen">
       <Header />
 
       <section className="relative mx-auto max-w-[1280px] px-6 pt-24 pb-12">
@@ -119,32 +119,26 @@ export default async function JudgesPage() {
         </Pill>
         <h1 className="text-display-xxl text-platinum-100 mt-6 max-w-[26ch]">
           Foundry in 60 seconds —
-          <span className="block text-ember-300 text-serif-display">
+          <span className="text-ember-300 text-serif-display block">
             no wallet required.
           </span>
         </h1>
         <p className="text-body-lg text-platinum-300 mt-6 max-w-[68ch]">
-          You can verify every claim Foundry makes from this page. The
-          inference widget calls a live Ingot on 0G Aristotle mainnet. The
-          deployment table links to {chain.network}. The dashboard counters
-          are rendered from on-chain events. Nothing here is staged.
+          You can verify every claim Foundry makes from this page. The inference widget
+          calls a live Ingot on 0G Aristotle mainnet. The deployment table links to{" "}
+          {chain.network}. The dashboard counters are rendered from on-chain events.
+          Nothing here is staged.
         </p>
 
         <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
           {HEADLINES.map((h) => (
             <div
               key={h.label}
-              className="rounded-2xl border-hairline bg-ink-900/60 p-5"
+              className="border-hairline bg-ink-900/60 rounded-2xl p-5"
             >
-              <div className="text-display text-ember-300 tabular">
-                {h.metric}
-              </div>
-              <div className="text-caption text-platinum-200 mt-2">
-                {h.label}
-              </div>
-              <div className="text-mono-sm text-platinum-500 mt-1">
-                {h.detail}
-              </div>
+              <div className="text-display text-ember-300 tabular">{h.metric}</div>
+              <div className="text-caption text-platinum-200 mt-2">{h.label}</div>
+              <div className="text-mono-sm text-platinum-500 mt-1">{h.detail}</div>
             </div>
           ))}
         </div>
@@ -163,19 +157,15 @@ export default async function JudgesPage() {
           {STOPS.map((s) => (
             <li
               key={s.n}
-              className="rounded-2xl border-hairline bg-ink-900/40 p-6 md:p-8"
+              className="border-hairline bg-ink-900/40 rounded-2xl p-6 md:p-8"
             >
               <div className="flex items-baseline gap-4">
                 <span className="text-display text-ember-300 tabular">
                   {String(s.n).padStart(2, "0")}
                 </span>
-                <h3 className="text-display-sm text-platinum-100">
-                  {s.title}
-                </h3>
+                <h3 className="text-display-sm text-platinum-100">{s.title}</h3>
               </div>
-              <p className="text-body text-platinum-300 mt-3 max-w-[72ch]">
-                {s.body}
-              </p>
+              <p className="text-body text-platinum-300 mt-3 max-w-[72ch]">{s.body}</p>
               <Link
                 href={s.link.href}
                 className="text-mono-sm text-ember-300 hover:text-ember-200 mt-4 inline-flex items-center gap-1"
@@ -188,30 +178,24 @@ export default async function JudgesPage() {
       </section>
 
       <section className="mx-auto max-w-[1280px] px-6 py-20">
-        <h2 className="text-display-xl text-platinum-100">
-          Verifiable deployment
-        </h2>
+        <h2 className="text-display-xl text-platinum-100">Verifiable deployment</h2>
         <p className="text-body text-platinum-400 mt-3 max-w-[64ch]">
-          All six contracts live on 0G Aristotle (chain id 16661). Source is
-          verified on the 0G explorer. Click any address to inspect.
+          All six contracts live on 0G Aristotle (chain id 16661). Source is verified on
+          the 0G explorer. Click any address to inspect.
         </p>
-        <div className="mt-8 overflow-hidden rounded-2xl border-hairline">
+        <div className="border-hairline mt-8 overflow-hidden rounded-2xl">
           <table className="w-full text-left">
             <thead className="bg-ink-900/60 text-mono-sm text-platinum-400">
               <tr>
                 <th className="px-4 py-3 font-medium">Contract</th>
                 <th className="px-4 py-3 font-medium">Address</th>
-                <th className="hidden px-4 py-3 font-medium md:table-cell">
-                  Role
-                </th>
+                <th className="hidden px-4 py-3 font-medium md:table-cell">Role</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-platinum-900/40 bg-ink-950/60">
+            <tbody className="divide-platinum-900/40 bg-ink-950/60 divide-y">
               {DEPLOYMENTS.map((d) => (
                 <tr key={d.addr}>
-                  <td className="px-4 py-3 text-mono-sm text-platinum-100">
-                    {d.name}
-                  </td>
+                  <td className="text-mono-sm text-platinum-100 px-4 py-3">{d.name}</td>
                   <td className="px-4 py-3">
                     <a
                       href={`https://chainscan.0g.ai/address/${d.addr}`}
@@ -222,7 +206,7 @@ export default async function JudgesPage() {
                       {d.addr}
                     </a>
                   </td>
-                  <td className="hidden px-4 py-3 text-mono-sm text-platinum-400 md:table-cell">
+                  <td className="text-mono-sm text-platinum-400 hidden px-4 py-3 md:table-cell">
                     {d.note}
                   </td>
                 </tr>
@@ -237,11 +221,11 @@ export default async function JudgesPage() {
           What we want you to grade us on
         </h2>
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border-hairline bg-ink-900/40 p-6">
+          <div className="border-hairline bg-ink-900/40 rounded-2xl p-6">
             <Pill tone="ember">Innovation</Pill>
             <p className="text-body text-platinum-300 mt-4">
-              No other project on 0G — or in the broader AI×crypto landscape —
-              ships a primitive that turns &ldquo;contributing to a model&rsquo;s
+              No other project on 0G — or in the broader AI×crypto landscape — ships a
+              primitive that turns &ldquo;contributing to a model&rsquo;s
               training&rdquo; into &ldquo;owning a share of its revenue forever.&rdquo;
               See{" "}
               <Link
@@ -253,12 +237,12 @@ export default async function JudgesPage() {
               .
             </p>
           </div>
-          <div className="rounded-2xl border-hairline bg-ink-900/40 p-6">
+          <div className="border-hairline bg-ink-900/40 rounded-2xl p-6">
             <Pill tone="ember">Execution</Pill>
             <p className="text-body text-platinum-300 mt-4">
-              Six contracts, ~100% line coverage, TEE attestation parsed
-              on-chain, npm SDK with three adapters, Next.js 16 web surface,
-              indexer, eval coordinator. None of it is mocked. See{" "}
+              Six contracts, ~100% line coverage, TEE attestation parsed on-chain, npm
+              SDK with three adapters, Next.js 16 web surface, indexer, eval
+              coordinator. None of it is mocked. See{" "}
               <Link
                 href="/docs/real-vs-roadmap"
                 className="text-ember-300 hover:underline"
@@ -268,13 +252,12 @@ export default async function JudgesPage() {
               .
             </p>
           </div>
-          <div className="rounded-2xl border-hairline bg-ink-900/40 p-6">
+          <div className="border-hairline bg-ink-900/40 rounded-2xl p-6">
             <Pill tone="ember">0G integration</Pill>
             <p className="text-body text-platinum-300 mt-4">
-              Every 0G surface is load-bearing. Foundry generates chain txs,
-              storage uploads, compute hours, TEE jobs, and Agent IDs as the
-              direct result of its core loop. Every Forge created grows 0G.
-              See{" "}
+              Every 0G surface is load-bearing. Foundry generates chain txs, storage
+              uploads, compute hours, TEE jobs, and Agent IDs as the direct result of
+              its core loop. Every Forge created grows 0G. See{" "}
               <Link
                 href="/docs/protocol-overview"
                 className="text-ember-300 hover:underline"
@@ -284,12 +267,12 @@ export default async function JudgesPage() {
               .
             </p>
           </div>
-          <div className="rounded-2xl border-hairline bg-ink-900/40 p-6">
+          <div className="border-hairline bg-ink-900/40 rounded-2xl p-6">
             <Pill tone="ember">Future</Pill>
             <p className="text-body text-platinum-300 mt-4">
-              The hackathon ends; Foundry doesn&rsquo;t. Audit, Shapley v2,
-              secondary market for shares, and 50 Forges live by Month 6 are
-              all funded by current grant runway. See the{" "}
+              The hackathon ends; Foundry doesn&rsquo;t. Audit, Shapley v2, secondary
+              market for shares, and 50 Forges live by Month 6 are all funded by current
+              grant runway. See the{" "}
               <a
                 href="https://github.com/rajkaria/foundry/blob/main/docs/VISION.md"
                 target="_blank"
@@ -307,8 +290,8 @@ export default async function JudgesPage() {
       {stats && (
         <section className="mx-auto max-w-[1280px] px-6 pb-24">
           <p className="text-mono-sm text-platinum-500">
-            Live (from on-chain events): {stats.forges} Forges · {stats.ingots}{" "}
-            Ingots · {stats.contributions} contributions · last block{" "}
+            Live (from on-chain events): {stats.forges} Forges · {stats.ingots} Ingots ·{" "}
+            {stats.contributions} contributions · last block{" "}
             {stats.lastBlock.toString()}
           </p>
         </section>

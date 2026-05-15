@@ -74,9 +74,9 @@ export default function BuildOnFoundryPage() {
           </h1>
           <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
             The Foundry SDK ships with adapters for the agent frameworks your project
-            already uses — Vercel AI SDK, LangChain, OpenAI-compatible HTTP — and an
-            MCP server so Claude Desktop, Cursor, Cline, or any MCP-capable agent
-            picks up Foundry Ingots as first-class tools. Revenue routes back to the
+            already uses — Vercel AI SDK, LangChain, OpenAI-compatible HTTP — and an MCP
+            server so Claude Desktop, Cursor, Cline, or any MCP-capable agent picks up
+            Foundry Ingots as first-class tools. Revenue routes back to the
             Ingot&rsquo;s co-owners automatically, on-chain.
           </p>
 

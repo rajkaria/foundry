@@ -86,7 +86,11 @@ export type ForgeId = `forge:0x${string}`;
 export type AgentId = `${number}:${IngotId}:${number}`; // chainId:ingotId:tokenId
 
 export type { Address, Hex };
-export type { InferenceParams, InferenceResult, InferenceMessage } from "./inference.js";
+export type {
+  InferenceParams,
+  InferenceResult,
+  InferenceMessage,
+} from "./inference.js";
 export type { Deployment, NetworkName };
 export type { StorageClientConfig, UploadOptions, UploadResult } from "./storage.js";
 export type { DAClientConfig, DAPublishResult } from "./da.js";
@@ -406,29 +410,57 @@ export class Foundry {
 
     get: async (forgeId: ForgeId): Promise<ForgeFullState> => {
       const addr = unwrap(forgeId);
-      const [state, creator, modelSpec, evalSpec, evalCoordinator, windowEnds, attestation, tokenId] =
-        (await Promise.all([
-          this.publicClient.readContract({ address: addr, abi: forgeAbi, functionName: "state" }),
-          this.publicClient.readContract({ address: addr, abi: forgeAbi, functionName: "creator" }),
-          this.publicClient.readContract({ address: addr, abi: forgeAbi, functionName: "modelSpec" }),
-          this.publicClient.readContract({ address: addr, abi: forgeAbi, functionName: "evalSpec" }),
-          this.publicClient.readContract({
-            address: addr,
-            abi: forgeAbi,
-            functionName: "evalCoordinator",
-          }),
-          this.publicClient.readContract({
-            address: addr,
-            abi: forgeAbi,
-            functionName: "contributionWindowEnds",
-          }),
-          this.publicClient.readContract({
-            address: addr,
-            abi: forgeAbi,
-            functionName: "attestation",
-          }),
-          this.publicClient.readContract({ address: addr, abi: forgeAbi, functionName: "tokenId" }),
-        ])) as [number, Address, Hex, Hex, Address, bigint, Hex, bigint];
+      const [
+        state,
+        creator,
+        modelSpec,
+        evalSpec,
+        evalCoordinator,
+        windowEnds,
+        attestation,
+        tokenId,
+      ] = (await Promise.all([
+        this.publicClient.readContract({
+          address: addr,
+          abi: forgeAbi,
+          functionName: "state",
+        }),
+        this.publicClient.readContract({
+          address: addr,
+          abi: forgeAbi,
+          functionName: "creator",
+        }),
+        this.publicClient.readContract({
+          address: addr,
+          abi: forgeAbi,
+          functionName: "modelSpec",
+        }),
+        this.publicClient.readContract({
+          address: addr,
+          abi: forgeAbi,
+          functionName: "evalSpec",
+        }),
+        this.publicClient.readContract({
+          address: addr,
+          abi: forgeAbi,
+          functionName: "evalCoordinator",
+        }),
+        this.publicClient.readContract({
+          address: addr,
+          abi: forgeAbi,
+          functionName: "contributionWindowEnds",
+        }),
+        this.publicClient.readContract({
+          address: addr,
+          abi: forgeAbi,
+          functionName: "attestation",
+        }),
+        this.publicClient.readContract({
+          address: addr,
+          abi: forgeAbi,
+          functionName: "tokenId",
+        }),
+      ])) as [number, Address, Hex, Hex, Address, bigint, Hex, bigint];
 
       return {
         id: forgeId,
@@ -666,9 +698,15 @@ export class Foundry {
   /* ─── lineage ──────────────────────────────────────────────────────── */
 
   readonly lineage = {
-    get: async (tokenId: bigint): Promise<{ parent: Hex; weightsRoot: Hex; forge: Address }> => {
+    get: async (
+      tokenId: bigint
+    ): Promise<{ parent: Hex; weightsRoot: Hex; forge: Address }> => {
       const meta = await this.ingot.meta(tokenId);
-      return { parent: meta.lineageParent, weightsRoot: meta.weightsRoot, forge: meta.forge };
+      return {
+        parent: meta.lineageParent,
+        weightsRoot: meta.weightsRoot,
+        forge: meta.forge,
+      };
     },
 
     walkAncestors: async (tokenId: bigint, max: number = 32): Promise<bigint[]> => {

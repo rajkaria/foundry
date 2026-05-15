@@ -39,7 +39,7 @@ A Forge is an LP for an AI model.
 1. Smiths pool data, compute, capital
 2. Python coordinator runs Leave-One-Out attribution inside a 0G TEE
 3. Hardware-signed attestation comes back on-chain
-4. Ingot mints with a cap table proportional to *measured* contribution
+4. Ingot mints with a cap table proportional to _measured_ contribution
 5. Every inference call routes revenue to co-owners
 
 ---
@@ -119,7 +119,7 @@ If you build on 0G — slot in. If you have data — own a model.
 
 If your dataset trains the next AI model, you currently get nothing — the company that built it keeps the upside forever. We spent the 0G APAC Hackathon building the primitive that fixes that.
 
-Foundry is on-chain co-ownership of AI models. Anyone can pool data, compute, or capital into a Forge. A Python eval coordinator runs a Leave-One-Out attribution test inside a 0G TEE. A hardware-signed attestation comes back on-chain. The Forge mints an Ingot — a co-owned model with a share ledger proportional to *measured* contribution. Every inference call routes revenue back to those co-owners, pull-claimable forever.
+Foundry is on-chain co-ownership of AI models. Anyone can pool data, compute, or capital into a Forge. A Python eval coordinator runs a Leave-One-Out attribution test inside a 0G TEE. A hardware-signed attestation comes back on-chain. The Forge mints an Ingot — a co-owned model with a share ledger proportional to _measured_ contribution. Every inference call routes revenue back to those co-owners, pull-claimable forever.
 
 Six contracts. Two hundred-million-parameter Konkani↔English translation Ingot already live. A published npm SDK that plugs into the Vercel AI SDK, LangChain, OpenAI-compatible HTTP, and an MCP server so any AI agent can natively consume a Foundry Ingot.
 

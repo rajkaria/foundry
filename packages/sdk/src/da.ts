@@ -133,7 +133,10 @@ export class DAClient {
 }
 
 export class DAError extends Error {
-  constructor(public readonly status: number, body: string) {
+  constructor(
+    public readonly status: number,
+    body: string
+  ) {
     super(`[foundry-sdk:da] ${status} ${body.slice(0, 200)}`);
     this.name = "DAError";
   }
@@ -159,7 +162,8 @@ function canonicalJsonStringify(value: unknown): string {
   }
   const keys = Object.keys(value as Record<string, unknown>).sort();
   const entries = keys.map(
-    (k) => `${JSON.stringify(k)}:${canonicalJsonStringify((value as Record<string, unknown>)[k])}`
+    (k) =>
+      `${JSON.stringify(k)}:${canonicalJsonStringify((value as Record<string, unknown>)[k])}`
   );
   return `{${entries.join(",")}}`;
 }

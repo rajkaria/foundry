@@ -66,7 +66,7 @@ Foundry is the missing primitive. A Forge is an LP for an AI model. An Ingot is 
 
 ## How each 0G integration deepens
 
-Every component of 0G that Foundry uses today gets *more* usage as the protocol grows. This is the value flywheel sponsor judges look for.
+Every component of 0G that Foundry uses today gets _more_ usage as the protocol grows. This is the value flywheel sponsor judges look for.
 
 ### 0G Chain (Aristotle mainnet)
 
@@ -113,6 +113,7 @@ Foundry charges a **protocol fee on inference revenue** routed through Ingots.
 - **No mint fees, no contribution fees.** Foundry only earns when an Ingot earns. Aligned incentives.
 
 Rough unit economics (Month 6 target):
+
 - 50 Forges × avg 200 inference calls/day × $0.005 per call = **$50/day per Forge** = **$2,500/day protocol-wide.**
 - 2% protocol fee = **$50/day** to Foundry treasury = **~$18k/year run rate** at Month 6 scale.
 - This is intentionally low; the moat is the network, not the rake. Year 1 targets are revenue routed through (the GMV-equivalent), not protocol take.
@@ -148,6 +149,7 @@ To accelerate this from a hackathon submission to a production protocol:
 - **Compute credits** on 0G Compute (training + TEE eval) sufficient to run 50 Forges through their first lifecycle without consumer-paid revenue.
 
 In exchange, 0G gets:
+
 - The first AI-model-ownership primitive on its chain. A defensible position vs. Bittensor, Ocean, and every other AI×crypto network.
 - A consumer-recognizable proof case (a community-owned translation model for a real low-resource language).
 - A growing % of all Aristotle transactions, Storage uploads, Compute hours, TEE jobs, and Agent IDs.

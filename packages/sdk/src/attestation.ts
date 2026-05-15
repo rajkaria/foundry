@@ -62,7 +62,9 @@ export async function signEnvelope(
   privateKey: Hex
 ): Promise<SignedEnvelope> {
   if (!isHex(privateKey) || privateKey.length !== 66) {
-    throw new Error("[foundry-sdk:attestation] privateKey must be 0x-prefixed 32 bytes");
+    throw new Error(
+      "[foundry-sdk:attestation] privateKey must be 0x-prefixed 32 bytes"
+    );
   }
   const digest = digestEnvelope(envelope);
   // We use the EIP-191 personal-sign envelope so the recovery on-chain
@@ -111,9 +113,10 @@ export async function verifyEnvelope(
 function encodeSignature(sig: { r: Hex; s: Hex; v?: bigint; yParity?: number }): Hex {
   const r = sig.r.replace(/^0x/, "").padStart(64, "0");
   const s = sig.s.replace(/^0x/, "").padStart(64, "0");
-  const v = sig.v !== undefined
-    ? Number(sig.v).toString(16).padStart(2, "0")
-    : ((sig.yParity ?? 0) + 27).toString(16).padStart(2, "0");
+  const v =
+    sig.v !== undefined
+      ? Number(sig.v).toString(16).padStart(2, "0")
+      : ((sig.yParity ?? 0) + 27).toString(16).padStart(2, "0");
   return `0x${r}${s}${v}` as Hex;
 }
 
@@ -124,7 +127,8 @@ function canonicalJsonStringify(value: unknown): string {
   }
   const keys = Object.keys(value as Record<string, unknown>).sort();
   const entries = keys.map(
-    (k) => `${JSON.stringify(k)}:${canonicalJsonStringify((value as Record<string, unknown>)[k])}`
+    (k) =>
+      `${JSON.stringify(k)}:${canonicalJsonStringify((value as Record<string, unknown>)[k])}`
   );
   return `{${entries.join(",")}}`;
 }
