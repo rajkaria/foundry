@@ -4,14 +4,22 @@ import type { ReactNode } from "react";
 type Tone = "neutral" | "positive" | "warn" | "danger" | "ember";
 
 const tones: Record<Tone, string> = {
-  neutral: "bg-ink-800/80 text-platinum-300 border-ink-600",
+  neutral: "bg-ink-800/70 text-platinum-300 border-ink-600",
   positive:
-    "bg-[color-mix(in_oklab,var(--signal-positive)_14%,transparent)] text-signal-positive border-[color-mix(in_oklab,var(--signal-positive)_38%,transparent)] shadow-[0_0_16px_-6px_color-mix(in_oklab,var(--signal-positive)_60%,transparent)]",
-  warn: "bg-[color-mix(in_oklab,var(--signal-warn)_14%,transparent)] text-signal-warn border-[color-mix(in_oklab,var(--signal-warn)_38%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--signal-positive)_11%,transparent)] text-signal-positive border-[color-mix(in_oklab,var(--signal-positive)_30%,transparent)]",
+  warn: "bg-[color-mix(in_oklab,var(--signal-warn)_11%,transparent)] text-signal-warn border-[color-mix(in_oklab,var(--signal-warn)_30%,transparent)]",
   danger:
-    "bg-[color-mix(in_oklab,var(--signal-danger)_14%,transparent)] text-signal-danger border-[color-mix(in_oklab,var(--signal-danger)_38%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--signal-danger)_11%,transparent)] text-signal-danger border-[color-mix(in_oklab,var(--signal-danger)_30%,transparent)]",
   ember:
-    "bg-[color-mix(in_oklab,var(--ember-500)_14%,transparent)] text-ember-400 border-[color-mix(in_oklab,var(--ember-500)_42%,transparent)] shadow-[0_0_18px_-6px_color-mix(in_oklab,var(--ember-500)_70%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--ember-500)_11%,transparent)] text-ember-400 border-[color-mix(in_oklab,var(--ember-500)_32%,transparent)]",
+};
+
+const dotColor: Record<Tone, string> = {
+  neutral: "bg-platinum-400 text-platinum-400",
+  positive: "bg-signal-positive text-signal-positive",
+  warn: "bg-signal-warn text-signal-warn",
+  danger: "bg-signal-danger text-signal-danger",
+  ember: "bg-ember-500 text-ember-500",
 };
 
 export function Pill({
@@ -19,6 +27,7 @@ export function Pill({
   tone = "neutral",
   dot,
   pulse,
+  block = false,
   className,
 }: {
   children: ReactNode;
@@ -26,13 +35,18 @@ export function Pill({
   dot?: boolean;
   /** Animate the dot with a live ping ring (implies dot). */
   pulse?: boolean;
+  /** Fill the parent width and center content — for fixed-width columns. */
+  block?: boolean;
   className?: string;
 }) {
   const showDot = dot || pulse;
   return (
     <span
       className={cn(
-        "rounded-pill text-caption inline-flex items-center gap-1.5 border px-2.5 py-0.5",
+        // Uniform geometry: same height, padding, and baseline everywhere.
+        "text-caption h-6 rounded-full border px-2.5 leading-none",
+        block ? "flex w-full" : "inline-flex",
+        "items-center justify-center gap-1.5 align-middle whitespace-nowrap",
         tones[tone],
         className
       )}
@@ -40,17 +54,13 @@ export function Pill({
       {showDot && (
         <span
           className={cn(
-            "size-1.5 rounded-full",
+            "size-1.5 shrink-0 rounded-full",
             pulse && "pulse-dot",
-            tone === "positive" && "bg-signal-positive text-signal-positive",
-            tone === "warn" && "bg-signal-warn text-signal-warn",
-            tone === "danger" && "bg-signal-danger text-signal-danger",
-            tone === "ember" && "bg-ember-500 text-ember-500",
-            tone === "neutral" && "bg-platinum-400 text-platinum-400"
+            dotColor[tone]
           )}
         />
       )}
-      {children}
+      <span className="truncate">{children}</span>
     </span>
   );
 }

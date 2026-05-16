@@ -33,7 +33,7 @@ export function EventRow({
       rel="noreferrer noopener"
       style={style}
       className={cn(
-        "group relative grid grid-cols-[120px_1fr_auto] items-center gap-4 px-5 py-4",
+        "group relative grid grid-cols-[124px_1fr_auto] items-center gap-4 px-5 py-4",
         "border-hairline border-b transition-colors duration-[var(--dur-quick)] last:border-b-0",
         "hover:bg-[color-mix(in_oklab,var(--ember-900)_22%,var(--ink-900))]"
       )}
@@ -44,7 +44,7 @@ export function EventRow({
           "from-ember-400 to-ember-600 bg-gradient-to-b group-hover:scale-y-100"
         )}
       />
-      <Pill tone={tone} dot pulse={pulse}>
+      <Pill tone={tone} dot pulse={pulse} block>
         {label}
       </Pill>
       <span className="text-body-sm text-platinum-200 group-hover:text-platinum-100 truncate transition-colors">
