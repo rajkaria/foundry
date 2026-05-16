@@ -3,6 +3,7 @@ import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Pill } from "@/components/ui/Pill";
 import { Card, CardEyebrow, CardTitle, CardBody } from "@/components/ui/Card";
+import { LinkButton } from "@/components/ui/Button";
 import { EmptyChainState } from "@/components/app/EmptyChainState";
 import { listForges } from "@/lib/forges-data";
 import { getChain, shortAddr } from "@/lib/chain";
@@ -44,12 +45,15 @@ export default async function ForgesPage() {
   return (
     <main>
       <Header />
-      <section className="border-hairline border-t">
-        <div className="mx-auto max-w-[1280px] px-6 py-16">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+      <section className="bg-stage border-hairline glow-ember border-t">
+        <div className="mx-auto max-w-[1280px] px-6 py-20">
+          <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="text-caption text-ember-400">Forges</p>
-              <h1 className="text-display-lg text-platinum-100 mt-3 max-w-[18ch]">
+              <p className="text-caption text-ember-400 flex items-center gap-2">
+                <span className="bg-ember-500/70 inline-block h-px w-6" />
+                Forges
+              </p>
+              <h1 className="text-display-xl text-platinum-100 mt-4 max-w-[16ch] text-balance">
                 Models, trained by whoever shows up.
               </h1>
               <p className="text-body-lg text-platinum-300 mt-5 max-w-[64ch]">
@@ -63,15 +67,18 @@ export default async function ForgesPage() {
                 to owners on-chain — forever.
               </p>
             </div>
-            <Link
+            <LinkButton
               href="/forges/new"
-              className="bg-ember-500 text-ink-950 hover:bg-ember-400 inline-flex h-10 items-center rounded-md px-5 font-medium transition-colors"
+              size="lg"
+              trailing={<span aria-hidden>→</span>}
             >
-              Create with AI →
-            </Link>
+              Create with AI
+            </LinkButton>
           </div>
 
-          <div className="border-hairline mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-lg sm:grid-cols-3">
+          <div className="ember-rule mt-10" />
+
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <HowTile
               k="01"
               t="Contribute"
@@ -107,29 +114,31 @@ export default async function ForgesPage() {
               />
             </div>
           ) : (
-            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {forges.map((f) => {
+            <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {forges.map((f, i) => {
                 const m = manifests[f.address.toLowerCase()];
                 const open = windowOpen(f.state, f.contributionWindowEnds);
+                const live = open || f.state === "LIVE";
                 return (
                   <Link
                     key={f.address}
                     href={`/forges/${f.address}`}
-                    className="group block"
+                    className="rise-in group block"
+                    style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}
                   >
-                    <Card className="group-hover:border-platinum-400/25 h-full transition-colors">
+                    <Card interactive className="flex h-full flex-col">
                       <div className="flex items-start justify-between gap-3">
-                        <CardEyebrow>
+                        <CardEyebrow className="mb-0">
                           {m
                             ? (TASK_LABEL[m.modelSpec.task] ?? m.modelSpec.task)
                             : shortAddr(f.address)}
                         </CardEyebrow>
-                        <Pill tone={STATE_TONE[f.state] ?? "neutral"} dot>
+                        <Pill tone={STATE_TONE[f.state] ?? "neutral"} dot pulse={live}>
                           {f.state}
                         </Pill>
                       </div>
 
-                      <CardTitle className="mt-3">
+                      <CardTitle className="group-hover:text-ember-300 mt-3 transition-colors">
                         {m ? m.title : `Forge ${shortAddr(f.address)}`}
                       </CardTitle>
                       <CardBody className="line-clamp-3">
@@ -147,11 +156,16 @@ export default async function ForgesPage() {
                         </div>
                       )}
 
-                      <div className="border-hairline text-caption text-platinum-400 mt-5 flex items-center justify-between border-t pt-4">
-                        <span>{f.contributionsCount} contributions</span>
+                      <div className="border-hairline text-caption mt-auto flex items-center justify-between border-t pt-4">
+                        <span className="text-platinum-400">
+                          <span className="text-platinum-100 tabular">
+                            {f.contributionsCount}
+                          </span>{" "}
+                          contributions
+                        </span>
                         <span
                           className={
-                            open ? "text-signal-positive" : "text-platinum-400"
+                            open ? "text-signal-positive" : "text-platinum-500"
                           }
                         >
                           {open ? "Open to contribute" : "Window closed"}
@@ -172,9 +186,11 @@ export default async function ForgesPage() {
 
 function HowTile({ k, t, b }: { k: string; t: string; b: string }) {
   return (
-    <div className="bg-ink-900 p-6">
-      <span className="text-ember-400 text-mono-sm tabular">{k}</span>
-      <p className="text-title-md text-platinum-100 mt-3">{t}</p>
+    <div className="surface-forged hover-lift group rounded-lg p-6">
+      <span className="border-ember-500/30 bg-ember-500/10 text-ember-400 text-mono tabular inline-flex size-9 items-center justify-center rounded-md border">
+        {k}
+      </span>
+      <p className="text-title-md text-platinum-100 mt-4">{t}</p>
       <p className="text-body-sm text-platinum-400 mt-2">{b}</p>
     </div>
   );

@@ -13,9 +13,11 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-ember-500 text-ink-950 hover:bg-ember-400 active:bg-ember-600 shadow-[0_8px_24px_-12px_rgba(255,138,26,0.6)]",
+    "text-ink-950 bg-gradient-to-b from-ember-400 to-ember-500 hover:from-ember-300 hover:to-ember-400 active:from-ember-500 active:to-ember-600 " +
+    "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35),0_10px_28px_-10px_rgba(255,138,26,0.65)] " +
+    "hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.45),0_14px_36px_-10px_rgba(255,138,26,0.85)]",
   secondary:
-    "bg-transparent text-platinum-100 border border-hairline hover:bg-ink-800 hover:border-platinum-400/30",
+    "bg-transparent text-platinum-100 border border-hairline hover:bg-ink-800 hover:border-[color-mix(in_oklab,var(--ember-500)_35%,transparent)]",
   ghost: "bg-transparent text-platinum-300 hover:text-platinum-100 hover:bg-ink-800",
 };
 

@@ -4,15 +4,23 @@ import type { HTMLAttributes, ReactNode } from "react";
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   elevated?: boolean;
+  /** Adds the ember hover-lift — use when the whole card is a link/button. */
+  interactive?: boolean;
 }
 
-export function Card({ className, children, elevated = false, ...props }: CardProps) {
+export function Card({
+  className,
+  children,
+  elevated = false,
+  interactive = false,
+  ...props
+}: CardProps) {
   return (
     <div
       className={cn(
-        "bg-ink-900 border-hairline rounded-lg p-6",
-        elevated ? "elev-2" : "elev-1",
-        "transition-[background-color,border-color] duration-[var(--dur-base)]",
+        "surface-forged rounded-lg p-6",
+        elevated && "elev-2",
+        interactive && "hover-lift cursor-pointer",
         className
       )}
       {...props}

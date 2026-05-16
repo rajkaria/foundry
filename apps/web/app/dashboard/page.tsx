@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Dashboard } from "@/components/marketing/Dashboard";
-import { Pill } from "@/components/ui/Pill";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { EventRow } from "@/components/ui/EventRow";
 import { getStats } from "@/lib/stats-data";
 import { getDashboardDetail, type EventKind } from "@/lib/dashboard-data";
 import { explorerAddress, explorerTx, getChain, shortAddr } from "@/lib/chain";
@@ -50,11 +51,14 @@ export default async function DashboardPage() {
   return (
     <main>
       <Header />
-      <section className="border-hairline border-t">
-        <div className="mx-auto max-w-[1280px] px-6 py-16">
-          <p className="text-caption text-ember-400">Forge in Public</p>
-          <h1 className="text-display-xl text-platinum-100 mt-3 max-w-[26ch]">
-            Real numbers, on mainnet, ticking live.
+      <section className="bg-stage border-hairline glow-ember border-t">
+        <div className="mx-auto max-w-[1280px] px-6 py-20">
+          <p className="text-caption text-ember-400 flex items-center gap-2">
+            <span className="bg-ember-500/70 inline-block h-px w-6" />
+            Forge in Public
+          </p>
+          <h1 className="text-display-xl text-platinum-100 mt-4 max-w-[24ch] text-balance">
+            Real numbers, on mainnet, <span className="sheen-ember">ticking live.</span>
           </h1>
           <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
             Every figure below is read straight from 0G {chain.network} event logs — the
@@ -63,7 +67,8 @@ export default async function DashboardPage() {
             cache.
           </p>
           {stats.isLive && (
-            <p className="text-mono-sm text-platinum-400 tabular mt-4">
+            <p className="text-mono-sm text-platinum-400 tabular mt-5 inline-flex items-center gap-2">
+              <span className="text-signal-positive pulse-dot inline-block size-1.5 rounded-full bg-current" />
               chain head: block {stats.lastBlock.toString()}
             </p>
           )}
@@ -77,37 +82,23 @@ export default async function DashboardPage() {
           {/* ── Live activity feed ──────────────────────────────── */}
           <section className="border-hairline border-t">
             <div className="mx-auto max-w-[1280px] px-6 py-16">
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <p className="text-caption text-ember-400">Live activity</p>
-                  <h2 className="text-display-sm text-platinum-100 mt-3">
-                    Every protocol event, newest first
-                  </h2>
-                </div>
-                <p className="text-caption text-platinum-400">
-                  {detail.feed.length} events · each row links to its tx
-                </p>
-              </div>
+              <SectionHeader
+                eyebrow="Live activity"
+                title="Every protocol event, newest first"
+                meta={`${detail.feed.length} events · each row links to its tx`}
+              />
 
-              <div className="border-hairline mt-8 overflow-hidden rounded-lg border">
+              <div className="surface-forged mt-8 overflow-hidden rounded-lg">
                 {detail.feed.slice(0, 30).map((e, i) => (
-                  <a
+                  <EventRow
                     key={`${e.txHash}-${i}`}
                     href={explorerTx(e.txHash)}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="bg-ink-900 hover:bg-ink-800 border-hairline grid grid-cols-[110px_1fr_auto] items-center gap-4 border-b px-5 py-3.5 transition-colors last:border-b-0"
-                  >
-                    <Pill tone={KIND_TONE[e.kind]} dot>
-                      {KIND_LABEL[e.kind]}
-                    </Pill>
-                    <span className="text-body-sm text-platinum-200 truncate">
-                      {e.summary}
-                    </span>
-                    <span className="text-mono-sm text-platinum-400 tabular whitespace-nowrap">
-                      blk {e.block.toString()} ↗
-                    </span>
-                  </a>
+                    tone={KIND_TONE[e.kind]}
+                    label={KIND_LABEL[e.kind]}
+                    summary={e.summary}
+                    meta={`blk ${e.block.toString()}`}
+                    pulse={i < 3}
+                  />
                 ))}
               </div>
             </div>
@@ -116,15 +107,15 @@ export default async function DashboardPage() {
           {/* ── Forges table ────────────────────────────────────── */}
           <section className="border-hairline border-t">
             <div className="mx-auto max-w-[1280px] px-6 py-16">
-              <p className="text-caption text-ember-400">Forges</p>
-              <h2 className="text-display-sm text-platinum-100 mt-3">
-                {detail.forges.length} forges on 0G {chain.network}
-              </h2>
+              <SectionHeader
+                eyebrow="Forges"
+                title={`${detail.forges.length} forges on 0G ${chain.network}`}
+              />
 
-              <div className="border-hairline mt-8 overflow-x-auto rounded-lg border">
+              <div className="surface-forged mt-8 overflow-x-auto rounded-lg">
                 <table className="w-full min-w-[760px] text-left">
                   <thead>
-                    <tr className="bg-ink-900 text-caption text-platinum-400">
+                    <tr className="text-caption text-platinum-400 border-hairline border-b">
                       <Th>Forge / model</Th>
                       <Th>Task</Th>
                       <Th>Creator</Th>
@@ -137,7 +128,7 @@ export default async function DashboardPage() {
                     {detail.forges.map((f) => (
                       <tr
                         key={f.address}
-                        className="bg-ink-900 border-hairline border-t"
+                        className="border-hairline hover:bg-ink-800/60 border-t transition-colors"
                       >
                         <Td>
                           <Link
@@ -183,18 +174,18 @@ export default async function DashboardPage() {
           {/* ── Revenue table ───────────────────────────────────── */}
           <section className="border-hairline border-t">
             <div className="mx-auto max-w-[1280px] px-6 py-16">
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <p className="text-caption text-ember-400">Revenue</p>
-                  <h2 className="text-display-sm text-platinum-100 mt-3">
-                    Per-Ingot revenue, received vs. claimed
-                  </h2>
-                </div>
-                <p className="text-mono-sm text-platinum-400 tabular">
-                  {detail.totals.receivedOG.toFixed(4)} OG in ·{" "}
-                  {detail.totals.claimedOG.toFixed(4)} OG claimed
-                </p>
-              </div>
+              <SectionHeader
+                eyebrow="Revenue"
+                title="Per-Ingot revenue, received vs. claimed"
+                meta={
+                  <span className="text-mono-sm tabular">
+                    <span className="sheen-ember font-semibold">
+                      {detail.totals.receivedOG.toFixed(4)} OG
+                    </span>{" "}
+                    in · {detail.totals.claimedOG.toFixed(4)} OG claimed
+                  </span>
+                }
+              />
 
               {detail.revenue.length === 0 ? (
                 <p className="text-body-sm text-platinum-400 mt-8">
@@ -202,10 +193,10 @@ export default async function DashboardPage() {
                   RevenueSplitter payment lands.
                 </p>
               ) : (
-                <div className="border-hairline mt-8 overflow-x-auto rounded-lg border">
+                <div className="surface-forged mt-8 overflow-x-auto rounded-lg">
                   <table className="w-full min-w-[680px] text-left">
                     <thead>
-                      <tr className="bg-ink-900 text-caption text-platinum-400">
+                      <tr className="text-caption text-platinum-400 border-hairline border-b">
                         <Th>Ingot</Th>
                         <Th>Model</Th>
                         <Th className="text-right">Received</Th>
@@ -218,7 +209,7 @@ export default async function DashboardPage() {
                       {detail.revenue.map((r) => (
                         <tr
                           key={String(r.tokenId)}
-                          className="bg-ink-900 border-hairline border-t"
+                          className="border-hairline hover:bg-ink-800/60 border-t transition-colors"
                         >
                           <Td className="text-platinum-100 tabular">
                             {r.forge ? (
