@@ -12,204 +12,185 @@ import {
 } from "@/components/docs/DocsLayout";
 
 export const metadata = {
-  title: "0G Hackathon integration plan — Foundry docs",
+  title: "Integrate Foundry — the ownership & revenue layer for 0G AI projects",
   description:
-    "Make Foundry the most-integrated project in the 0G hackathon: codebase-accurate pitch, three integration paths, per-archetype value props, and a campaign plan.",
+    "Add co-owned, revenue-sharing, verifiable AI to your 0G project in under 15 minutes. Why it pays off, what you get, and three copy-paste integration paths.",
 };
 
 const toc = [
-  { id: "post", label: "Broadcast post" },
-  { id: "live", label: "What's actually live" },
-  { id: "archetypes", label: "Who benefits" },
-  { id: "paths", label: "Three integration paths" },
-  { id: "templates", label: "Outreach templates" },
-  { id: "forge", label: "Data becomes equity" },
-  { id: "catalog", label: "Live Ingot catalog" },
-  { id: "campaign", label: "Campaign plan" },
+  { id: "why", label: "Why integrate" },
+  { id: "get", label: "What you get" },
+  { id: "fit", label: "Find your fit" },
+  { id: "quickstart", label: "Integrate in 3 lines" },
+  { id: "paths", label: "Pick your path" },
+  { id: "equity", label: "Turn data into equity" },
+  { id: "catalog", label: "Try a live Ingot now" },
+  { id: "next", label: "Next steps" },
 ];
 
 export default function ZeroGHackathonDocsPage() {
   return (
     <DocsLayout
       active="/docs/0g-hackathon"
-      eyebrow="Start here · 0G Hackathon"
-      title="Make Foundry the most-integrated project in the 0G hackathon."
+      eyebrow="0G builders · Integration guide"
+      title="Add co-owned, revenue-sharing AI to your project in 15 minutes."
       intro={
         <Lead>
-          Almost every hackathon submission does AI inference, memory, or data. Foundry
-          turns each of them into a revenue-earning co-owner of on-chain models — zero
-          bridges, same 0G Storage + 0G Compute TEEs + 0G Chain (Aristotle). Every
-          snippet, package name, contract address, and Ingot ID below is verbatim from
-          the shipped repo.
+          If your project does model inference, holds memory, or produces data, Foundry
+          turns that into ongoing on-chain ownership and revenue — with no bridges, on
+          the same 0G Storage + 0G Compute TEEs + 0G Chain you already build on. Every
+          snippet, address, and Ingot ID on this page is live on Aristotle mainnet
+          today.
         </Lead>
       }
       toc={toc}
     >
-      <H2 id="post">The broadcast post</H2>
+      <H2 id="why">Why integrate</H2>
       <P>
-        Drop this in the hackathon Discord / Telegram and the 0G channels. It leads with
-        the three defensible upsides — verifiable receipts, data-as-equity, and passive
-        revenue — not a model-quality claim.
+        Most AI projects rent intelligence: you call a closed model, you pay a bill, the
+        value flows one way and stops the moment you stop paying. Foundry inverts that.
+        When you build on a Foundry Ingot, you and your contributors{" "}
+        <strong className="text-platinum-100">own a share of the model</strong>, and
+        every call anyone makes routes revenue back to owners automatically — forever.
       </P>
-
-      <Callout tone="ember" title="Copy-paste post">
+      <P>
+        Concretely, integrating gets you three things you cannot get from a raw API:
+      </P>
+      <ul className="text-body-lg text-platinum-300 ml-6 list-disc space-y-3">
+        <li>
+          <strong className="text-platinum-100">Verifiable, not just trusted</strong> —
+          every inference returns an on-chain receipt (<Code>inferenceTxHash</Code>) and
+          a TEE attestation. You can prove to your users exactly which model ran and
+          that owners were paid.
+        </li>
+        <li>
+          <strong className="text-platinum-100">Your data becomes equity</strong> — the
+          memory, traces, and datasets you already generate can be contributed to a
+          Forge and minted into ownership of the resulting model.
+        </li>
+        <li>
+          <strong className="text-platinum-100">Revenue that compounds</strong> — once
+          your agents run on an Ingot you co-own, every call (yours or anyone
+          else&apos;s) pays your team. Usage becomes an asset, not just a cost.
+        </li>
+      </ul>
+      <Callout tone="ember" title="The one-sentence pitch">
         <p>
-          <strong className="text-platinum-100">Hey 0G Hackathon builders 👋</strong>
-        </p>
-        <p>
-          Almost every submission is building AI agents, memory layers, verifiable
-          finance, marketplaces, infra, or consumer tools that depend on model inference
-          and data.
-        </p>
-        <p>
-          <strong className="text-platinum-100">Foundry Protocol</strong> is live on{" "}
-          <strong className="text-platinum-100">0G Aristotle mainnet</strong> (chain{" "}
-          <Code>16661</Code>). Pool data + compute + capital into a Forge to co-train a
-          real model. Contributors get proportional on-chain ownership — an Ingot
-          (ERC-721 cap table) — and every inference automatically routes revenue back to
-          co-owners via the on-chain <Code>RevenueSplitter</Code>. No middleman, no
-          off-chain trust.
-        </p>
-        <p>
-          <strong className="text-platinum-100">Three concrete upsides:</strong> (1)
-          inference with on-chain receipts — drop-in OpenAI-compatible endpoint, every
-          call returns <Code>inferenceTxHash</Code> + <Code>revenueTxHash</Code>; (2)
-          your data becomes equity — push datasets into a Forge, get minted ownership
-          inside the TEE; (3) passive revenue forever — every call on an Ingot you
-          co-own pays your team.
-        </p>
-        <p>
-          Ships with Vercel AI SDK + LangChain adapters and an MCP server (
-          <Code>npx @foundryprotocol/mcp</Code>). We&apos;ll help any team ship in &lt;
-          30 minutes — reference repo, live Ingot IDs, co-branded demo. Reply or DM. cc
-          @0G_labs @dragon0195 🚀
+          Stop renting intelligence. Own a slice of the model your project runs on, and
+          earn every time it&apos;s used.
         </p>
       </Callout>
 
+      <H2 id="get">What you get out of the box</H2>
+      <Table
+        head={["Capability", "What it means for you"]}
+        rows={[
+          [
+            "OpenAI-compatible API",
+            "Swap your base URL + a header. No SDK lock-in, no rewrite.",
+          ],
+          [
+            "On-chain receipts",
+            <>
+              Every call returns <Code>inferenceTxHash</Code> /{" "}
+              <Code>revenueTxHash</Code> — show users the proof.
+            </>,
+          ],
+          [
+            "TEE-attested inference",
+            "Hardware-signed execution on 0G Compute. Verifiable, not custodial.",
+          ],
+          [
+            "Automatic revenue split",
+            <>
+              The on-chain <Code>RevenueSplitter</Code> pays co-owners. Zero accounting
+              code from you.
+            </>,
+          ],
+          [
+            "Framework adapters",
+            "Vercel AI SDK + LangChain ship in the box. Drop-in for existing apps.",
+          ],
+          [
+            "Agent-native MCP",
+            <>
+              <Code>npx @foundryprotocol/mcp</Code> works in Claude, Cursor, Cline, and
+              custom runtimes.
+            </>,
+          ],
+        ]}
+      />
+      <Callout tone="note" title="Good to know">
+        <p>
+          The inference endpoint is general drop-in. The Ingots live on mainnet today
+          are domain models (translation, contract-clause classification) — perfect for
+          a working demo. The bigger win is spinning up a Forge for <em>your</em>{" "}
+          vertical so you co-own a model tuned to your use case.
+        </p>
+      </Callout>
+
+      <H2 id="fit">Find your fit</H2>
+      <P>
+        Whatever you&apos;re building on 0G, there&apos;s a direct payoff. Find the row
+        closest to your project:
+      </P>
+      <ul className="text-body-lg text-platinum-300 ml-6 list-disc space-y-3">
+        <li>
+          <strong className="text-platinum-100">Agents, memory, identity</strong> — keep
+          your sovereign memory; swap the inference backend to a co-owned Ingot.
+          Contribute memory logs or synthetic datasets and own part of the model your
+          agents help improve.
+        </li>
+        <li>
+          <strong className="text-platinum-100">
+            Verifiable finance, trading, DeFi agents
+          </strong>{" "}
+          — every decision your agent makes gets a TEE attestation and an on-chain
+          receipt. Store it next to the trade for an instant, provable audit trail.
+        </li>
+        <li>
+          <strong className="text-platinum-100">
+            Marketplaces, gig, skill, payment protocols
+          </strong>{" "}
+          — list Foundry Ingots as a model SKU. The <Code>RevenueSplitter</Code> handles
+          per-call payout accounting on-chain for free, and every call pays co-owners.
+        </li>
+        <li>
+          <strong className="text-platinum-100">Consumer apps, RWA, tools</strong> — no
+          web3 code needed to start: it&apos;s a drop-in OpenAI endpoint. Contribute
+          your domain data later and start earning from the model.
+        </li>
+        <li>
+          <strong className="text-platinum-100">Infra, data, compute providers</strong>{" "}
+          — you already produce the storage, DA, and compute Forges consume. Become a
+          contributor and earn Ingot shares for infra you already run.
+        </li>
+      </ul>
+
+      <H2 id="quickstart">Integrate in 3 lines</H2>
+      <P>
+        This is the entire happy path. Pick any live Ingot ID from the{" "}
+        <a href="#catalog" className="text-ember-400 hover:text-ember-300">
+          catalog below
+        </a>{" "}
+        and run:
+      </P>
       <CodeBlock lang="ts">{`import { Foundry } from "@foundryprotocol/sdk";
+
 const foundry = new Foundry({ contracts: "aristotle" });
 const { output, receipt } = await foundry.inference.run(
   "ingot:0x8e2af4a000000000000000000000000000000001",
   { input: userQuery },
-);`}</CodeBlock>
+);
+// receipt.inferenceTxHash → on-chain proof you can show your users`}</CodeBlock>
 
-      <H2 id="live">What&apos;s actually live (so we never overclaim)</H2>
-      <Table
-        head={["Asset", "Reality"]}
-        rows={[
-          ["Network", "0G Aristotle mainnet, chain ID 16661"],
-          [
-            "SDK",
-            <>
-              <Code>@foundryprotocol/sdk</Code> v1.0.0 — <Code>Foundry</Code> class,
-              viem-based
-            </>,
-          ],
-          [
-            "MCP",
-            <>
-              <Code>@foundryprotocol/mcp</Code> — <Code>npx @foundryprotocol/mcp</Code>
-            </>,
-          ],
-          [
-            "HTTP API",
-            <>
-              OpenAI-compatible:{" "}
-              <Code>POST https://api.foundryprotocol.xyz/v1/chat/completions</Code>
-            </>,
-          ],
-          [
-            "Adapters",
-            <>
-              <Code>/adapters/vercel-ai</Code>, <Code>/adapters/langchain</Code>
-            </>,
-          ],
-          [
-            "Live Ingots",
-            "Domain models (translation + clause classifier) — see below",
-          ],
-          [
-            "Receipts",
-            <>
-              <Code>requestId</Code>, <Code>inferenceTxHash</Code>,{" "}
-              <Code>revenueTxHash</Code>, <Code>latencyMs</Code>
-            </>,
-          ],
-        ]}
-      />
+      <H2 id="paths">Pick your path</H2>
 
-      <H3 id="contracts">Deployed contracts (Aristotle, chain 16661)</H3>
-      <Table
-        head={["Contract", "Address"]}
-        rows={[
-          ["FORGEToken", <Code>0xE716B0260f462b2A1789cB6cfCBd825736b920Ca</Code>],
-          [
-            "ContributionRegistry",
-            <Code>0x05235Ba0F2a77bcaB87371E4d797D6830ddC2d86</Code>,
-          ],
-          ["Ingot", <Code>0x39B736f424754d05a0da186d89015b74d1DDe1d3</Code>],
-          ["RevenueSplitter", <Code>0xC58E0F32BD43e43153D3CA8ee8F25C8198789289</Code>],
-          ["ForgeFactory", <Code>0x636109264EBF6cFD18CC38bD43eDf9cCad7ae23D</Code>],
-          ["IngotRegistry", <Code>0xF8f3fAE648A8d7ee4Df0A7b10a0F759938aab7e1</Code>],
-        ]}
-      />
-
-      <Callout tone="warn" title="Honest framing">
-        <p>
-          The inference endpoint is general drop-in, but the live Ingots are domain
-          models today. The killer pitch for general agents is &ldquo;spin up a Forge
-          for your vertical and co-own the model&rdquo; — not &ldquo;replace
-          GPT-4.&rdquo; Lead with ownership + revenue + verifiable receipts, not raw
-          model quality.
-        </p>
-      </Callout>
-
-      <H2 id="archetypes">Who benefits — segment the 95</H2>
-      <P>
-        Bucket the master list into five archetypes. Each gets a different lead
-        value-prop.
-      </P>
-      <ul className="text-body-lg text-platinum-300 ml-6 list-disc space-y-3">
-        <li>
-          <strong className="text-platinum-100">
-            A · Agent infra / memory / identity
-          </strong>{" "}
-          — &ldquo;your memory becomes equity.&rdquo; Contribute logs/datasets to a
-          Forge, own part of the model, keep sovereign memory.
-        </li>
-        <li>
-          <strong className="text-platinum-100">
-            B · Verifiable finance / trading
-          </strong>{" "}
-          — TEE-attested inference + on-chain receipts for every decision. Feed signed
-          reasoning traces into a Forge for ownership.
-        </li>
-        <li>
-          <strong className="text-platinum-100">
-            C · Marketplaces / gig / payments
-          </strong>{" "}
-          — every inference on a co-owned Ingot pays you passively;{" "}
-          <Code>RevenueSplitter</Code> handles payout accounting for free.
-        </li>
-        <li>
-          <strong className="text-platinum-100">D · Consumer / RWA / tools</strong> —
-          drop-in OpenAI endpoint, no web3 code to start; contribute domain data later
-          and earn.
-        </li>
-        <li>
-          <strong className="text-platinum-100">E · Pure infra / data / compute</strong>{" "}
-          — you already produce what Forges consume; become a contributor and earn Ingot
-          shares.
-        </li>
-      </ul>
-
-      <H2 id="paths">Three integration paths (all live)</H2>
-
-      <H3 id="path-sdk">Path 1 · SDK (TypeScript)</H3>
+      <H3 id="path-sdk">SDK — TypeScript, full ownership + inference</H3>
       <CodeBlock lang="bash">npm install @foundryprotocol/sdk viem</CodeBlock>
       <CodeBlock lang="ts">{`import { Foundry } from "@foundryprotocol/sdk";
 
-// network names: "aristotle" | "galileo" | "local" (only aristotle is live)
+// networks: "aristotle" | "galileo" | "local" (only aristotle is live)
 const foundry = new Foundry({ contracts: "aristotle" });
 
 const { output, ingotId, receipt } = await foundry.inference.run(
@@ -218,18 +199,19 @@ const { output, ingotId, receipt } = await foundry.inference.run(
 );
 // receipt = { requestId, inferenceTxHash?, revenueTxHash?, latencyMs }`}</CodeBlock>
 
-      <H3 id="path-http">Path 2 · HTTP (any language, drop-in OpenAI client)</H3>
+      <H3 id="path-http">HTTP — any language, drop-in OpenAI client</H3>
       <CodeBlock lang="bash">{`curl https://api.foundryprotocol.xyz/v1/chat/completions \\
   -H "content-type: application/json" \\
   -H "x-foundry-ingot-id: 0x8e2af4a000000000000000000000000000000001" \\
   -d '{"messages":[{"role":"user","content":"Translate to Konkani: hello"}],"temperature":0.7}'`}</CodeBlock>
       <P>
-        Response is OpenAI-shaped with an extra <Code>foundry</Code> block carrying{" "}
-        <Code>inferenceTxHash</Code> / <Code>revenueTxHash</Code> /{" "}
-        <Code>attestation</Code>.
+        The response is OpenAI-shaped, with an extra <Code>foundry</Code> block carrying{" "}
+        <Code>inferenceTxHash</Code>, <Code>revenueTxHash</Code>, and{" "}
+        <Code>attestation</Code>. Point your existing OpenAI client at the base URL and
+        you&apos;re done.
       </P>
 
-      <H3 id="path-mcp">Path 3 · MCP (Claude / Cursor / Cline / agents)</H3>
+      <H3 id="path-mcp">MCP — Claude, Cursor, Cline, custom agents</H3>
       <CodeBlock lang="json">{`{
   "mcpServers": {
     "foundry": {
@@ -247,7 +229,7 @@ const { output, ingotId, receipt } = await foundry.inference.run(
         <Code>get_ingot</Code>, <Code>get_lineage</Code>, <Code>get_attestation</Code>.
       </P>
 
-      <H3 id="path-adapters">Adapters (zero rewrite for existing AI apps)</H3>
+      <H3 id="path-adapters">Adapters — zero rewrite for existing AI apps</H3>
       <CodeBlock lang="ts">{`// Vercel AI SDK
 import { foundry } from "@foundryprotocol/sdk/adapters/vercel-ai";
 import { generateText } from "ai";
@@ -260,39 +242,12 @@ import { HumanMessage } from "@langchain/core/messages";
 const llm = new FoundryChat({ ingotId: "ingot:0x8e2af4a000000000000000000000000000000001" });
 const res = await llm.invoke([new HumanMessage("…")]);`}</CodeBlock>
 
-      <H2 id="templates">Per-archetype outreach templates</H2>
-      <ul className="text-body-lg text-platinum-300 ml-6 list-disc space-y-3">
-        <li>
-          <strong className="text-platinum-100">A — Memory:</strong> &ldquo;Your memory
-          can become equity. Push logs into a Forge, own part of the model, swap
-          inference to a co-owned Ingot in 3 lines. 30-min co-branded demo on us.&rdquo;
-        </li>
-        <li>
-          <strong className="text-platinum-100">B — Finance:</strong> &ldquo;Your edge
-          is verifiability. Every inference gets a TEE attestation +{" "}
-          <Code>inferenceTxHash</Code> on Aristotle — instant on-chain audit
-          trail.&rdquo;
-        </li>
-        <li>
-          <strong className="text-platinum-100">C — Marketplace:</strong> &ldquo;Add
-          Foundry Ingots as a model SKU. <Code>RevenueSplitter</Code> handles
-          per-inference payout accounting on-chain for free.&rdquo;
-        </li>
-        <li>
-          <strong className="text-platinum-100">D — Consumer:</strong> &ldquo;No web3
-          code to start: drop-in OpenAI endpoint. Contribute domain data later and earn
-          from the model.&rdquo;
-        </li>
-        <li>
-          <strong className="text-platinum-100">E — Infra:</strong> &ldquo;You produce
-          the storage/DA/compute Forges consume. Become a contributor, earn Ingot
-          shares.&rdquo;
-        </li>
-      </ul>
-
-      <H2 id="forge">&ldquo;Your data becomes equity&rdquo; — the real moat</H2>
+      <H2 id="equity">Turn your data into equity</H2>
       <P>
-        No other hackathon project has this. The full Forge lifecycle, real SDK calls:
+        The deeper integration: don&apos;t just call a model — help train one and own
+        it. Contribute data, compute, or capital to a Forge; when it closes, ownership
+        mints proportionally and revenue starts flowing. The full lifecycle, real SDK
+        calls:
       </P>
       <CodeBlock lang="ts">{`const { forgeId } = await foundry.forge.create({ modelSpec, evalSpec, evalCoordinator, contributionWindowEnds });
 await foundry.forge.contributeData(forgeId, storageRootHash);   // 0G Storage root
@@ -304,7 +259,27 @@ await foundry.forge.mintOwnership(forgeId);                     // ERC-721 cap t
 await foundry.forge.setWeightsAndGoLive(forgeId, weightsRoot);  // Ingot callable
 await foundry.revenue.claim(tokenId);                           // pull from RevenueSplitter`}</CodeBlock>
 
-      <H2 id="catalog">Live Ingot catalog (for demos)</H2>
+      <H3 id="contracts">Deployed contracts (Aristotle, chain 16661)</H3>
+      <Table
+        head={["Contract", "Address"]}
+        rows={[
+          ["FORGEToken", <Code>0xE716B0260f462b2A1789cB6cfCBd825736b920Ca</Code>],
+          [
+            "ContributionRegistry",
+            <Code>0x05235Ba0F2a77bcaB87371E4d797D6830ddC2d86</Code>,
+          ],
+          ["Ingot", <Code>0x39B736f424754d05a0da186d89015b74d1DDe1d3</Code>],
+          ["RevenueSplitter", <Code>0xC58E0F32BD43e43153D3CA8ee8F25C8198789289</Code>],
+          ["ForgeFactory", <Code>0x636109264EBF6cFD18CC38bD43eDf9cCad7ae23D</Code>],
+          ["IngotRegistry", <Code>0xF8f3fAE648A8d7ee4Df0A7b10a0F759938aab7e1</Code>],
+        ]}
+      />
+
+      <H2 id="catalog">Try a live Ingot right now</H2>
+      <P>
+        These are live on Aristotle mainnet. Paste any ID into the quickstart above and
+        you&apos;ll get a real on-chain receipt back.
+      </P>
       <Table
         head={["Ingot ID", "Model", "Contributors", "License"]}
         rows={[
@@ -341,30 +316,37 @@ await foundry.revenue.claim(tokenId);                           // pull from Rev
         ]}
       />
 
-      <H2 id="campaign">Campaign plan — how we win &ldquo;most integrated&rdquo;</H2>
+      <H2 id="next">Next steps</H2>
       <ul className="text-body-lg text-platinum-300 ml-6 list-disc space-y-3">
         <li>
-          <strong className="text-platinum-100">Week 1 · Reach</strong> — post above,
-          tag the master list A–E, send templates in batches of ~20/day.
+          Browse live Forges and Ingots at{" "}
+          <a href="/forges" className="text-ember-400 hover:text-ember-300">
+            /forges
+          </a>{" "}
+          and{" "}
+          <a href="/lineage" className="text-ember-400 hover:text-ember-300">
+            /lineage
+          </a>
+          .
         </li>
         <li>
-          <strong className="text-platinum-100">Week 2 · Convert</strong> — ship a
-          public <Code>foundry-0g-starter</Code> repo; offer 15 co-branded 30-min
-          pairing slots, each yielding a tweet + a real <Code>inferenceTxHash</Code>.
+          Read the deeper{" "}
+          <a
+            href="/docs/build-on-foundry"
+            className="text-ember-400 hover:text-ember-300"
+          >
+            Build on Foundry
+          </a>{" "}
+          guide for the contributor and Forge-owner paths.
         </li>
         <li>
-          <strong className="text-platinum-100">Week 3 · Amplify</strong> — publish
-          &ldquo;N projects integrated in 72h&rdquo; thread with explorer links; flip
-          integrators into Forge co-owners.
+          Want a co-branded demo or help wiring your project in? Open the{" "}
+          <a href="/docs/quickstart" className="text-ember-400 hover:text-ember-300">
+            Quickstart
+          </a>{" "}
+          — most teams ship in under 30 minutes.
         </li>
       </ul>
-      <Callout tone="ember" title="Definition of winning">
-        <p>
-          Count of distinct hackathon projects with a real <Code>inferenceTxHash</Code>{" "}
-          on Aristotle from their codebase. Track it on a public leaderboard — social
-          proof compounds.
-        </p>
-      </Callout>
 
       <PageNav
         prev={{ href: "/docs/build-on-foundry", label: "Build on Foundry" }}
