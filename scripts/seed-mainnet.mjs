@@ -32,7 +32,7 @@
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..");
@@ -151,6 +151,171 @@ const smiths = [deriveSmith(1), deriveSmith(2), deriveSmith(3)]; // data, comput
 const tx = (h) => `${EXPLORER}/tx/${h}`;
 const rand = () => keccak256(toHex(`${Date.now()}-${Math.random()}`));
 
+/* ─── forge manifests ─────────────────────────────────────────────────────
+ * Each seeded Forge gets a real, content-bound manifest. The manifest's
+ * content digest is passed as the on-chain `modelSpec`, so the web app can
+ * prove the description matches the chain ("content-verified"). Keep this
+ * digest algorithm byte-identical to apps/web/lib/forge-manifest.ts. */
+
+const MANIFEST_TEMPLATES = [
+  {
+    title: "Konkani ↔ English Translator",
+    summary:
+      "An open-weights translation model for Konkani, a low-resource Indian language with no production-grade MT. Trained from community-contributed parallel text.",
+    about:
+      "Konkani is spoken by ~2.5M people across coastal India but is effectively invisible to commercial translation systems. This Forge pools sentence pairs, glossaries, and proofreading effort from native speakers, scores each contribution by its measured effect on held-out translation quality, and mints proportional ownership of the resulting model.",
+    modelSpec: {
+      baseModel: "Qwen2.5-1.5B-Instruct",
+      task: "translation",
+      fineTuneMethod: "lora",
+      languages: ["kok", "en"],
+    },
+    evalSpec: { method: "holdout", sizeTarget: 2000, metric: "bleu" },
+    weights: { data: 7000, compute: 2000, capital: 1000 },
+    datasetGuidance: [
+      "Sentence-aligned Konkani↔English pairs (news, literature, conversation)",
+      "Devanagari and Romi script both welcome — tag the script",
+      "Native-speaker proofreading passes on machine-drafted pairs",
+      "No copyrighted text without a clear redistribution license",
+    ],
+    audience: [
+      "Native Konkani speakers and translators contributing parallel text",
+      "Language institutions donating digitised corpora",
+      "GPU providers running the fine-tune jobs",
+    ],
+    useCases: [
+      { title: "Civic & government access", body: "Translate public-health and government notices into Konkani at near-zero marginal cost." },
+      { title: "Education tooling", body: "Power reading apps and bilingual learning material for Konkani-medium schools." },
+    ],
+  },
+  {
+    title: "MSA Risk-Clause Classifier",
+    summary:
+      "A contract-intelligence model that flags risky clauses in software Master Service Agreements — uncapped liability, auto-renewal, IP assignment.",
+    about:
+      "Reviewing a software MSA is slow, expensive, and inconsistent. This Forge trains a classifier that labels each clause by risk category and severity so legal and procurement teams can triage a 40-page agreement in minutes. Ownership mints in proportion to how much each contribution moved held-out F1.",
+    modelSpec: { baseModel: "ModernBERT-base", task: "classification", fineTuneMethod: "full" },
+    evalSpec: { method: "holdout", sizeTarget: 3500, metric: "f1" },
+    weights: { data: 7500, compute: 1500, capital: 1000 },
+    datasetGuidance: [
+      "Redacted clauses labelled by risk category + severity (1–5)",
+      "Cover liability, indemnity, IP, termination, renewal, data terms",
+      "Include benign clauses as negatives — not just risky ones",
+      "Strip all party names and commercial figures before upload",
+    ],
+    audience: [
+      "Contract lawyers and legal-ops teams contributing labelled clauses",
+      "Procurement reviewers adjudicating edge cases",
+      "Compute providers for the fine-tune sweep",
+    ],
+    useCases: [
+      { title: "First-pass contract triage", body: "Surface the 5 clauses a human must read first, instead of all 60." },
+      { title: "Procurement guardrails", body: "Block auto-renewal and uncapped-liability terms from slipping through unreviewed." },
+    ],
+  },
+  {
+    title: "Chemistry-Paper Retrieval Embeddings",
+    summary:
+      "A dense embedding model tuned for semantic retrieval over chemistry literature, where general-purpose embeddings miss reaction and compound nuance.",
+    about:
+      "Researchers searching chemistry corpora are failed by generic embeddings that collapse distinct reaction mechanisms. This Forge fine-tunes an embedding model on contributed query→relevant-passage pairs mined from real literature search, so retrieval ranks the paper a chemist actually wanted.",
+    modelSpec: { baseModel: "bge-base-en-v1.5", task: "embedding", fineTuneMethod: "lora" },
+    evalSpec: { method: "holdout", sizeTarget: 5000, metric: "accuracy" },
+    weights: { data: 6500, compute: 2500, capital: 1000 },
+    datasetGuidance: [
+      "Query → relevant-passage pairs from real literature search",
+      "Hard negatives: near-miss passages that look relevant but aren't",
+      "Span organic, inorganic, and materials sub-domains",
+      "Only openly licensed or self-authored passages",
+    ],
+    audience: [
+      "Chemists and librarians contributing labelled retrieval pairs",
+      "Research groups donating anonymised search logs",
+      "Compute providers for contrastive fine-tuning",
+    ],
+    useCases: [
+      { title: "Better literature search", body: "Drop-in embedding upgrade for RAG over chemistry corpora." },
+      { title: "Patent & prior-art discovery", body: "Surface mechanistically related work that keyword search misses." },
+    ],
+  },
+  {
+    title: "Solidity Vulnerability Explainer",
+    summary:
+      "A code model that reads a Solidity function and explains likely vulnerability classes in plain English — reentrancy, unchecked math, access-control gaps.",
+    about:
+      "Most smart-contract bugs are re-discoveries of known patterns. This Forge trains a generation model on contributed (vulnerable snippet → explanation + fix) triples drawn from public audit reports and CTFs, scored on held-out explanation quality.",
+    modelSpec: { baseModel: "Qwen2.5-Coder-3B-Instruct", task: "generation", fineTuneMethod: "qlora" },
+    evalSpec: { method: "holdout", sizeTarget: 1500, metric: "perplexity" },
+    weights: { data: 7000, compute: 2500, capital: 500 },
+    datasetGuidance: [
+      "Triples: vulnerable snippet → explanation → fixed version",
+      "Cite the vulnerability class (SWC / DASP where applicable)",
+      "Include safe look-alikes so the model doesn't over-flag",
+      "Public audit reports / CTFs only — no client-confidential code",
+    ],
+    audience: [
+      "Auditors contributing annotated findings",
+      "Protocol engineers donating fixed-bug pairs",
+      "GPU providers running the QLoRA fine-tune",
+    ],
+    useCases: [
+      { title: "Inline review assistant", body: "Explain risk in a diff before it reaches a human auditor." },
+      { title: "Onboarding & training", body: "Teach new auditors the pattern library interactively." },
+    ],
+  },
+];
+
+const DIGEST_KEYS = [
+  "title",
+  "summary",
+  "about",
+  "modelSpec",
+  "evalSpec",
+  "weights",
+  "datasetGuidance",
+  "audience",
+  "useCases",
+];
+
+function canonical(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+  const entries = Object.keys(value)
+    .sort()
+    .map((k) => `${JSON.stringify(k)}:${canonical(value[k])}`);
+  return `{${entries.join(",")}}`;
+}
+
+function manifestDigest(m) {
+  const subset = {};
+  for (const k of DIGEST_KEYS) subset[k] = m[k];
+  return keccak256(toHex(canonical(subset)));
+}
+
+const MANIFEST_FILE = resolve(repoRoot, "apps", "web", "data", "forge-manifests.json");
+
+function persistManifest(forgeAddr, tpl) {
+  let reg = {};
+  if (existsSync(MANIFEST_FILE)) {
+    try {
+      reg = JSON.parse(readFileSync(MANIFEST_FILE, "utf8"));
+    } catch {
+      reg = {};
+    }
+  }
+  const key = forgeAddr.toLowerCase();
+  reg[key] = {
+    version: 1,
+    forge: key,
+    ...tpl,
+    createdAt: Math.floor(Date.now() / 1000),
+    generator: "seed",
+  };
+  mkdirSync(dirname(MANIFEST_FILE), { recursive: true });
+  writeFileSync(MANIFEST_FILE, JSON.stringify(reg, null, 2) + "\n");
+  console.log(`  · manifest persisted → forge-manifests.json (${tpl.title})`);
+}
+
 // 0G's public RPC is slow to expose receipts and intermittently 404s a
 // just-broadcast tx, which makes viem's default waitForTransactionReceipt
 // throw instead of waiting. Poll getTransactionReceipt ourselves, tolerating
@@ -243,12 +408,15 @@ async function runForge(n) {
   const now = Number((await publicClient.getBlock()).timestamp);
   const windowEnds = BigInt(now + WINDOW_SECS);
 
+  const tpl = MANIFEST_TEMPLATES[(n - 1) % MANIFEST_TEMPLATES.length];
+  const modelSpec = manifestDigest(tpl);
+
   await send(
     deployerWallet.writeContract({
       address: deployment.ForgeFactory,
       abi: factoryAbi,
       functionName: "createForge",
-      args: [rand(), rand(), deployer.address, windowEnds],
+      args: [modelSpec, rand(), deployer.address, windowEnds],
     }),
     "createForge"
   );
@@ -265,6 +433,7 @@ async function runForge(n) {
     args: [count - 1n],
   });
   console.log(`  · forge address: ${EXPLORER}/address/${forge}`);
+  persistManifest(forge, tpl);
 
   // Contributions from three distinct smith wallets (Data / Compute / Capital).
   await send(

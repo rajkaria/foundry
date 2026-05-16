@@ -6,13 +6,40 @@ import { Card, CardEyebrow, CardTitle, CardBody } from "@/components/ui/Card";
 import { EmptyChainState } from "@/components/app/EmptyChainState";
 import { listForges } from "@/lib/forges-data";
 import { getChain, shortAddr } from "@/lib/chain";
+import { getAllManifests, type ForgeManifest } from "@/lib/forge-manifest";
 
-export const metadata = { title: "Forges" };
+export const metadata = {
+  title: "Forges — collectively trained models on 0G",
+  description:
+    "Each Forge pools data, compute, and capital to train one open model. Contribute and own a measured slice of the result.",
+};
 export const revalidate = 10;
+
+const TASK_LABEL: Record<string, string> = {
+  translation: "Translation",
+  classification: "Classification",
+  embedding: "Embedding",
+  generation: "Generation",
+};
+
+const STATE_TONE = {
+  OPEN: "positive",
+  LIVE: "positive",
+  EVALUATING: "ember",
+  MINTING: "warn",
+  TRAINING: "neutral",
+} as const;
+
+function windowOpen(state: string, ends: number): boolean {
+  return state === "OPEN" && ends > Math.floor(Date.now() / 1000);
+}
 
 export default async function ForgesPage() {
   const chain = getChain();
-  const forges = await listForges().catch(() => []);
+  const [forges, manifests] = await Promise.all([
+    listForges().catch(() => []),
+    getAllManifests().catch(() => ({}) as Record<string, ForgeManifest>),
+  ]);
 
   return (
     <main>
@@ -22,13 +49,18 @@ export default async function ForgesPage() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-caption text-ember-400">Forges</p>
-              <h1 className="text-display-lg text-platinum-100 mt-3">
-                Active and recent collectives, on mainnet.
+              <h1 className="text-display-lg text-platinum-100 mt-3 max-w-[18ch]">
+                Models, trained by whoever shows up.
               </h1>
-              <p className="text-body-lg text-platinum-300 mt-5 max-w-[60ch]">
-                Each Forge pools data, compute, and capital to train one Ingot. Connect
-                a wallet to contribute. Ownership mints proportionally to measured
-                contribution.
+              <p className="text-body-lg text-platinum-300 mt-5 max-w-[64ch]">
+                A Forge is a collective that trains one open model — an{" "}
+                <span className="text-platinum-100">Ingot</span>. Anyone can add{" "}
+                <span className="text-platinum-100">data</span>,{" "}
+                <span className="text-platinum-100">compute</span>, or{" "}
+                <span className="text-platinum-100">capital</span>. A TEE eval
+                measures how much each contribution actually moved the model, and
+                ownership mints in exactly that proportion. Revenue from running
+                the Ingot routes back to owners on-chain — forever.
               </p>
             </div>
             <Link
@@ -37,6 +69,24 @@ export default async function ForgesPage() {
             >
               Create with AI →
             </Link>
+          </div>
+
+          <div className="border-hairline mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-lg sm:grid-cols-3">
+            <HowTile
+              k="01"
+              t="Contribute"
+              b="Bring openly licensed data, run training/eval compute, or fund the eval set. Every input is logged on 0G."
+            />
+            <HowTile
+              k="02"
+              t="Get measured"
+              b="The eval coordinator scores each contribution's marginal effect on a held-out set inside a trusted enclave."
+            />
+            <HowTile
+              k="03"
+              t="Own & earn"
+              b="Ingot shares mint proportionally. Inference revenue then splits to contributors automatically."
+            />
           </div>
 
           {!chain.isLive ? (
@@ -58,39 +108,78 @@ export default async function ForgesPage() {
             </div>
           ) : (
             <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {forges.map((f) => (
-                <Link key={f.address} href={`/forges/${f.address}`} className="block">
-                  <Card>
-                    <div className="flex items-start justify-between gap-3">
-                      <CardEyebrow>{shortAddr(f.address)}</CardEyebrow>
-                      <Pill
-                        tone={
-                          f.state === "OPEN" || f.state === "LIVE"
-                            ? "positive"
-                            : f.state === "EVALUATING"
-                              ? "ember"
-                              : f.state === "MINTING"
-                                ? "warn"
-                                : "neutral"
-                        }
-                        dot
-                      >
-                        {f.state}
-                      </Pill>
-                    </div>
-                    <CardTitle className="mt-4">Forge {shortAddr(f.address)}</CardTitle>
-                    <CardBody>
-                      Creator {shortAddr(f.creator)} · {f.contributionsCount}{" "}
-                      contributions
-                    </CardBody>
-                  </Card>
-                </Link>
-              ))}
+              {forges.map((f) => {
+                const m = manifests[f.address.toLowerCase()];
+                const open = windowOpen(f.state, f.contributionWindowEnds);
+                return (
+                  <Link
+                    key={f.address}
+                    href={`/forges/${f.address}`}
+                    className="group block"
+                  >
+                    <Card className="h-full transition-colors group-hover:border-platinum-400/25">
+                      <div className="flex items-start justify-between gap-3">
+                        <CardEyebrow>
+                          {m
+                            ? (TASK_LABEL[m.modelSpec.task] ??
+                              m.modelSpec.task)
+                            : shortAddr(f.address)}
+                        </CardEyebrow>
+                        <Pill
+                          tone={STATE_TONE[f.state] ?? "neutral"}
+                          dot
+                        >
+                          {f.state}
+                        </Pill>
+                      </div>
+
+                      <CardTitle className="mt-3">
+                        {m ? m.title : `Forge ${shortAddr(f.address)}`}
+                      </CardTitle>
+                      <CardBody className="line-clamp-3">
+                        {m
+                          ? m.summary
+                          : `Creator ${shortAddr(f.creator)} · a training collective on 0G ${chain.network}.`}
+                      </CardBody>
+
+                      {m && (
+                        <div className="mt-4 flex flex-wrap gap-1.5">
+                          <Pill tone="neutral">{m.modelSpec.baseModel}</Pill>
+                          <Pill tone="neutral">
+                            {m.modelSpec.fineTuneMethod.toUpperCase()}
+                          </Pill>
+                        </div>
+                      )}
+
+                      <div className="border-hairline text-caption text-platinum-400 mt-5 flex items-center justify-between border-t pt-4">
+                        <span>{f.contributionsCount} contributions</span>
+                        <span
+                          className={
+                            open ? "text-signal-positive" : "text-platinum-400"
+                          }
+                        >
+                          {open ? "Open to contribute" : "Window closed"}
+                        </span>
+                      </div>
+                    </Card>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
       </section>
       <Footer />
     </main>
+  );
+}
+
+function HowTile({ k, t, b }: { k: string; t: string; b: string }) {
+  return (
+    <div className="bg-ink-900 p-6">
+      <span className="text-ember-400 text-mono-sm tabular">{k}</span>
+      <p className="text-title-md text-platinum-100 mt-3">{t}</p>
+      <p className="text-body-sm text-platinum-400 mt-2">{b}</p>
+    </div>
   );
 }

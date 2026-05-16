@@ -1,0 +1,262 @@
+{
+  "0x221cc6c3ee6df4050892e858efcc78a8709224e3": {
+    "version": 1,
+    "forge": "0x221cc6c3ee6df4050892e858efcc78a8709224e3",
+    "title": "Konkani ↔ English Translator",
+    "summary": "An open-weights translation model for Konkani, a low-resource Indian language with no production-grade MT. Trained from community-contributed parallel text.",
+    "about": "Konkani is spoken by ~2.5M people across coastal India but is effectively invisible to commercial translation systems — there is no clean, openly licensed parallel corpus large enough to fine-tune on. This Forge pools sentence pairs, glossaries, and proofreading effort from native speakers and Konkani-language institutions, scores each contribution by its measured effect on held-out translation quality, and mints proportional ownership of the resulting model. The output is a permanently free Ingot that anyone can run.",
+    "modelSpec": {
+      "baseModel": "Qwen2.5-1.5B-Instruct",
+      "task": "translation",
+      "fineTuneMethod": "lora",
+      "languages": ["kok", "en"]
+    },
+    "evalSpec": { "method": "holdout", "sizeTarget": 2000, "metric": "bleu" },
+    "weights": { "data": 7000, "compute": 2000, "capital": 1000 },
+    "datasetGuidance": [
+      "Sentence-aligned Konkani↔English pairs (news, literature, conversation)",
+      "Devanagari and Romi script both welcome — tag the script",
+      "Native-speaker proofreading passes on machine-drafted pairs",
+      "Domain glossaries (legal, medical, civic) with attested sources",
+      "No copyrighted text without a clear redistribution license"
+    ],
+    "audience": [
+      "Native Konkani speakers and translators contributing parallel text",
+      "Language institutions donating digitised corpora",
+      "GPU providers running the fine-tune jobs",
+      "Backers funding eval-set curation and proofreading bounties"
+    ],
+    "useCases": [
+      {
+        "title": "Civic & government access",
+        "body": "Translate public-health and government notices into Konkani at near-zero marginal cost."
+      },
+      {
+        "title": "Education tooling",
+        "body": "Power reading apps and bilingual learning material for Konkani-medium schools."
+      },
+      {
+        "title": "Composable lineage",
+        "body": "Downstream Forges can fork this Ingot for Konkani ASR or summarisation and inherit attribution."
+      }
+    ],
+    "createdAt": 1778851060,
+    "generator": "seed"
+  },
+  "0x2414b96056adef9aee1523b846f1a94656399adc": {
+    "version": 1,
+    "forge": "0x2414b96056adef9aee1523b846f1a94656399adc",
+    "title": "MSA Risk-Clause Classifier",
+    "summary": "A contract-intelligence model that flags risky clauses in software Master Service Agreements — uncapped liability, auto-renewal, IP assignment, unilateral termination.",
+    "about": "Reviewing a software MSA is slow, expensive, and inconsistent across reviewers. This Forge trains a classifier that reads a clause and labels it by risk category and severity, so legal and procurement teams can triage a 40-page agreement in minutes. Contributors supply labelled clauses from real (redacted) agreements and adjudicate disagreements; ownership of the model mints in proportion to how much each contribution moved held-out F1.",
+    "modelSpec": {
+      "baseModel": "ModernBERT-base",
+      "task": "classification",
+      "fineTuneMethod": "full"
+    },
+    "evalSpec": { "method": "holdout", "sizeTarget": 3500, "metric": "f1" },
+    "weights": { "data": 7500, "compute": 1500, "capital": 1000 },
+    "datasetGuidance": [
+      "Redacted clauses labelled by risk category + severity (1–5)",
+      "Cover liability, indemnity, IP, termination, renewal, data terms",
+      "Include benign clauses as negatives — not just risky ones",
+      "Two-reviewer adjudication on contested labels",
+      "Strip all party names and commercial figures before upload"
+    ],
+    "audience": [
+      "Contract lawyers and legal-ops teams contributing labelled clauses",
+      "Procurement reviewers adjudicating edge cases",
+      "Compute providers for the fine-tune sweep",
+      "Backers underwriting the gold-standard eval set"
+    ],
+    "useCases": [
+      {
+        "title": "First-pass contract triage",
+        "body": "Surface the 5 clauses a human must read first, instead of all 60."
+      },
+      {
+        "title": "Procurement guardrails",
+        "body": "Block auto-renewal and uncapped-liability terms from slipping through unreviewed."
+      },
+      {
+        "title": "Inference via the proxy",
+        "body": "Call the trained Ingot through Foundry's OpenAI-compatible endpoint from any review tool."
+      }
+    ],
+    "createdAt": 1778851180,
+    "generator": "seed"
+  },
+  "0x5d08d97de140e79cdac032e10e36fe3b86930a12": {
+    "version": 1,
+    "forge": "0x5d08d97de140e79cdac032e10e36fe3b86930a12",
+    "title": "Chemistry-Paper Retrieval Embeddings",
+    "summary": "A dense embedding model tuned for semantic retrieval over chemistry and materials-science literature, where general-purpose embeddings miss reaction and compound nuance.",
+    "about": "Researchers searching chemistry corpora are failed by generic embeddings: they collapse distinct reaction mechanisms and confuse compounds with similar names. This Forge fine-tunes an embedding model on contributed query→relevant-passage pairs mined from real literature search sessions, so retrieval ranks the paper a chemist actually wanted. Ownership mints proportionally to each contribution's measured lift in retrieval accuracy.",
+    "modelSpec": {
+      "baseModel": "bge-base-en-v1.5",
+      "task": "embedding",
+      "fineTuneMethod": "lora"
+    },
+    "evalSpec": { "method": "holdout", "sizeTarget": 5000, "metric": "accuracy" },
+    "weights": { "data": 6500, "compute": 2500, "capital": 1000 },
+    "datasetGuidance": [
+      "Query → relevant-passage pairs from real literature search",
+      "Hard negatives: near-miss passages that look relevant but aren't",
+      "Span organic, inorganic, and materials sub-domains",
+      "Abstract-level granularity is fine; full-text spans are better",
+      "Only openly licensed or self-authored passages"
+    ],
+    "audience": [
+      "Chemists and librarians contributing labelled retrieval pairs",
+      "Research groups donating anonymised search logs",
+      "Compute providers for contrastive fine-tuning",
+      "Backers funding annotation of hard negatives"
+    ],
+    "useCases": [
+      {
+        "title": "Better literature search",
+        "body": "Drop-in embedding upgrade for RAG over chemistry corpora."
+      },
+      {
+        "title": "Patent & prior-art discovery",
+        "body": "Surface mechanistically related work that keyword search misses."
+      },
+      {
+        "title": "Lineage forks",
+        "body": "A downstream Forge can specialise this Ingot for a single sub-field and inherit credit."
+      }
+    ],
+    "createdAt": 1778851300,
+    "generator": "seed"
+  },
+  "0xc39be4476c4cac6911d0894a549497a947462d64": {
+    "version": 1,
+    "forge": "0xc39be4476c4cac6911d0894a549497a947462d64",
+    "title": "Clinical Note De-Identification",
+    "summary": "A model that detects and redacts protected health information in free-text clinical notes, so hospitals can share data for research without leaking patient identity.",
+    "about": "De-identification is the gate on every clinical-data-sharing project, and off-the-shelf PII scrubbers miss the long tail of clinical phrasing. This Forge trains a sequence labeller on contributed, expert-redacted notes — names, dates, MRNs, locations, rare identifiers — and scores contributions by their effect on held-out recall, because in de-id a single miss is a breach. The resulting Ingot is openly runnable so smaller institutions aren't priced out.",
+    "modelSpec": {
+      "baseModel": "ModernBERT-base",
+      "task": "classification",
+      "fineTuneMethod": "full"
+    },
+    "evalSpec": { "method": "holdout", "sizeTarget": 4000, "metric": "f1" },
+    "weights": { "data": 8000, "compute": 1500, "capital": 500 },
+    "datasetGuidance": [
+      "Synthetic or fully consented notes only — never real PHI",
+      "Token-level spans for every identifier type",
+      "Cover rare identifiers: device IDs, rare locations, kin names",
+      "Include hard negatives (clinical terms that look like names)",
+      "Two-annotator agreement before a span is accepted"
+    ],
+    "audience": [
+      "Clinical NLP annotators contributing labelled spans",
+      "Hospitals donating consented or synthetic note sets",
+      "Compute providers for the labelling-model fine-tune",
+      "Backers funding the adversarial recall eval"
+    ],
+    "useCases": [
+      {
+        "title": "Unblock data sharing",
+        "body": "Redact note corpora to a defensible standard before research release."
+      },
+      {
+        "title": "Pipeline pre-processing",
+        "body": "Run as the first stage of any downstream clinical-NLP Forge."
+      },
+      {
+        "title": "Audit trail",
+        "body": "Every redaction decision is reproducible from the on-chain attestation."
+      }
+    ],
+    "createdAt": 1778851420,
+    "generator": "seed"
+  },
+  "0xeff6fc79b6d3f361602e745dc7d1c7a9492b509d": {
+    "version": 1,
+    "forge": "0xeff6fc79b6d3f361602e745dc7d1c7a9492b509d",
+    "title": "Solidity Vulnerability Explainer",
+    "summary": "A code model that reads a Solidity function and explains likely vulnerability classes in plain English — reentrancy, unchecked math, access-control gaps.",
+    "about": "Most smart-contract bugs are re-discoveries of known patterns, but junior auditors and protocol devs lack the pattern library in their head. This Forge trains a generation model on contributed (vulnerable snippet → explanation + fixed version) triples drawn from public audit reports and CTF challenges. Contributions are scored on how much they improve held-out explanation quality, and the Ingot becomes a free second pair of eyes for every Solidity author.",
+    "modelSpec": {
+      "baseModel": "Qwen2.5-Coder-3B-Instruct",
+      "task": "generation",
+      "fineTuneMethod": "qlora"
+    },
+    "evalSpec": { "method": "holdout", "sizeTarget": 1500, "metric": "perplexity" },
+    "weights": { "data": 7000, "compute": 2500, "capital": 500 },
+    "datasetGuidance": [
+      "Triples: vulnerable snippet → explanation → fixed version",
+      "Cite the vulnerability class (SWC / DASP where applicable)",
+      "Cover reentrancy, access control, arithmetic, oracle, DoS",
+      "Include safe look-alikes so the model doesn't over-flag",
+      "Public audit reports / CTFs only — no client-confidential code"
+    ],
+    "audience": [
+      "Auditors contributing annotated findings",
+      "Protocol engineers donating fixed-bug pairs",
+      "GPU providers running the QLoRA fine-tune",
+      "Backers funding the held-out explanation rubric"
+    ],
+    "useCases": [
+      {
+        "title": "Inline review assistant",
+        "body": "Explain risk in a diff before it reaches a human auditor."
+      },
+      {
+        "title": "Onboarding & training",
+        "body": "Teach new auditors the pattern library interactively."
+      },
+      {
+        "title": "Composable with the proxy",
+        "body": "Wire the Ingot into CI via Foundry's OpenAI-compatible endpoint."
+      }
+    ],
+    "createdAt": 1778851540,
+    "generator": "seed"
+  },
+  "0xcaf8469cdbb71bc9db60f60236f188267ea92531": {
+    "version": 1,
+    "forge": "0xcaf8469cdbb71bc9db60f60236f188267ea92531",
+    "title": "Spoken-Hindi Intent Classifier",
+    "summary": "An intent classifier for code-mixed spoken Hindi-English (Hinglish), built for voice interfaces that India's existing NLU stacks handle poorly.",
+    "about": "Voice products in India have to understand Hinglish — Hindi and English mixed within a single utterance, transliterated a dozen different ways. General intent models trained on clean English collapse on this. This Forge pools transcribed utterances labelled with intent and slots, weighted toward real spoken data, and scores contributions by held-out accuracy on a code-mixed test set. The Ingot ships free so small Indian-language voice teams aren't gated on a vendor.",
+    "modelSpec": {
+      "baseModel": "MuRIL-base",
+      "task": "classification",
+      "fineTuneMethod": "lora",
+      "languages": ["hi", "en"]
+    },
+    "evalSpec": { "method": "holdout", "sizeTarget": 6000, "metric": "accuracy" },
+    "weights": { "data": 7000, "compute": 2000, "capital": 1000 },
+    "datasetGuidance": [
+      "Transcribed Hinglish utterances with intent + slot labels",
+      "Keep natural code-switching — do not normalise to one language",
+      "Cover multiple transliteration spellings of the same word",
+      "Real spoken data preferred over written/synthetic",
+      "Speaker consent required for any human-recorded data"
+    ],
+    "audience": [
+      "Annotators labelling intents and slots on Hinglish speech",
+      "Voice teams donating consented, transcribed utterances",
+      "Compute providers for the LoRA fine-tune",
+      "Backers funding the code-mixed evaluation set"
+    ],
+    "useCases": [
+      {
+        "title": "Voice assistants",
+        "body": "Route Hinglish commands correctly in consumer voice products."
+      },
+      {
+        "title": "IVR & support bots",
+        "body": "Understand mixed-language customer intents without a vendor NLU."
+      },
+      {
+        "title": "Lineage to ASR",
+        "body": "Pair with a downstream Hinglish ASR Forge and share attribution across the stack."
+      }
+    ],
+    "createdAt": 1778851660,
+    "generator": "seed"
+  }
+}
