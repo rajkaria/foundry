@@ -29,6 +29,7 @@ export const DOC_NAV: DocGroup[] = [
       { href: "/docs/attribution", label: "Verifiable attribution" },
       { href: "/docs/threat-model", label: "Threat model" },
       { href: "/docs/contracts", label: "Contract self-review" },
+      { href: "/docs/forge-ledger", label: "Forge ledger (proof)" },
       { href: "/docs/real-vs-roadmap", label: "Real vs Roadmap" },
     ],
   },
