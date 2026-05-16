@@ -23,6 +23,7 @@ const toc = [
   { id: "fit", label: "Find your fit" },
   { id: "quickstart", label: "Integrate in 3 lines" },
   { id: "paths", label: "Pick your path" },
+  { id: "examples", label: "Integration examples" },
   { id: "equity", label: "Turn data into equity" },
   { id: "catalog", label: "Try a live Ingot now" },
   { id: "next", label: "Next steps" },
@@ -242,6 +243,109 @@ import { HumanMessage } from "@langchain/core/messages";
 const llm = new FoundryChat({ ingotId: "ingot:0x8e2af4a000000000000000000000000000000001" });
 const res = await llm.invoke([new HumanMessage("…")]);`}</CodeBlock>
 
+      <H2 id="examples">Integration examples</H2>
+      <P>
+        Worked patterns for the kinds of projects building on 0G today. Each is a small
+        diff on top of what you already have — drop in the call, keep your existing
+        logic.
+      </P>
+
+      <H3 id="ex-memory">Sovereign-memory agent (e.g. a SealedMind / MindVault)</H3>
+      <P>
+        Keep your encrypted memory exactly as-is. Swap only the model call so your agent
+        runs on an Ingot you can co-own — and attach the on-chain receipt as proof of
+        what answered.
+      </P>
+      <CodeBlock lang="ts">{`import { Foundry } from "@foundryprotocol/sdk";
+
+const foundry = new Foundry({ contracts: "aristotle" });
+
+// 1. Your existing sovereign recall — unchanged
+const memory = await vault.recall(userId, query);
+
+// 2. Reason on a co-owned Ingot instead of a closed API
+const { output, receipt } = await foundry.inference.run(
+  "ingot:0x8e2af4a000000000000000000000000000000001",
+  { input: \`\${memory}\\n\\nUser: \${query}\` },
+);
+
+// 3. Store the answer + on-chain proof in your memory graph
+await vault.remember(userId, { output, proof: receipt.inferenceTxHash });`}</CodeBlock>
+
+      <H3 id="ex-finance">
+        Verifiable trading / DeFi agent (e.g. a Provus / Aegis Vault)
+      </H3>
+      <P>
+        Every decision your agent makes ships with a TEE attestation and a transaction
+        hash. Persist it next to the trade for an audit trail anyone can verify.
+      </P>
+      <CodeBlock lang="ts">{`const signals = await market.snapshot(pair);
+
+const { output, receipt } = await foundry.inference.run(
+  "ingot:0x8e2af4a000000000000000000000000000000004", // clause/intent Ingot
+  { input: JSON.stringify({ signals, policy }), temperature: 0.2 },
+);
+
+const decision = JSON.parse(output);
+await ledger.record({
+  pair,
+  decision,
+  verifiedBy: receipt.inferenceTxHash, // provable, not "trust us"
+  revenuePaid: receipt.revenueTxHash,
+});`}</CodeBlock>
+
+      <H3 id="ex-marketplace">Agent marketplace (e.g. an AgentHub / zer0Gig)</H3>
+      <P>
+        List Ingots as model SKUs. Route a job through Foundry and the on-chain{" "}
+        <Code>RevenueSplitter</Code> pays every co-owner automatically — you write zero
+        payout code.
+      </P>
+      <CodeBlock lang="ts">{`// Each listing maps a task to an Ingot SKU
+const sku = catalog.resolve(job.taskType); // -> { ingotId }
+
+const { output, receipt } = await foundry.inference.run(sku.ingotId, {
+  input: job.payload,
+});
+
+// Revenue already split on-chain to co-owners. Just surface the proof.
+return { result: output, receiptUrl: \`/ingots/\${sku.ingotId}\`, tx: receipt.revenueTxHash };`}</CodeBlock>
+
+      <H3 id="ex-consumer">Consumer app, zero web3 (e.g. a ZeroViza / Compass)</H3>
+      <P>
+        No SDK, no wallet. Point your existing OpenAI client at the Foundry base URL and
+        add one header — you&apos;re calling a co-owned model in minutes.
+      </P>
+      <CodeBlock lang="ts">{`import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://api.foundryprotocol.xyz/v1",
+  apiKey: "not-required",
+  defaultHeaders: {
+    "x-foundry-ingot-id": "0x8e2af4a000000000000000000000000000000001",
+  },
+});
+
+const res = await client.chat.completions.create({
+  model: "foundry",
+  messages: [{ role: "user", content: userInput }],
+});
+// res.foundry.inferenceTxHash → show the on-chain receipt in your UI`}</CodeBlock>
+
+      <Callout tone="ember" title="Need help wiring yours in?">
+        <p>
+          Ping me directly on Telegram —{" "}
+          <a
+            href="https://t.me/rajkaria"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="text-ember-400 hover:text-ember-300"
+          >
+            t.me/rajkaria
+          </a>{" "}
+          — and I&apos;ll help you ship your integration, usually in under 30 minutes.
+        </p>
+      </Callout>
+
       <H2 id="equity">Turn your data into equity</H2>
       <P>
         The deeper integration: don&apos;t just call a model — help train one and own
@@ -343,6 +447,15 @@ await foundry.revenue.claim(tokenId);                           // pull from Rev
           Want a co-branded demo or help wiring your project in? Open the{" "}
           <a href="/docs/quickstart" className="text-ember-400 hover:text-ember-300">
             Quickstart
+          </a>
+          , or message me on Telegram at{" "}
+          <a
+            href="https://t.me/rajkaria"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="text-ember-400 hover:text-ember-300"
+          >
+            t.me/rajkaria
           </a>{" "}
           — most teams ship in under 30 minutes.
         </li>
