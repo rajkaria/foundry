@@ -67,7 +67,11 @@ export default async function ForgesPage() {
                 to owners on-chain — forever.
               </p>
             </div>
-            <LinkButton href="/forges/new" size="lg" trailing={<span aria-hidden>→</span>}>
+            <LinkButton
+              href="/forges/new"
+              size="lg"
+              trailing={<span aria-hidden>→</span>}
+            >
               Create with AI
             </LinkButton>
           </div>
@@ -129,11 +133,7 @@ export default async function ForgesPage() {
                             ? (TASK_LABEL[m.modelSpec.task] ?? m.modelSpec.task)
                             : shortAddr(f.address)}
                         </CardEyebrow>
-                        <Pill
-                          tone={STATE_TONE[f.state] ?? "neutral"}
-                          dot
-                          pulse={live}
-                        >
+                        <Pill tone={STATE_TONE[f.state] ?? "neutral"} dot pulse={live}>
                           {f.state}
                         </Pill>
                       </div>
@@ -165,9 +165,7 @@ export default async function ForgesPage() {
                         </span>
                         <span
                           className={
-                            open
-                              ? "text-signal-positive"
-                              : "text-platinum-500"
+                            open ? "text-signal-positive" : "text-platinum-500"
                           }
                         >
                           {open ? "Open to contribute" : "Window closed"}

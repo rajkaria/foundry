@@ -41,7 +41,7 @@ export function EventRow({
       <span
         className={cn(
           "absolute top-0 bottom-0 left-0 w-px origin-top scale-y-0 transition-transform duration-[var(--dur-base)]",
-          "bg-gradient-to-b from-ember-400 to-ember-600 group-hover:scale-y-100"
+          "from-ember-400 to-ember-600 bg-gradient-to-b group-hover:scale-y-100"
         )}
       />
       <Pill tone={tone} dot pulse={pulse}>

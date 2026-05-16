@@ -58,8 +58,7 @@ export default async function DashboardPage() {
             Forge in Public
           </p>
           <h1 className="text-display-xl text-platinum-100 mt-4 max-w-[24ch] text-balance">
-            Real numbers, on mainnet,{" "}
-            <span className="sheen-ember">ticking live.</span>
+            Real numbers, on mainnet, <span className="sheen-ember">ticking live.</span>
           </h1>
           <p className="text-body-lg text-platinum-300 mt-6 max-w-[60ch]">
             Every figure below is read straight from 0G {chain.network} event logs — the
