@@ -26,7 +26,7 @@ const DEFAULT_RPCS: Record<NetworkName, string> = {
 };
 
 const CHAIN_IDS: Record<NetworkName, number> = {
-  aristotle: 16608, // canonical 0G mainnet — confirmed at deploy
+  aristotle: 16661, // 0G Aristotle mainnet — confirmed via eth_chainId on https://evmrpc.0g.ai
   galileo: 16601, // 0G Galileo testnet
   local: 31337, // Anvil default
 };
