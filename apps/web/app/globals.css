@@ -81,3 +81,200 @@ html {
   opacity: 0.5;
   mix-blend-mode: overlay;
 }
+
+/* ============================================================
+   Molten foundry — bold surface system
+   Forged metal: top-lit gradient, ember-tinted hairline, depth.
+   ============================================================ */
+
+/* Reduced-motion guard for everything below */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot,
+  .pulse-dot::before,
+  .glow-ember::before,
+  .ember-rule::after {
+    animation: none !important;
+  }
+  .hover-lift {
+    transition: none !important;
+  }
+}
+
+/* Forged surface — replaces flat ink-900 panels with machined-metal depth */
+.surface-forged {
+  position: relative;
+  background:
+    linear-gradient(180deg, var(--ink-800) 0%, var(--ink-900) 38%, var(--ink-950) 100%);
+  border: 1px solid color-mix(in oklab, var(--bg-hairline) 70%, transparent);
+  box-shadow:
+    0 1px 0 0 rgb(255 255 255 / 0.05) inset,
+    0 18px 40px -22px rgb(0 0 0 / 0.7);
+}
+.surface-forged::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  /* hairline catch-light along the top edge */
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--ember-400) 7%, transparent) 0%,
+    transparent 14%
+  );
+  opacity: 0.7;
+}
+
+/* Hover lift — used on interactive cards/rows */
+.hover-lift {
+  transition:
+    transform var(--dur-base) var(--ease-decel),
+    border-color var(--dur-quick) var(--ease-standard),
+    box-shadow var(--dur-base) var(--ease-decel);
+  will-change: transform;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in oklab, var(--ember-500) 38%, transparent);
+  box-shadow:
+    0 1px 0 0 rgb(255 255 255 / 0.06) inset,
+    0 0 0 1px color-mix(in oklab, var(--ember-500) 18%, transparent),
+    0 28px 56px -20px rgb(0 0 0 / 0.78),
+    0 14px 40px -26px color-mix(in oklab, var(--ember-500) 55%, transparent);
+}
+
+/* Ember bloom — radial heat behind a section header or hero */
+.glow-ember {
+  position: relative;
+  isolation: isolate;
+}
+.glow-ember::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: -10%;
+  width: min(680px, 90%);
+  height: 280px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(
+    50% 60% at 50% 0%,
+    color-mix(in oklab, var(--ember-500) 22%, transparent) 0%,
+    color-mix(in oklab, var(--ember-700) 10%, transparent) 38%,
+    transparent 72%
+  );
+  filter: blur(8px);
+  animation: heat-breathe 7s var(--ease-standard) infinite;
+}
+@keyframes heat-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+/* Molten text sheen — for marquee numbers (revenue, counts) */
+.sheen-ember {
+  background: linear-gradient(
+    180deg,
+    var(--ember-300) 0%,
+    var(--ember-500) 55%,
+    var(--ember-600) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Pulsing live dot — wrap a colored dot to make it breathe with a ring */
+.pulse-dot {
+  position: relative;
+}
+.pulse-dot::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.5;
+  animation: ping 1800ms var(--ease-decel) infinite;
+}
+@keyframes ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* Section heat rule — an ember gradient hairline that travels */
+.ember-rule {
+  position: relative;
+  height: 1px;
+  background: color-mix(in oklab, var(--bg-hairline) 70%, transparent);
+  overflow: hidden;
+}
+.ember-rule::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--ember-500) 90%, transparent),
+    transparent
+  );
+  animation: travel 4.5s linear infinite;
+}
+@keyframes travel {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(350%);
+  }
+}
+
+/* Forged texture — opt-in fine machined grain for key panels */
+.forged {
+  position: relative;
+}
+.forged::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.04 0'/></filter><rect width='160' height='160' filter='url(%23f)'/></svg>");
+  opacity: 0.6;
+  mix-blend-mode: overlay;
+}
+
+/* Animated entrance — staggered rise for grids/feeds */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise-in {
+  animation: rise-in var(--dur-base) var(--ease-decel) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise-in {
+    animation: none;
+  }
+}
