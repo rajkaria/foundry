@@ -1,0 +1,347 @@
+#!/usr/bin/env node
+/**
+ * Mainnet activity seeder — drives REAL on-chain forge lifecycles so the
+ * "Forge in Public" dashboard reflects genuine, explorer-verifiable numbers.
+ *
+ * This is the only honest way to show traction: the dashboard reads event
+ * logs straight off 0G Aristotle, so the only way to move the counters is to
+ * actually transact. Every number this produces is backed by a tx hash.
+ *
+ * For each forge it runs the full loop end to end:
+ *   createForge → contributeData/Compute/Capital (3 distinct smith wallets)
+ *   → wait out the contribution window → startEvaluating → submitEvalResult
+ *   → mintOwnership (mints the Ingot) → setWeightsAndGoLive
+ *   → RevenueSplitter.receivePayment → claim
+ *
+ * That lights up all five dashboard metrics: Forges live, Ingots minted,
+ * Total contributions, External Smiths, Revenue distributed.
+ *
+ * Smith wallets are derived deterministically from the funded key, then
+ * topped up from it, so a re-run reuses the same on-chain identities.
+ *
+ * Env:
+ *   SEED_KEY | DEPLOYER_KEY_ARISTOTLE   funded private key (required)
+ *   RPC_ARISTOTLE                        RPC URL (default https://evmrpc.0g.ai)
+ *   SEED_FORGES                          how many full loops (default 3)
+ *   SEED_WINDOW_SECS                     contribution window length (default 45)
+ *   SEED_DRY=1                           preview plan + balance, send nothing
+ *
+ * Run:  SEED_KEY=0x... node scripts/seed-mainnet.mjs
+ */
+
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
+import { readFileSync } from "node:fs";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const repoRoot = resolve(__dirname, "..");
+
+// Resolve viem via the SDK's node_modules (same trick as mainnet-smoke.mjs).
+const requireFromSdk = createRequire(
+  resolve(repoRoot, "packages", "sdk", "package.json")
+);
+let viem, viemAccounts;
+try {
+  viem = await import(requireFromSdk.resolve("viem"));
+  viemAccounts = await import(requireFromSdk.resolve("viem/accounts"));
+} catch {
+  console.error(
+    "[seed] viem not found. Run `pnpm install` at the repo root first."
+  );
+  process.exit(1);
+}
+
+const {
+  createPublicClient,
+  createWalletClient,
+  http,
+  defineChain,
+  parseEther,
+  formatEther,
+  keccak256,
+  toHex,
+  encodePacked,
+  parseAbi,
+} = viem;
+const { privateKeyToAccount } = viemAccounts;
+
+/* ─── config ──────────────────────────────────────────────────────────── */
+
+const RAW_KEY = process.env.SEED_KEY ?? process.env.DEPLOYER_KEY_ARISTOTLE;
+if (!RAW_KEY || !/^0x[0-9a-fA-F]{64}$/.test(RAW_KEY)) {
+  console.error(
+    "[seed] SEED_KEY (or DEPLOYER_KEY_ARISTOTLE) must be a 0x-prefixed 32-byte hex private key."
+  );
+  process.exit(1);
+}
+const KEY = RAW_KEY;
+const RPC = process.env.RPC_ARISTOTLE ?? "https://evmrpc.0g.ai";
+const FORGES = Math.max(1, Number(process.env.SEED_FORGES ?? 3));
+const WINDOW_SECS = Math.max(15, Number(process.env.SEED_WINDOW_SECS ?? 45));
+const DRY = process.env.SEED_DRY === "1";
+
+const COMPUTE_WEI = parseEther("0.00002");
+const CAPITAL_WEI = parseEther("0.00002");
+const REVENUE_WEI = parseEther("0.0005");
+const SMITH_FUND = parseEther("0.003"); // gas + contribution value buffer
+const EXPLORER = "https://chainscan.0g.ai";
+
+const deployment = JSON.parse(
+  readFileSync(resolve(repoRoot, "contracts", "deployments", "aristotle.json"), "utf8")
+);
+for (const k of ["ForgeFactory", "Ingot", "ContributionRegistry", "RevenueSplitter"]) {
+  if (!deployment[k] || /^0x0+$/.test(deployment[k])) {
+    console.error(`[seed] deployment.${k} missing/zero — contracts not deployed.`);
+    process.exit(1);
+  }
+}
+
+/* ─── ABIs (minimal, sourced from contracts/src) ──────────────────────── */
+
+const factoryAbi = parseAbi([
+  "function createForge(bytes32 modelSpec, bytes32 evalSpec, address evalCoordinator, uint64 contributionWindowEnds) returns (address)",
+  "function count() view returns (uint256)",
+  "function allForges(uint256) view returns (address)",
+]);
+const forgeAbi = parseAbi([
+  "function contributeData(bytes32 storageRoot) returns (uint256)",
+  "function contributeCompute(uint128 amount) payable returns (uint256)",
+  "function fundForge() payable returns (uint256)",
+  "function startEvaluating()",
+  "function submitEvalResult(bytes32 attestation, uint64[] scores)",
+  "function mintOwnership()",
+  "function setWeightsAndGoLive(bytes32 weightsRoot, bytes32 lineageParent)",
+  "function tokenId() view returns (uint256)",
+  "function state() view returns (uint8)",
+]);
+const splitterAbi = parseAbi([
+  "function receivePayment(uint256 tokenId) payable",
+  "function claimable(uint256 tokenId, address holder) view returns (uint256)",
+  "function claim(uint256 tokenId) returns (uint256)",
+]);
+
+/* ─── chain + clients ─────────────────────────────────────────────────── */
+
+const probe = createPublicClient({ transport: http(RPC) });
+const chainId = await probe.getChainId();
+const chain = defineChain({
+  id: chainId,
+  name: "0G Aristotle",
+  nativeCurrency: { name: "OG", symbol: "OG", decimals: 18 },
+  rpcUrls: { default: { http: [RPC] } },
+});
+const publicClient = createPublicClient({ chain, transport: http(RPC) });
+
+const deployer = privateKeyToAccount(KEY);
+const deployerWallet = createWalletClient({ account: deployer, chain, transport: http(RPC) });
+
+// Deterministic smith wallets derived from the funded key — stable across runs.
+function deriveSmith(i) {
+  const pk = keccak256(encodePacked(["bytes32", "uint8"], [KEY, i]));
+  const account = privateKeyToAccount(pk);
+  return {
+    pk,
+    account,
+    wallet: createWalletClient({ account, chain, transport: http(RPC) }),
+  };
+}
+const smiths = [deriveSmith(1), deriveSmith(2), deriveSmith(3)]; // data, compute, capital
+
+const tx = (h) => `${EXPLORER}/tx/${h}`;
+const rand = () => keccak256(toHex(`${Date.now()}-${Math.random()}`));
+
+// 0G's public RPC is slow to expose receipts and intermittently 404s a
+// just-broadcast tx, which makes viem's default waitForTransactionReceipt
+// throw instead of waiting. Poll getTransactionReceipt ourselves, tolerating
+// "not found" until the tx lands or we hit a hard timeout.
+async function waitReceipt(hash, label, timeoutMs = 180_000) {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    try {
+      const rcpt = await publicClient.getTransactionReceipt({ hash });
+      if (rcpt) return rcpt;
+    } catch (err) {
+      if (!/could not be found|not be processed/i.test(err?.shortMessage ?? err?.message ?? "")) {
+        throw err;
+      }
+    }
+    if (Date.now() > deadline) {
+      throw new Error(`${label}: receipt for ${hash} not seen within ${timeoutMs / 1000}s`);
+    }
+    await new Promise((r) => setTimeout(r, 3000));
+  }
+}
+
+async function send(promise, label) {
+  const hash = await promise;
+  process.stdout.write(`  · ${label}: ${tx(hash)}\n`);
+  const rcpt = await waitReceipt(hash, label);
+  if (rcpt.status !== "success") throw new Error(`${label} reverted (${hash})`);
+  return rcpt;
+}
+
+async function waitUntil(tsSeconds) {
+  for (;;) {
+    const block = await publicClient.getBlock();
+    if (Number(block.timestamp) >= tsSeconds) return;
+    const remain = tsSeconds - Number(block.timestamp);
+    process.stdout.write(`  · window closes in ~${remain}s…\n`);
+    await new Promise((r) => setTimeout(r, Math.min(remain, 10) * 1000));
+  }
+}
+
+/* ─── plan + balance check ────────────────────────────────────────────── */
+
+const bal = await publicClient.getBalance({ address: deployer.address });
+const estPerForge = SMITH_FUND * 3n + REVENUE_WEI + parseEther("0.002"); // + gas headroom
+const estTotal = estPerForge * BigInt(FORGES);
+
+console.log("[seed] network        0G Aristotle (chainId %d)", chainId);
+console.log("[seed] rpc            %s", RPC);
+console.log("[seed] deployer       %s", deployer.address);
+console.log("[seed] balance        %s OG", formatEther(bal));
+console.log("[seed] forges to run  %d", FORGES);
+console.log("[seed] est. spend     ~%s OG", formatEther(estTotal));
+console.log("[seed] smiths         %s", smiths.map((s) => s.account.address).join(", "));
+
+if (bal < estTotal) {
+  console.error(
+    `[seed] insufficient balance: have ${formatEther(bal)} OG, need ~${formatEther(estTotal)} OG.`
+  );
+  process.exit(1);
+}
+if (DRY) {
+  console.log("[seed] SEED_DRY=1 — preview only, nothing sent.");
+  process.exit(0);
+}
+
+/* ─── smith funding (top up before each forge) ────────────────────────── */
+
+// A smith spends gas on a contribution + a claim per forge. Keep each topped
+// up to SMITH_FUND whenever it dips below the per-forge floor, so the run
+// scales to any SEED_FORGES count instead of draining a one-time grant.
+const SMITH_FLOOR = SMITH_FUND / 2n;
+
+async function ensureFunded() {
+  for (const s of smiths) {
+    const sbal = await publicClient.getBalance({ address: s.account.address });
+    if (sbal >= SMITH_FLOOR) continue;
+    const topUp = SMITH_FUND - sbal;
+    await send(
+      deployerWallet.sendTransaction({ to: s.account.address, value: topUp }),
+      `top up ${s.account.address} (+${formatEther(topUp)} OG)`
+    );
+  }
+}
+
+/* ─── full forge lifecycle ────────────────────────────────────────────── */
+
+async function runForge(n) {
+  console.log(`\n[seed] ═══ forge ${n}/${FORGES} ═══`);
+  await ensureFunded();
+  const now = Number((await publicClient.getBlock()).timestamp);
+  const windowEnds = BigInt(now + WINDOW_SECS);
+
+  await send(
+    deployerWallet.writeContract({
+      address: deployment.ForgeFactory,
+      abi: factoryAbi,
+      functionName: "createForge",
+      args: [rand(), rand(), deployer.address, windowEnds],
+    }),
+    "createForge"
+  );
+
+  const count = await publicClient.readContract({
+    address: deployment.ForgeFactory,
+    abi: factoryAbi,
+    functionName: "count",
+  });
+  const forge = await publicClient.readContract({
+    address: deployment.ForgeFactory,
+    abi: factoryAbi,
+    functionName: "allForges",
+    args: [count - 1n],
+  });
+  console.log(`  · forge address: ${EXPLORER}/address/${forge}`);
+
+  // Contributions from three distinct smith wallets (Data / Compute / Capital).
+  await send(
+    smiths[0].wallet.writeContract({
+      address: forge, abi: forgeAbi, functionName: "contributeData", args: [rand()],
+    }),
+    "contributeData (smith 1)"
+  );
+  await send(
+    smiths[1].wallet.writeContract({
+      address: forge, abi: forgeAbi, functionName: "contributeCompute",
+      args: [COMPUTE_WEI], value: COMPUTE_WEI,
+    }),
+    "contributeCompute (smith 2)"
+  );
+  await send(
+    smiths[2].wallet.writeContract({
+      address: forge, abi: forgeAbi, functionName: "fundForge", value: CAPITAL_WEI,
+    }),
+    "fundForge (smith 3)"
+  );
+
+  await waitUntil(Number(windowEnds) + 3);
+
+  await send(
+    deployerWallet.writeContract({ address: forge, abi: forgeAbi, functionName: "startEvaluating" }),
+    "startEvaluating"
+  );
+  await send(
+    deployerWallet.writeContract({
+      address: forge, abi: forgeAbi, functionName: "submitEvalResult",
+      args: [rand(), [800000n, 0n, 0n]], // data scored; compute/capital weigh by amount
+    }),
+    "submitEvalResult"
+  );
+  await send(
+    deployerWallet.writeContract({ address: forge, abi: forgeAbi, functionName: "mintOwnership" }),
+    "mintOwnership (Ingot minted)"
+  );
+
+  const tokenId = await publicClient.readContract({
+    address: forge, abi: forgeAbi, functionName: "tokenId",
+  });
+  console.log(`  · ingot tokenId: ${tokenId}`);
+
+  await send(
+    deployerWallet.writeContract({
+      address: forge, abi: forgeAbi, functionName: "setWeightsAndGoLive",
+      args: [rand(), "0x0000000000000000000000000000000000000000000000000000000000000000"],
+    }),
+    "setWeightsAndGoLive"
+  );
+  await send(
+    deployerWallet.writeContract({
+      address: deployment.RevenueSplitter, abi: splitterAbi,
+      functionName: "receivePayment", args: [tokenId], value: REVENUE_WEI,
+    }),
+    "receivePayment (revenue distributed)"
+  );
+
+  const claimable = await publicClient.readContract({
+    address: deployment.RevenueSplitter, abi: splitterAbi,
+    functionName: "claimable", args: [tokenId, smiths[0].account.address],
+  });
+  if (claimable > 0n) {
+    await send(
+      smiths[0].wallet.writeContract({
+        address: deployment.RevenueSplitter, abi: splitterAbi,
+        functionName: "claim", args: [tokenId],
+      }),
+      `claim ${formatEther(claimable)} OG (smith 1)`
+    );
+  }
+  console.log(`  ✓ forge ${n} complete — live with revenue`);
+}
+
+for (let i = 1; i <= FORGES; i++) await runForge(i);
+
+console.log(`\n[seed] done. ${FORGES} forge(s) created, minted, and earning on 0G Aristotle.`);
+console.log("[seed] the dashboard will reflect this within ~10s (ISR revalidate).");

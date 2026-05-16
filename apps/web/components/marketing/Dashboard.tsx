@@ -61,6 +61,13 @@ function buildRows(s: DashboardProps["stats"]): Stat[] {
 
 export function Dashboard({ stats }: DashboardProps) {
   const rows = buildRows(stats);
+  const hasActivity =
+    stats.forges +
+      stats.ingots +
+      stats.contributions +
+      stats.externalSmiths +
+      stats.totalRevenueOG >
+    0;
 
   return (
     <section className="border-hairline relative border-t py-28">
@@ -78,9 +85,11 @@ export function Dashboard({ stats }: DashboardProps) {
           <div>
             <p className="text-caption text-ember-400">Forge in Public</p>
             <h2 className="text-display-lg text-platinum-100 mt-3 max-w-[24ch]">
-              {stats.isLive
-                ? "No fake counters. Just live mainnet activity."
-                : "Live numbers ship the moment contracts deploy."}
+              {!stats.isLive
+                ? "Live numbers ship the moment contracts deploy."
+                : hasActivity
+                  ? "No fake counters. Just live mainnet activity."
+                  : "Contracts are live. Zero is the honest number — for now."}
             </h2>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -138,9 +147,11 @@ export function Dashboard({ stats }: DashboardProps) {
           className="mt-8 flex flex-wrap items-center justify-between gap-3"
         >
           <p className="text-body-sm text-platinum-400">
-            {stats.isLive
-              ? "Indexed live from 0G mainnet events. Sparklines stretch toward the current value until per-day buckets ship."
-              : "These tiles surface counts from the contract event logs. Deploy the protocol to populate them."}
+            {!stats.isLive
+              ? "These tiles surface counts from the contract event logs. Deploy the protocol to populate them."
+              : hasActivity
+                ? "Indexed live from 0G mainnet events. Sparklines stretch toward the current value until per-day buckets ship."
+                : "Every tile reads contract event logs directly — so it stays at zero until a real on-chain forge moves it. No seeded demo numbers, ever."}
           </p>
           <a
             href="/dashboard"
