@@ -21,7 +21,7 @@ export const DOC_NAV: DocGroup[] = [
       { href: "/docs/protocol-overview", label: "Protocol overview" },
       { href: "/docs/quickstart", label: "Quickstart" },
       { href: "/docs/build-on-foundry", label: "Build on Foundry" },
-      { href: "/docs/0g-hackathon", label: "0G Hackathon plan" },
+      { href: "/docs/0g-hackathon", label: "Integrate Foundry (0G)" },
     ],
   },
   {
