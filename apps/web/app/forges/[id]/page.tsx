@@ -215,9 +215,7 @@ export default async function ForgeDetailPage({ params }: PageProps) {
           <h1 className="text-display-xl text-platinum-100 mt-4 max-w-[22ch]">
             {title}
           </h1>
-          <p className="text-body-lg text-platinum-300 mt-5 max-w-[68ch]">
-            {summary}
-          </p>
+          <p className="text-body-lg text-platinum-300 mt-5 max-w-[68ch]">{summary}</p>
 
           <div className="border-hairline mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg md:grid-cols-4">
             <Stat label="Contributions" value={String(forge.contributionsCount)} />
@@ -270,10 +268,7 @@ export default async function ForgeDetailPage({ params }: PageProps) {
                   v={manifest.evalSpec.sizeTarget.toLocaleString()}
                 />
                 {manifest.modelSpec.languages && (
-                  <Field
-                    k="Languages"
-                    v={manifest.modelSpec.languages.join(" · ")}
-                  />
+                  <Field k="Languages" v={manifest.modelSpec.languages.join(" · ")} />
                 )}
               </div>
             )}
@@ -483,9 +478,7 @@ export default async function ForgeDetailPage({ params }: PageProps) {
                     </span>
                   </div>
                   <span className="text-mono-sm text-platinum-400">
-                    {c.timestamp
-                      ? new Date(c.timestamp * 1000).toLocaleString()
-                      : "—"}{" "}
+                    {c.timestamp ? new Date(c.timestamp * 1000).toLocaleString() : "—"}{" "}
                     ↗
                   </span>
                 </a>
@@ -518,9 +511,7 @@ function Stat({
   return (
     <div className="bg-ink-900 p-5">
       <p className="text-caption text-platinum-400">{label}</p>
-      <p
-        className={`text-title-md text-platinum-100 mt-1 ${mono ? "font-mono" : ""}`}
-      >
+      <p className={`text-title-md text-platinum-100 mt-1 ${mono ? "font-mono" : ""}`}>
         {value}
       </p>
     </div>

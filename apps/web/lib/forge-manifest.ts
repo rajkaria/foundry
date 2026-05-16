@@ -28,11 +28,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { keccak256, toHex, type Address, type Hex } from "viem";
 
-export type ForgeTask =
-  | "translation"
-  | "classification"
-  | "embedding"
-  | "generation";
+export type ForgeTask = "translation" | "classification" | "embedding" | "generation";
 export type FineTuneMethod = "lora" | "full" | "qlora";
 export type EvalMetric = "bleu" | "accuracy" | "f1" | "perplexity";
 
@@ -108,10 +104,7 @@ export function manifestDigest(m: Partial<ForgeManifest>): Hex {
 }
 
 /** True when the manifest is cryptographically bound to the on-chain spec. */
-export function isContentVerified(
-  m: ForgeManifest,
-  onChainModelSpec: Hex
-): boolean {
+export function isContentVerified(m: ForgeManifest, onChainModelSpec: Hex): boolean {
   return manifestDigest(m).toLowerCase() === onChainModelSpec.toLowerCase();
 }
 
@@ -123,7 +116,8 @@ type Registry = Record<string, ForgeManifest>;
 const CANDIDATES = [
   () => path.join(process.cwd(), "data", "forge-manifests.json"),
   () => path.join(process.cwd(), "apps", "web", "data", "forge-manifests.json"),
-  () => path.join(process.cwd(), "..", "..", "apps", "web", "data", "forge-manifests.json"),
+  () =>
+    path.join(process.cwd(), "..", "..", "apps", "web", "data", "forge-manifests.json"),
 ];
 
 let resolvedPath: string | null = null;
@@ -182,9 +176,7 @@ export interface UpsertResult {
  * Insert or replace a manifest. Always returns the content digest (so the
  * caller can anchor it on-chain even when the filesystem is read-only).
  */
-export async function upsertManifest(
-  m: ForgeManifest
-): Promise<UpsertResult> {
+export async function upsertManifest(m: ForgeManifest): Promise<UpsertResult> {
   const digest = manifestDigest(m);
   const key = m.forge.toLowerCase();
   try {

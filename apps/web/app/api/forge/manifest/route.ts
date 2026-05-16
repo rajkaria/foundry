@@ -14,11 +14,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { isAddress, type Address } from "viem";
-import {
-  getManifest,
-  upsertManifest,
-  type ForgeManifest,
-} from "@/lib/forge-manifest";
+import { getManifest, upsertManifest, type ForgeManifest } from "@/lib/forge-manifest";
 
 export const runtime = "nodejs";
 
@@ -41,7 +37,9 @@ const TASKS = ["translation", "classification", "embedding", "generation"];
 const METHODS = ["lora", "full", "qlora"];
 const METRICS = ["bleu", "accuracy", "f1", "perplexity"];
 
-function validate(b: unknown): { ok: true; m: ForgeManifest } | { ok: false; why: string } {
+function validate(
+  b: unknown
+): { ok: true; m: ForgeManifest } | { ok: false; why: string } {
   if (!b || typeof b !== "object") return { ok: false, why: "body must be an object" };
   const m = b as Record<string, unknown>;
   if (typeof m.forge !== "string" || !isAddress(m.forge))
@@ -106,9 +104,7 @@ function validate(b: unknown): { ok: true; m: ForgeManifest } | { ok: false; why
       .map((u) => ({ title: String(u.title), body: String(u.body) })),
     createdAt: Math.floor(Date.now() / 1000),
     generator:
-      m.generator === "ai-wizard" || m.generator === "manual"
-        ? m.generator
-        : "manual",
+      m.generator === "ai-wizard" || m.generator === "manual" ? m.generator : "manual",
   };
   return { ok: true, m: manifest };
 }

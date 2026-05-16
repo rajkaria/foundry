@@ -57,10 +57,10 @@ export default async function ForgesPage() {
                 <span className="text-platinum-100">Ingot</span>. Anyone can add{" "}
                 <span className="text-platinum-100">data</span>,{" "}
                 <span className="text-platinum-100">compute</span>, or{" "}
-                <span className="text-platinum-100">capital</span>. A TEE eval
-                measures how much each contribution actually moved the model, and
-                ownership mints in exactly that proportion. Revenue from running
-                the Ingot routes back to owners on-chain — forever.
+                <span className="text-platinum-100">capital</span>. A TEE eval measures
+                how much each contribution actually moved the model, and ownership mints
+                in exactly that proportion. Revenue from running the Ingot routes back
+                to owners on-chain — forever.
               </p>
             </div>
             <Link
@@ -117,18 +117,14 @@ export default async function ForgesPage() {
                     href={`/forges/${f.address}`}
                     className="group block"
                   >
-                    <Card className="h-full transition-colors group-hover:border-platinum-400/25">
+                    <Card className="group-hover:border-platinum-400/25 h-full transition-colors">
                       <div className="flex items-start justify-between gap-3">
                         <CardEyebrow>
                           {m
-                            ? (TASK_LABEL[m.modelSpec.task] ??
-                              m.modelSpec.task)
+                            ? (TASK_LABEL[m.modelSpec.task] ?? m.modelSpec.task)
                             : shortAddr(f.address)}
                         </CardEyebrow>
-                        <Pill
-                          tone={STATE_TONE[f.state] ?? "neutral"}
-                          dot
-                        >
+                        <Pill tone={STATE_TONE[f.state] ?? "neutral"} dot>
                           {f.state}
                         </Pill>
                       </div>
