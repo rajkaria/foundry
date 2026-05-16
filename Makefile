@@ -29,6 +29,7 @@ help:
 	@echo "  deploy-aristotle     deploy to 0G Aristotle mainnet (irreversible)"
 	@echo "  deploy-dry           --fork-url \$$RPC dry-run (no broadcast)"
 	@echo "  sync-deployments     re-sync deployments/*.json → SDK"
+	@echo "  seed-aristotle       run real forge lifecycles on mainnet (Forge in Public)"
 	@echo ""
 	@echo "  indexer-dev          watch live chain events"
 	@echo "  web-dev              next dev"
@@ -134,6 +135,14 @@ deploy-dry:
 .PHONY: sync-deployments
 sync-deployments:
 	node scripts/sync-deployments.mjs
+
+# Seed REAL on-chain activity on Aristotle so the public dashboard shows
+# genuine, explorer-verifiable traction. Spends real OG. Honest by design:
+# every counter is backed by a tx hash. SEED_DRY=1 previews without sending.
+.PHONY: seed-aristotle
+seed-aristotle:
+	@[ -n "$$SEED_KEY$$DEPLOYER_KEY_ARISTOTLE" ] || (echo "set SEED_KEY or DEPLOYER_KEY_ARISTOTLE" && exit 1)
+	node scripts/seed-mainnet.mjs
 
 # ─── dev servers ───────────────────────────────────────────────────────
 
