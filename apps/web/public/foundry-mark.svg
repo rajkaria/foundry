@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Foundry">
+  <defs>
+    <linearGradient id="fm-front" x1="16" y1="22" x2="32" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffb260"/>
+      <stop offset="55%" stop-color="#ff8a1a"/>
+      <stop offset="100%" stop-color="#a64a00"/>
+    </linearGradient>
+    <linearGradient id="fm-top" x1="32" y1="6" x2="32" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff1d6"/>
+      <stop offset="100%" stop-color="#ffb260"/>
+    </linearGradient>
+    <linearGradient id="fm-side" x1="46" y1="14" x2="58" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e26a00"/>
+      <stop offset="100%" stop-color="#4a1f00"/>
+    </linearGradient>
+  </defs>
+  <path d="M44 14 L56 18 L52 54 L40 50 Z" fill="url(#fm-side)"/>
+  <path d="M20 10 L44 14 L40 22 L18 18 Z" fill="url(#fm-top)"/>
+  <path d="M18 18 L40 22 L40 50 L14 46 Z" fill="url(#fm-front)"/>
+  <path d="M22 24 L34 26 L34 28.5 L25 27 L25 32 L31.5 33 L31.5 35.5 L25 34.4 L25 42 L22 41.4 Z" fill="#fff1d6" fill-opacity="0.22" stroke="#4a1f00" stroke-opacity="0.55" stroke-width="0.9" stroke-linejoin="round"/>
+  <path d="M20 10 L44 14 L56 18 L52 54 L40 50 L14 46 L18 18 Z" fill="none" stroke="#4a1f00" stroke-opacity="0.7" stroke-width="0.85" stroke-linejoin="round"/>
+  <path d="M20 10 L44 14 L40 16.5 L20 13 Z" fill="#fff8e8" fill-opacity="0.45"/>
+  <circle cx="33" cy="37" r="1.2" fill="#fff8e8" fill-opacity="0.9"/>
+</svg>

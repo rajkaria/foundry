@@ -8,6 +8,7 @@ const sections = [
       { href: "/forges", label: "Forges" },
       { href: "/smiths", label: "Smiths" },
       { href: "/lineage", label: "Lineage Graph" },
+      { href: "/ecosystem", label: "Ecosystem" },
       { href: "/dashboard", label: "Forge in Public" },
     ],
   },
@@ -24,6 +25,7 @@ const sections = [
     title: "Resources",
     links: [
       { href: "/docs", label: "Docs" },
+      { href: "/docs/media-kit", label: "Media kit" },
       { href: "/docs/real-vs-roadmap", label: "Real vs Roadmap" },
       { href: "https://github.com/rajkaria/foundry", label: "GitHub" },
       { href: "https://x.com/foundryprotocol", label: "X / Twitter" },
