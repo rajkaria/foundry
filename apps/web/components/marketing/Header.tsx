@@ -6,6 +6,7 @@ const nav = [
   { href: "/forges", label: "Forges" },
   { href: "/smiths", label: "Smiths" },
   { href: "/lineage", label: "Lineage" },
+  { href: "/ecosystem", label: "Ecosystem" },
   { href: "/docs", label: "Docs" },
   { href: "/dashboard", label: "Live" },
 ];

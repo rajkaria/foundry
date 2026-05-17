@@ -43,6 +43,13 @@ export const DOC_NAV: DocGroup[] = [
       { href: "/docs/cli", label: "Foundry CLI" },
     ],
   },
+  {
+    title: "Resources",
+    items: [
+      { href: "/ecosystem", label: "Ecosystem" },
+      { href: "/docs/media-kit", label: "Media kit" },
+    ],
+  },
 ];
 
 interface DocsLayoutProps {
