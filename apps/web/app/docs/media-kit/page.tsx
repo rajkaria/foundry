@@ -42,10 +42,7 @@ function Swatch({
 }) {
   return (
     <div className="border-hairline overflow-hidden rounded-lg border">
-      <div
-        className="flex h-20 items-end p-2"
-        style={{ background: hex }}
-      >
+      <div className="flex h-20 items-end p-2" style={{ background: hex }}>
         <span
           className="text-mono-sm rounded px-1.5 py-0.5"
           style={{
@@ -72,10 +69,10 @@ export default function MediaKitPage() {
       title="Foundry media kit."
       intro={
         <Lead>
-          Everything you need to represent Foundry accurately — logos, colors,
-          type, naming rules, and copy you can paste straight into a post,
-          deck, or integration page. Ecosystem partners: this is what to use
-          when you announce a Foundry integration.
+          Everything you need to represent Foundry accurately — logos, colors, type,
+          naming rules, and copy you can paste straight into a post, deck, or
+          integration page. Ecosystem partners: this is what to use when you announce a
+          Foundry integration.
         </Lead>
       }
       toc={toc}
@@ -83,22 +80,21 @@ export default function MediaKitPage() {
       <H2 id="about">About Foundry</H2>
       <P>
         Foundry is the supply-side ownership and revenue layer for AI on 0G.
-        Contributors pool data, compute, and capital to co-train a model, then
-        own a verifiable, revenue-generating share of it — minted on mainnet,
-        attributed inside a TEE. Every inference call routes revenue back to
-        the people who made the model good, automatically and forever.
+        Contributors pool data, compute, and capital to co-train a model, then own a
+        verifiable, revenue-generating share of it — minted on mainnet, attributed
+        inside a TEE. Every inference call routes revenue back to the people who made
+        the model good, automatically and forever.
       </P>
       <P>
-        Built on the 0G stack: 0G Chain (L1), 0G Storage, and 0G Compute
-        (TEEs). No bridges, no custodial middle layer.
+        Built on the 0G stack: 0G Chain (L1), 0G Storage, and 0G Compute (TEEs). No
+        bridges, no custodial middle layer.
       </P>
 
       <H2 id="logos">Logos &amp; downloads</H2>
       <P>
-        The Foundry mark is an isometric ingot — a freshly cast bar of metal
-        with a sculpted &ldquo;F&rdquo; channel and a molten core. Use the
-        full lockup wherever space allows; use the mark alone for avatars,
-        favicons, and tight UI.
+        The Foundry mark is an isometric ingot — a freshly cast bar of metal with a
+        sculpted &ldquo;F&rdquo; channel and a molten core. Use the full lockup wherever
+        space allows; use the mark alone for avatars, favicons, and tight UI.
       </P>
       <Table
         head={["Asset", "Best for", "Download"]}
@@ -145,34 +141,41 @@ export default function MediaKitPage() {
         ]}
       />
       <Callout>
-        All marks are vector SVG. Scale freely — never re-trace, re-draw, or
-        export a low-res raster as the &ldquo;official&rdquo; logo.
+        All marks are vector SVG. Scale freely — never re-trace, re-draw, or export a
+        low-res raster as the &ldquo;official&rdquo; logo.
       </Callout>
 
       <H2 id="usage">Logo usage</H2>
-      <H3>Do</H3>
+      <H3 id="do">Do</H3>
       <ul className="text-body-lg text-platinum-300 ml-6 list-disc space-y-2">
-        <li>Keep clear space around the mark equal to the height of the ingot top facet.</li>
-        <li>Use the dark-background lockup on Foundry ink (#07080a–#14171d) or any dark surface.</li>
+        <li>
+          Keep clear space around the mark equal to the height of the ingot top facet.
+        </li>
+        <li>
+          Use the dark-background lockup on Foundry ink (#07080a–#14171d) or any dark
+          surface.
+        </li>
         <li>Use the light-background lockup on white or pale surfaces.</li>
         <li>Scale the mark and wordmark together — never independently.</li>
       </ul>
-      <H3>Don&apos;t</H3>
+      <H3 id="dont">Don&apos;t</H3>
       <ul className="text-body-lg text-platinum-300 ml-6 list-disc space-y-2">
         <li>Recolor the ingot. The ember gradient is fixed.</li>
         <li>Rotate, skew, add shadows, outlines, or effects.</li>
         <li>Place the dark lockup on a busy or low-contrast photo.</li>
         <li>Typeset &ldquo;Foundry&rdquo; in another font and call it the wordmark.</li>
-        <li>Call it &ldquo;Foundry Protocol&rdquo; in body copy — the name is just <strong className="text-platinum-100">Foundry</strong>.</li>
+        <li>
+          Call it &ldquo;Foundry Protocol&rdquo; in body copy — the name is just{" "}
+          <strong className="text-platinum-100">Foundry</strong>.
+        </li>
       </ul>
 
       <H2 id="color">Color palette</H2>
       <P>
-        Three families: <strong className="text-platinum-100">Ink</strong>{" "}
-        (the cool dark stage), <strong className="text-platinum-100">Platinum</strong>{" "}
-        (cool light type), and <strong className="text-platinum-100">Ember</strong>{" "}
-        (the single warm focal — molten metal). Ember is used sparingly, for
-        emphasis and the mark only.
+        Three families: <strong className="text-platinum-100">Ink</strong> (the cool
+        dark stage), <strong className="text-platinum-100">Platinum</strong> (cool light
+        type), and <strong className="text-platinum-100">Ember</strong> (the single warm
+        focal — molten metal). Ember is used sparingly, for emphasis and the mark only.
       </P>
       <div className="my-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <Swatch name="Ink 950" hex="#07080a" note="--ink-950 · page" dark />
@@ -188,10 +191,10 @@ export default function MediaKitPage() {
 
       <H2 id="type">Typography</H2>
       <P>
-        The wordmark and UI use a tight, modern sans (weight 600,
-        letter-spacing 0.02em — Anthropic-style capital lockup). Body text is
-        the same sans family at regular weight. Code, hashes, and on-chain
-        addresses use a monospace face with tabular numerics.
+        The wordmark and UI use a tight, modern sans (weight 600, letter-spacing 0.02em
+        — Anthropic-style capital lockup). Body text is the same sans family at regular
+        weight. Code, hashes, and on-chain addresses use a monospace face with tabular
+        numerics.
       </P>
       <Table
         head={["Role", "Family", "Weight"]}
@@ -213,14 +216,13 @@ export default function MediaKitPage() {
           <Code>@foundryprotocol</Code>.
         </li>
         <li>
-          Core nouns, always lowercase in body copy:{" "}
-          <Code>Ingot</Code> (a co-owned model),{" "}
-          <Code>Forge</Code> (a training run),{" "}
-          <Code>Smith</Code> (a contributor).
+          Core nouns, always lowercase in body copy: <Code>Ingot</Code> (a co-owned
+          model), <Code>Forge</Code> (a training run), <Code>Smith</Code> (a
+          contributor).
         </li>
         <li>
-          Voice: precise, technical, no hype. We say what ships on mainnet and
-          flag what&apos;s roadmap. Never claim &ldquo;the first&rdquo; or
+          Voice: precise, technical, no hype. We say what ships on mainnet and flag
+          what&apos;s roadmap. Never claim &ldquo;the first&rdquo; or
           &ldquo;revolutionary&rdquo;.
         </li>
       </ul>
@@ -241,25 +243,19 @@ export default function MediaKitPage() {
 
       <H2 id="partners">For ecosystem partners</H2>
       <P>
-        Announcing a Foundry integration? Use this structure so the
-        relationship reads accurately:
+        Announcing a Foundry integration? Use this structure so the relationship reads
+        accurately:
       </P>
       <CodeBlock>
         {`[Your project] integrates Foundry to turn its AI inference into co-owned, revenue-sharing intelligence on 0G. [One sentence on what your project does.] Calls now route through a Foundry Ingot, so contributors earn on-chain revenue on every inference — verified inside a TEE.`}
       </CodeBlock>
       <P>
         Then ping us to get added to the{" "}
-        <a
-          href="/ecosystem"
-          className="text-ember-400 hover:text-ember-300"
-        >
+        <a href="/ecosystem" className="text-ember-400 hover:text-ember-300">
           Ecosystem page
         </a>
         . Always link integrations to <Code>foundryprotocol.xyz</Code> and the{" "}
-        <a
-          href="/docs/0g-hackathon"
-          className="text-ember-400 hover:text-ember-300"
-        >
+        <a href="/docs/0g-hackathon" className="text-ember-400 hover:text-ember-300">
           integration guide
         </a>
         .

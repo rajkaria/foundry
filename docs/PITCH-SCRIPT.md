@@ -1,6 +1,6 @@
 # Foundry · Pitch Video Script
 
-> Target length: **2:50**. Hard ceiling: 3:00. This is the *story* video — thesis, market, vision.
+> Target length: **2:50**. Hard ceiling: 3:00. This is the _story_ video — thesis, market, vision.
 > The demo video ([DEMO-SCRIPT.md](./DEMO-SCRIPT.md)) shows it working; this one explains why it matters.
 > Format: talking-head intercut with 4 simple slides + ~20s of product B-roll. Slower than feels natural.
 
@@ -29,7 +29,7 @@
 
 **Voice over:**
 
-> "Three groups create every AI model and capture none of it. Domain experts with the data that sets the quality ceiling. Capital that funds the training. Compute that runs it. Crypto has built a marketplace for each one — Ocean for data, Render and Akash for compute, Bittensor for inference. Every one of them rents a resource. None of them lets the people who made the model *own* the model. There has never been an on-chain way to say: I helped train this, I hold a share, every call pays me."
+> "Three groups create every AI model and capture none of it. Domain experts with the data that sets the quality ceiling. Capital that funds the training. Compute that runs it. Crypto has built a marketplace for each one — Ocean for data, Render and Akash for compute, Bittensor for inference. Every one of them rents a resource. None of them lets the people who made the model _own_ the model. There has never been an on-chain way to say: I helped train this, I hold a share, every call pays me."
 
 ### [0:50 – 1:25] SOLUTION + WHY NOW
 
@@ -53,7 +53,7 @@
 
 **Voice over:**
 
-> "Foundry only earns when an Ingot earns: a two percent protocol fee, ninety-eight percent to co-owners. No mint fees, no token sale — $FORGE is minted to contributors, never sold. The moat isn't the rake, it's the network. And the flywheel is 0G's flywheel: every Forge mints transactions, uploads storage, books compute, runs a TEE job, registers an Agent ID. Foundry growing *is* 0G growing — a single Forge generates more 0G activity than most consumer dApps do in a month."
+> "Foundry only earns when an Ingot earns: a two percent protocol fee, ninety-eight percent to co-owners. No mint fees, no token sale — $FORGE is minted to contributors, never sold. The moat isn't the rake, it's the network. And the flywheel is 0G's flywheel: every Forge mints transactions, uploads storage, books compute, runs a TEE job, registers an Agent ID. Foundry growing _is_ 0G growing — a single Forge generates more 0G activity than most consumer dApps do in a month."
 
 ### [2:20 – 2:40] VISION
 
@@ -90,10 +90,10 @@
 
 ## Two-video division of labour
 
-| | Pitch video (this) | Demo video ([DEMO-SCRIPT.md](./DEMO-SCRIPT.md)) |
-|---|---|---|
-| Job | Why this matters — thesis, market, vision | Proof it works — live happy path |
-| Mode | Talking head + slides + light B-roll | Screen recording, frame-by-frame |
-| Carries | Problem, primitive, moat, roadmap, ask | Forge → eval → mint → inference → revenue, on-chain |
+|         | Pitch video (this)                        | Demo video ([DEMO-SCRIPT.md](./DEMO-SCRIPT.md))     |
+| ------- | ----------------------------------------- | --------------------------------------------------- |
+| Job     | Why this matters — thesis, market, vision | Proof it works — live happy path                    |
+| Mode    | Talking head + slides + light B-roll      | Screen recording, frame-by-frame                    |
+| Carries | Problem, primitive, moat, roadmap, ask    | Forge → eval → mint → inference → revenue, on-chain |
 
 Don't repeat the deep product walkthrough in the pitch, and don't re-explain the market thesis in the demo. Each video assumes the judge may watch only one.

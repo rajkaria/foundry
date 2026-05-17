@@ -53,10 +53,7 @@ function Monogram({ partner }: { partner: EcosystemPartner }) {
 
 function PartnerCard({ partner }: { partner: EcosystemPartner }) {
   return (
-    <article
-      id={partner.slug}
-      className="surface-forged scroll-mt-24 rounded-xl p-7"
-    >
+    <article id={partner.slug} className="surface-forged scroll-mt-24 rounded-xl p-7">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-4">
           <Monogram partner={partner} />
@@ -79,18 +76,13 @@ function PartnerCard({ partner }: { partner: EcosystemPartner }) {
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
           <p className="text-caption text-ember-400">The Foundry integration</p>
-          <p className="text-body-sm text-platinum-300 mt-3">
-            {partner.integration}
-          </p>
+          <p className="text-body-sm text-platinum-300 mt-3">{partner.integration}</p>
         </div>
         <div>
           <p className="text-caption text-ember-400">Highlights</p>
           <ul className="mt-3 space-y-2">
             {partner.highlights.map((h) => (
-              <li
-                key={h}
-                className="text-body-sm text-platinum-300 flex gap-2.5"
-              >
+              <li key={h} className="text-body-sm text-platinum-300 flex gap-2.5">
                 <span className="bg-ember-500 mt-2 size-1.5 shrink-0 rounded-full" />
                 {h}
               </li>
@@ -122,32 +114,17 @@ function PartnerCard({ partner }: { partner: EcosystemPartner }) {
             </LinkButton>
           )}
           {partner.links.site && (
-            <LinkButton
-              href={partner.links.site}
-              variant="ghost"
-              size="md"
-              external
-            >
+            <LinkButton href={partner.links.site} variant="ghost" size="md" external>
               Website ↗
             </LinkButton>
           )}
           {partner.links.docs && (
-            <LinkButton
-              href={partner.links.docs}
-              variant="ghost"
-              size="md"
-              external
-            >
+            <LinkButton href={partner.links.docs} variant="ghost" size="md" external>
               Docs ↗
             </LinkButton>
           )}
           {partner.links.twitter && (
-            <LinkButton
-              href={partner.links.twitter}
-              variant="ghost"
-              size="md"
-              external
-            >
+            <LinkButton href={partner.links.twitter} variant="ghost" size="md" external>
               X ↗
             </LinkButton>
           )}
@@ -171,11 +148,11 @@ export default function EcosystemPage() {
             glow
             intro={
               <>
-                Foundry is the supply-side ownership and revenue layer for 0G AI.
-                These are the projects that route their intelligence through
-                co-owned Ingots — turning model calls into on-chain revenue for
-                the contributors who made them good. No bridges, same 0G Storage
-                + 0G Compute TEEs + 0G Chain everyone here already builds on.
+                Foundry is the supply-side ownership and revenue layer for 0G AI. These
+                are the projects that route their intelligence through co-owned Ingots —
+                turning model calls into on-chain revenue for the contributors who made
+                them good. No bridges, same 0G Storage + 0G Compute TEEs + 0G Chain
+                everyone here already builds on.
               </>
             }
             meta={`${ECOSYSTEM_SORTED.length} partner${ECOSYSTEM_SORTED.length === 1 ? "" : "s"}`}
@@ -192,23 +169,17 @@ export default function EcosystemPage() {
           </div>
 
           <div className="surface-forged mt-16 rounded-xl p-10 text-center">
-            <p className="text-caption text-ember-400">
-              Building on 0G?
-            </p>
+            <p className="text-caption text-ember-400">Building on 0G?</p>
             <h2 className="text-display-sm text-platinum-100 mx-auto mt-3 max-w-[24ch] text-balance">
               Add co-owned, revenue-sharing AI to your project.
             </h2>
             <p className="text-body-lg text-platinum-300 mx-auto mt-5 max-w-[60ch]">
-              If your project does inference, holds memory, or produces data,
-              Foundry turns that into ongoing on-chain ownership. Integrate in
-              under 15 minutes, then get listed here.
+              If your project does inference, holds memory, or produces data, Foundry
+              turns that into ongoing on-chain ownership. Integrate in under 15 minutes,
+              then get listed here.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <LinkButton
-                href="/docs/0g-hackathon"
-                variant="primary"
-                size="lg"
-              >
+              <LinkButton href="/docs/0g-hackathon" variant="primary" size="lg">
                 Integration guide
               </LinkButton>
               <LinkButton
