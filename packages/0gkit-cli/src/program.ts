@@ -109,7 +109,10 @@ export function buildProgram(deps: ProgramDeps): Command {
     .option("--rpc <url>", "override the network RPC URL")
     .option("--private-key <hex>", "signer key (or env ZEROG_PRIVATE_KEY)")
     .option("--json", "machine-readable JSON output")
-    .option("--foundry", "force-show the optional Foundry plugin namespace");
+    .option("--foundry", "force-show the optional Foundry plugin namespace")
+    // Ensure subcommands inherit exit-override so commander throws rather than
+    // calling process.exit — required for requiredOption validation in tests.
+    .exitOverride();
 
   registerChain(program, deps);
   registerDoctor(program, deps);
