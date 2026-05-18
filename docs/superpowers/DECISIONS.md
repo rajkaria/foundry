@@ -34,3 +34,19 @@ Research method: WebFetch on `docs.0g.ai` official docs pages
 Aristotle RPC (`https://evmrpc.0g.ai`) and chainId (`16661`) — repo-proven
 (storage.ts DEFAULT_RPC, 0G-HACKATHON-INTEGRATION-PLAN.md), no external source needed.
 Local Anvil (`http://127.0.0.1:8545`, chainId `31337`) — documented standard defaults.
+
+## D3 — DA verify scope (2026-05-18)
+
+`packages/sdk/src/da.ts` proves only the encoder **publish** path
+(`POST <encoderUrl>/blob`). No 0G DA blob-retrieval/verify endpoint is
+documented in the repo or official docs. Per the honesty rule, `@0gkit/da`
+does NOT call a guessed retrieval URL. It ships:
+
+- `digest(payload)` — deterministic keccak of canonical JSON (no network).
+- `publish(payload)` — POST to the encoder (or local-mode when unconfigured).
+- `verify(payload, expectedDigest)` — local integrity check: recompute the
+  digest and compare. Genuinely useful (detects tampering/corruption) and
+  needs no unverified endpoint.
+
+A network `verify(daRef)` is deferred until an official retrieval endpoint is
+verified; if/when it is, record it here and add it without breaking the API.
