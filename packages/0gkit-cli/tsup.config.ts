@@ -18,5 +18,6 @@ export default defineConfig({
     "@0gkit/da",
     "@0gkit/attestation",
     "commander",
+    "viem",
   ],
 });
