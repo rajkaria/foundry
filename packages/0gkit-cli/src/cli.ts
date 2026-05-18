@@ -1,4 +1,5 @@
 import { readFile, writeFile, mkdir, readdir, access } from "node:fs/promises";
+import { CommanderError } from "commander";
 import { createClient, getNetwork } from "@0gkit/core";
 import {
   faucet,
@@ -53,4 +54,12 @@ const deps: ProgramDeps = {
   write: (line) => process.stdout.write(line + "\n"),
 };
 
-await buildProgram(deps).parseAsync(process.argv);
+try {
+  await buildProgram(deps).parseAsync(process.argv);
+} catch (err) {
+  if (err instanceof CommanderError) {
+    // commander already printed help/error text; just exit with its code
+    process.exit(err.exitCode);
+  }
+  throw err;
+}
