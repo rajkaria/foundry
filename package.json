@@ -19,7 +19,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "boundary:check": "depcruise packages/0gkit-core/src packages/0gkit-chain/src --config .dependency-cruiser.cjs",
+    "boundary:check": "depcruise \"packages/0gkit-*/src\" --config .dependency-cruiser.cjs",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,mdx,json,css,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,md,mdx,json,css,yml,yaml}\"",
     "clean": "turbo run clean && rimraf node_modules"

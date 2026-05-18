@@ -46,6 +46,22 @@ jobs:
 
       - run: pnpm --filter @0gkit/chain test
 
+      - run: pnpm --filter @0gkit/da build
+
+      - run: pnpm --filter @0gkit/da test
+
+      - run: pnpm --filter @0gkit/attestation build
+
+      - run: pnpm --filter @0gkit/attestation test
+
+      - run: pnpm --filter @0gkit/storage build
+
+      - run: pnpm --filter @0gkit/storage test
+
+      - run: pnpm --filter @0gkit/compute build
+
+      - run: pnpm --filter @0gkit/compute test
+
       - run: pnpm typecheck
 
       - run: pnpm build
