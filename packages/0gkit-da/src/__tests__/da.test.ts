@@ -8,6 +8,15 @@ describe("DA.digest", () => {
     expect(da.digest({ a: 1, b: 2 })).toBe(da.digest({ b: 2, a: 1 }));
     expect(da.digest({ a: 1 })).toMatch(/^0x[0-9a-f]{64}$/);
   });
+
+  it("hashes raw bytes for a Uint8Array (not the JSON object-view)", async () => {
+    const { keccak256, toHex } = await import("viem");
+    const da = new DA({});
+    const bytes = new Uint8Array([1, 2, 3]);
+    expect(da.digest(bytes)).toBe(keccak256(toHex(bytes)));
+    // and it must differ from the (buggy) object-view digest
+    expect(da.digest(bytes)).not.toBe(da.digest({ 0: 1, 1: 2, 2: 3 }));
+  });
 });
 
 describe("DA.publish", () => {
@@ -45,6 +54,42 @@ describe("DA.publish", () => {
       fetch: vi.fn().mockResolvedValue(new Response("nope", { status: 500 })),
     });
     await expect(da.publish({ x: 1 })).rejects.toMatchObject({ code: "NETWORK" });
+  });
+
+  it("wraps a thrown fetch error in NetworkError", async () => {
+    const da = new DA({
+      encoderUrl: "https://enc.example",
+      fetch: vi.fn().mockRejectedValue(new TypeError("Failed to fetch")),
+    });
+    await expect(da.publish({ x: 1 })).rejects.toMatchObject({ code: "NETWORK" });
+  });
+
+  it("sends Authorization when apiKey is set, and daRef falls back to blobId", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ blobId: "b1" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      })
+    );
+    const da = new DA({
+      encoderUrl: "https://enc.example",
+      apiKey: "secret",
+      fetch: fetchMock,
+    });
+    const r = await da.publish({ a: 1 });
+    expect(r.daRef).toBe("b1"); // no `ref` → falls back to blobId
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    expect((init.headers as Record<string, string>).authorization).toBe(
+      "Bearer secret"
+    );
+  });
+
+  it("publish().digest of a Uint8Array equals digest(bytes) (round-trip)", async () => {
+    const da = new DA({});
+    const bytes = new Uint8Array([9, 8, 7]);
+    const r = await da.publish(bytes); // local mode
+    expect(r.digest).toBe(da.digest(bytes));
+    expect(da.verify(bytes, r.digest)).toBe(true);
   });
 });
 

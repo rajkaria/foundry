@@ -1,10 +1,5 @@
-import {
-  ConfigError,
-  NetworkError,
-  canonicalJsonStringify,
-  digestJson,
-} from "@0gkit/core";
-import { type Hex } from "viem";
+import { ConfigError, NetworkError, canonicalJsonStringify } from "@0gkit/core";
+import { keccak256, toHex, type Hex } from "viem";
 
 const ENCODERS = {
   aristotle: "https://da-encoder.0g.network",
@@ -39,20 +34,34 @@ export class DA {
     this.fetchImpl = config.fetch ?? globalThis.fetch;
   }
 
+  /** Canonical wire bytes: raw for Uint8Array, else encoded canonical JSON. */
+  private toBytes(payload: unknown): Uint8Array<ArrayBuffer> {
+    return payload instanceof Uint8Array
+      ? new Uint8Array(payload)
+      : new TextEncoder().encode(canonicalJsonStringify(payload));
+  }
+
+  /**
+   * Digest of the exact bytes that go on the wire. For objects/strings this
+   * equals digestJson(payload) (viem toHex(str) === toHex(utf8 bytes of str)),
+   * preserving byte-parity with the Foundry SDK reference; for a Uint8Array it
+   * is the keccak of the raw bytes (NOT the JSON object-view).
+   */
+  private digestOf(payload: unknown): Hex {
+    return keccak256(toHex(this.toBytes(payload)));
+  }
+
   digest(payload: unknown): Hex {
-    return digestJson(payload);
+    return this.digestOf(payload);
   }
 
   async publish(payload: unknown): Promise<DAPublishResult> {
     const startedAt = Date.now();
-    const digest = digestJson(payload);
+    const digest = this.digestOf(payload);
     if (!this.encoderUrl) {
       return { digest, mode: "local", latencyMs: Date.now() - startedAt };
     }
-    const body =
-      payload instanceof Uint8Array
-        ? payload
-        : new TextEncoder().encode(canonicalJsonStringify(payload));
+    const body = this.toBytes(payload);
     let res: Response;
     try {
       res = await this.fetchImpl(`${this.encoderUrl}/blob`, {
@@ -61,7 +70,7 @@ export class DA {
           "content-type": "application/octet-stream",
           ...(this.apiKey ? { authorization: `Bearer ${this.apiKey}` } : {}),
         },
-        body: body as BodyInit,
+        body,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -97,6 +106,6 @@ export class DA {
         `Pass the value returned by da.digest()/publish().digest.`
       );
     }
-    return digestJson(payload).toLowerCase() === expectedDigest.toLowerCase();
+    return this.digestOf(payload).toLowerCase() === expectedDigest.toLowerCase();
   }
 }
