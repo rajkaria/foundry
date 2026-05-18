@@ -17,8 +17,11 @@ export interface CreateClientOptions {
   rpcUrl?: string;
   /** Overrides the preset chain id. Required if the preset has no chainId. */
   chainId?: number;
-  /** 0x-prefixed private key. When set, a wallet client is also returned. */
-  privateKey?: `0x${string}` | string;
+  /**
+   * Private key for signing. The leading `0x` is optional — it is added
+   * automatically. When set, a wallet client is also returned.
+   */
+  privateKey?: string;
 }
 
 export interface ZeroGClient {
@@ -62,14 +65,21 @@ export function createClient(opts: CreateClientOptions): ZeroGClient {
 
   let wallet: WalletClient | undefined;
   if (opts.privateKey) {
-    const pk = opts.privateKey.startsWith("0x")
-      ? (opts.privateKey as `0x${string}`)
-      : (`0x${opts.privateKey}` as `0x${string}`);
-    wallet = createWalletClient({
-      chain,
-      transport,
-      account: privateKeyToAccount(pk),
-    });
+    try {
+      const pk = opts.privateKey.startsWith("0x")
+        ? (opts.privateKey as `0x${string}`)
+        : (`0x${opts.privateKey}` as `0x${string}`);
+      wallet = createWalletClient({
+        chain,
+        transport,
+        account: privateKeyToAccount(pk),
+      });
+    } catch {
+      throw new ConfigError(
+        "Invalid privateKey: must be a 32-byte hex string.",
+        "Provide a 64-char hex private key (with or without 0x), e.g. the output of `cast wallet new`."
+      );
+    }
   }
 
   return { network: preset, public: publicClient, wallet };

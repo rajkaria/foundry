@@ -23,11 +23,18 @@ describe("createClient", () => {
   it("honors an rpcUrl override", () => {
     const c = createClient({ network: "local", rpcUrl: "http://127.0.0.1:9999" });
     expect(c.public.chain?.id).toBe(31337);
+    expect(c.public.chain?.rpcUrls.default.http[0]).toBe("http://127.0.0.1:9999");
   });
 
   it("throws ConfigError when the preset has no rpcUrl/chainId and none is passed", () => {
     expect(() =>
       buildChain({ ...networks.galileo, rpcUrl: undefined, chainId: undefined })
+    ).toThrowError(ConfigError);
+  });
+
+  it("throws ConfigError for a malformed private key", () => {
+    expect(() =>
+      createClient({ network: "local", privateKey: "0x1234" })
     ).toThrowError(ConfigError);
   });
 });
