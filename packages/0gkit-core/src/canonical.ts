@@ -7,7 +7,7 @@ import { keccak256, toHex, type Hex } from "viem";
  */
 export function canonicalJsonStringify(value: unknown): string {
   if (value === null || typeof value !== "object") {
-    return JSON.stringify(value) ?? "null";
+    return JSON.stringify(value);
   }
   if (Array.isArray(value)) {
     return `[${value.map((v) => canonicalJsonStringify(v)).join(",")}]`;

@@ -13,6 +13,10 @@ describe("canonicalJsonStringify", () => {
     expect(canonicalJsonStringify([3, 1, 2])).toBe("[3,1,2]");
   });
 
+  it("sorts keys recursively inside array elements", () => {
+    expect(canonicalJsonStringify([{ b: 2, a: 1 }])).toBe('[{"a":1,"b":2}]');
+  });
+
   it("handles primitives and null", () => {
     expect(canonicalJsonStringify("x")).toBe('"x"');
     expect(canonicalJsonStringify(null)).toBe("null");
