@@ -120,4 +120,29 @@ describe("Compute", () => {
     await c.listProviders();
     expect(triedNew).toBe(true);
   });
+
+  it("wraps a fetch-level network error in NetworkError", async () => {
+    const c = new Compute({
+      ...baseCfg,
+      fetch: vi.fn().mockRejectedValue(new Error("ECONNREFUSED")),
+      loadBroker: async () => fakeBrokerMod() as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+    });
+    await expect(
+      c.inference({ messages: [{ role: "user", content: "x" }] })
+    ).rejects.toMatchObject({ code: "NETWORK" });
+  });
+
+  it("throws ConfigError when both SDK packages are missing", async () => {
+    const c = new Compute({
+      ...baseCfg,
+      loadBroker: async () => {
+        throw new Error("Cannot find module");
+      },
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+    });
+    await expect(c.listProviders()).rejects.toMatchObject({ code: "CONFIG" });
+  });
 });

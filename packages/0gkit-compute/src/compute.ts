@@ -95,6 +95,12 @@ export class Compute {
     );
     const wallet = new ethers.Wallet(this.cfg.brokerKey, provider);
     const mod = await this.loadBrokerMod();
+    if (typeof mod.createZGComputeNetworkBroker !== "function") {
+      throw new ConfigError(
+        `0G compute SDK loaded but 'createZGComputeNetworkBroker' is not exported.`,
+        `The installed SDK version may be incompatible. Try: npm install ${PKG_NEW}@latest`
+      );
+    }
     this.broker = (await mod.createZGComputeNetworkBroker(wallet)) as {
       inference: BrokerInference;
     };
@@ -113,7 +119,16 @@ export class Compute {
 
   async listProviders(): Promise<unknown[]> {
     const broker = await this.getBroker();
-    return broker.inference.listService();
+    try {
+      return await broker.inference.listService();
+    } catch (err) {
+      throw new NetworkError(
+        `Failed to list 0G compute providers: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+        `Check your RPC endpoint and network connectivity.`
+      );
+    }
   }
 
   async inference(args: {
@@ -128,8 +143,18 @@ export class Compute {
     } catch {
       /* already acknowledged — non-fatal */
     }
-    const { endpoint, model } =
-      await broker.inference.getServiceMetadata(provider);
+    let endpoint: string;
+    let model: string;
+    try {
+      ({ endpoint, model } = await broker.inference.getServiceMetadata(provider));
+    } catch (err) {
+      throw new NetworkError(
+        `Failed to fetch service metadata for provider ${provider}: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+        `Verify the provider address is registered and the broker is funded.`
+      );
+    }
     const body = {
       model: args.model ?? this.cfg.model ?? model,
       messages: args.messages,
@@ -137,10 +162,20 @@ export class Compute {
         ? { temperature: args.temperature }
         : {}),
     };
-    const headers = await broker.inference.getRequestHeaders(
-      provider,
-      JSON.stringify(args.messages)
-    );
+    let headers: Record<string, string>;
+    try {
+      headers = await broker.inference.getRequestHeaders(
+        provider,
+        JSON.stringify(args.messages)
+      );
+    } catch (err) {
+      throw new NetworkError(
+        `Failed to get request headers for provider ${provider}: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+        `Check broker key permissions and ledger balance.`
+      );
+    }
     const startedAt = Date.now();
     let res: Response;
     try {
@@ -195,8 +230,17 @@ export class Compute {
           }) {
             const r = await self.inference(params);
             return {
-              choices: [{ message: { role: "assistant", content: r.output } }],
-              _foundryReceipt: r.receipt,
+              id: `0g-${Date.now()}`,
+              object: "chat.completion" as const,
+              model: params.model ?? self.cfg.model ?? "",
+              choices: [
+                {
+                  index: 0,
+                  message: { role: "assistant" as const, content: r.output },
+                  finish_reason: "stop" as const,
+                },
+              ],
+              _0gReceipt: r.receipt,
             };
           },
         },
