@@ -36,6 +36,16 @@ jobs:
 
       - run: pnpm --filter @foundryprotocol/sdk test
 
+      - run: pnpm boundary:check
+
+      - run: pnpm --filter @0gkit/core build
+
+      - run: pnpm --filter @0gkit/core test
+
+      - run: pnpm --filter @0gkit/chain build
+
+      - run: pnpm --filter @0gkit/chain test
+
       - run: pnpm typecheck
 
       - run: pnpm build
