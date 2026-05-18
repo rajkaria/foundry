@@ -40,7 +40,7 @@ function fakeDeps(over: Partial<ProgramDeps> = {}): ProgramDeps {
 }
 
 describe("buildProgram", () => {
-  it.skip("registers the neutral command groups", async () => {
+  it("registers the neutral command groups", async () => {
     const program = buildProgram(fakeDeps());
     const names = program.commands.map((c) => c.name()).sort();
     expect(names).toEqual(
