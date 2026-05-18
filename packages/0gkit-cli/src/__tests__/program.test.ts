@@ -55,6 +55,17 @@ describe("buildProgram", () => {
     expect(program.commands.find((c) => c.name() === "foundry")).toBeUndefined();
   });
 
+  it("shows `foundry` only when --foundry is present in argv", () => {
+    const orig = process.argv;
+    process.argv = [...orig, "--foundry"];
+    try {
+      const program = buildProgram(fakeDeps());
+      expect(program.commands.find((c) => c.name() === "foundry")).toBeDefined();
+    } finally {
+      process.argv = orig;
+    }
+  });
+
   it("exposes --network/--rpc/--json/--private-key global options", () => {
     const program = buildProgram(fakeDeps());
     const opts = program.options.map((o) => o.long);
