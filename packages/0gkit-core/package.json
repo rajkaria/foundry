@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "description": "Neutral 0G core — network presets, viem client factory, Receipt, and the ZeroGError taxonomy. No Foundry, ever.",
   "license": "MIT",
+  "homepage": "https://github.com/rajkaria/foundry/tree/main/packages/0gkit-core",
   "repository": {
     "type": "git",
     "url": "https://github.com/rajkaria/foundry.git",
     "directory": "packages/0gkit-core"
   },
+  "bugs": { "url": "https://github.com/rajkaria/foundry/issues" },
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -18,7 +20,7 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -29,6 +31,9 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
+    "viem": "^2.21.0"
+  },
+  "peerDependencies": {
     "viem": "^2.21.0"
   },
   "devDependencies": {
