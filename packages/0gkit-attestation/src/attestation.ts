@@ -1,10 +1,5 @@
 import { AttestationError, digestJson } from "@0gkit/core";
-import {
-  hashMessage,
-  recoverAddress,
-  type Address,
-  type Hex,
-} from "viem";
+import { hashMessage, recoverAddress, type Address, type Hex } from "viem";
 import { sign } from "viem/accounts";
 
 export interface AttestationEnvelope {
@@ -47,8 +42,7 @@ export function parseEnvelope(value: unknown): AttestationEnvelope {
     e!.scores.some((n) => typeof n !== "number" || !Number.isFinite(n))
   )
     bad("scores");
-  if (typeof e!.baseline !== "number" || !Number.isFinite(e!.baseline))
-    bad("baseline");
+  if (typeof e!.baseline !== "number" || !Number.isFinite(e!.baseline)) bad("baseline");
   if (typeof e!.teeAttestation !== "string") bad("teeAttestation");
   if (typeof e!.coordinator !== "string") bad("coordinator");
   if (typeof e!.timestamp !== "number" || !Number.isFinite(e!.timestamp))
@@ -68,9 +62,7 @@ export async function signEnvelope(
   privateKey: Hex | string
 ): Promise<SignedEnvelope> {
   const digest = digestEnvelope(envelope);
-  const pk = (
-    privateKey.startsWith("0x") ? privateKey : `0x${privateKey}`
-  ) as Hex;
+  const pk = (privateKey.startsWith("0x") ? privateKey : `0x${privateKey}`) as Hex;
   let signature: Hex;
   try {
     signature = await sign({
@@ -112,8 +104,7 @@ export async function verifyEnvelope(
   let signerOk = false;
   try {
     signer = await recoverSigner(signed);
-    signerOk =
-      digestOk && signer.toLowerCase() === expectedSigner.toLowerCase();
+    signerOk = digestOk && signer.toLowerCase() === expectedSigner.toLowerCase();
   } catch {
     signerOk = false;
   }

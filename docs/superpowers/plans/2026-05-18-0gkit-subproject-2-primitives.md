@@ -238,7 +238,6 @@ git commit -m "feat(0gkit-da): scaffold DA package"
 - [ ] **Step 1: Append D3 to `docs/superpowers/DECISIONS.md`:**
 
 ```markdown
-
 ## D3 — DA verify scope (2026-05-18)
 
 `packages/sdk/src/da.ts` proves only the encoder **publish** path
@@ -534,12 +533,8 @@ describe("parseEnvelope", () => {
 describe("digestEnvelope", () => {
   it("is stable under key reorder, changes on mutation", () => {
     const e = makeEnv();
-    expect(digestEnvelope(e)).toBe(
-      digestEnvelope({ ...e } as AttestationEnvelope)
-    );
-    expect(digestEnvelope(e)).not.toBe(
-      digestEnvelope({ ...e, baseline: 0.99 })
-    );
+    expect(digestEnvelope(e)).toBe(digestEnvelope({ ...e } as AttestationEnvelope));
+    expect(digestEnvelope(e)).not.toBe(digestEnvelope({ ...e, baseline: 0.99 }));
   });
 });
 
@@ -598,12 +593,7 @@ describe("reportEnvelope", () => {
 
 ```ts
 import { AttestationError, digestJson } from "@0gkit/core";
-import {
-  hashMessage,
-  recoverAddress,
-  type Address,
-  type Hex,
-} from "viem";
+import { hashMessage, recoverAddress, type Address, type Hex } from "viem";
 import { sign } from "viem/accounts";
 
 export interface AttestationEnvelope {
@@ -662,9 +652,7 @@ export async function signEnvelope(
   privateKey: Hex | string
 ): Promise<SignedEnvelope> {
   const digest = digestEnvelope(envelope);
-  const pk = (
-    privateKey.startsWith("0x") ? privateKey : `0x${privateKey}`
-  ) as Hex;
+  const pk = (privateKey.startsWith("0x") ? privateKey : `0x${privateKey}`) as Hex;
   const signature = await sign({
     hash: hashMessage({ raw: digest }),
     privateKey: pk,
@@ -693,12 +681,15 @@ export async function verifyEnvelope(
   let signerOk = false;
   try {
     signer = await recoverSigner(signed);
-    signerOk =
-      digestOk && signer.toLowerCase() === expectedSigner.toLowerCase();
+    signerOk = digestOk && signer.toLowerCase() === expectedSigner.toLowerCase();
   } catch {
     signerOk = false;
   }
-  return { ok: digestOk && signerOk, checks: { digest: digestOk, signer: signerOk }, signer };
+  return {
+    ok: digestOk && signerOk,
+    checks: { digest: digestOk, signer: signerOk },
+    signer,
+  };
 }
 
 /** Human-readable multi-line summary for CLIs / logs. */
@@ -756,6 +747,7 @@ git commit -m "feat(0gkit-attestation): parse/sign/recover/verify/report (EIP-19
   - `"keywords": ["0g", "0g-storage", "storage", "toolkit"]`
   - `dependencies`: `{ "@0gkit/core": "workspace:*", "viem": "^2.21.0" }`
   - Add optional peers (the SDK is heavy + dynamically imported):
+
 ```json
   "peerDependencies": {
     "viem": "^2.21.0",
@@ -767,7 +759,8 @@ git commit -m "feat(0gkit-attestation): parse/sign/recover/verify/report (EIP-19
     "ethers": { "optional": true }
   },
 ```
-  - `devDependencies`: same six as `@0gkit/da` PLUS `"@0gfoundation/0g-storage-ts-sdk": "^1.2.9"` and `"ethers": "^6.16.0"` (needed so tests/typecheck resolve the optional peers locally).
+
+- `devDependencies`: same six as `@0gkit/da` PLUS `"@0gfoundation/0g-storage-ts-sdk": "^1.2.9"` and `"ethers": "^6.16.0"` (needed so tests/typecheck resolve the optional peers locally).
 
 - [ ] **Step 2:** `tsconfig.json` — copy `packages/0gkit-core/tsconfig.json` exactly.
 
@@ -839,7 +832,10 @@ function fakeSdk(opts: {
         ] as const;
       }
       async downloadToBlob() {
-        return [opts.blob ?? new Blob([new Uint8Array([1, 2, 3])]), opts.blobErr ?? null] as const;
+        return [
+          opts.blob ?? new Blob([new Uint8Array([1, 2, 3])]),
+          opts.blobErr ?? null,
+        ] as const;
       }
       async peekHeader() {
         return [opts.blob === null ? null : {}, opts.blobErr ?? null] as const;
@@ -850,8 +846,7 @@ function fakeSdk(opts: {
 
 const cfg = (over: Record<string, unknown> = {}) => ({
   network: "galileo" as const,
-  privateKey:
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+  privateKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
   ...over,
 });
 
@@ -966,9 +961,7 @@ export interface StorageSdk {
       root: string,
       opts?: unknown
     ): Promise<readonly [Blob | null, Error | null]>;
-    peekHeader(
-      root: string
-    ): Promise<readonly [unknown, Error | null]>;
+    peekHeader(root: string): Promise<readonly [unknown, Error | null]>;
   };
 }
 
@@ -1066,9 +1059,7 @@ export class Storage {
         ? (o.rootHash as string)
         : ((o.rootHashes as string[])[0] as string);
     const txHash =
-      "txHash" in o
-        ? (o.txHash as string)
-        : ((o.txHashes as string[])[0] as string);
+      "txHash" in o ? (o.txHash as string) : ((o.txHashes as string[])[0] as string);
     return {
       root: normalizeHex(root),
       tx: { txHash: normalizeHex(txHash), latencyMs: Date.now() - startedAt },
@@ -1193,12 +1184,8 @@ function fakeBrokerMod(over: Record<string, unknown> = {}) {
       .fn()
       .mockResolvedValue({ endpoint: "https://prov.example", model: "m1" }),
     getRequestHeaders: vi.fn().mockResolvedValue({ Authorization: "tok" }),
-    processResponse: vi
-      .fn()
-      .mockResolvedValue({ valid: true, txHash: "0xfee" }),
-    listService: vi
-      .fn()
-      .mockResolvedValue([{ provider: "0xprov", model: "m1" }]),
+    processResponse: vi.fn().mockResolvedValue({ valid: true, txHash: "0xfee" }),
+    listService: vi.fn().mockResolvedValue([{ provider: "0xprov", model: "m1" }]),
     ...over,
   };
   return {
@@ -1208,8 +1195,7 @@ function fakeBrokerMod(over: Record<string, unknown> = {}) {
 }
 
 const baseCfg = {
-  brokerKey:
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+  brokerKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
   provider: "0xprov",
 };
 
@@ -1219,7 +1205,8 @@ describe("Compute", () => {
     const c = new Compute({
       ...baseCfg,
       loadBroker: async () => mod as never,
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     const list = await c.listProviders();
     expect(list).toEqual([{ provider: "0xprov", model: "m1" }]);
@@ -1228,16 +1215,17 @@ describe("Compute", () => {
   it("inference calls the provider endpoint and returns output + receipt + raw", async () => {
     const mod = fakeBrokerMod();
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(
-        JSON.stringify({ choices: [{ message: { content: "hi" } }] }),
-        { status: 200, headers: { "content-type": "application/json" } }
-      )
+      new Response(JSON.stringify({ choices: [{ message: { content: "hi" } }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      })
     );
     const c = new Compute({
       ...baseCfg,
       fetch: fetchMock,
       loadBroker: async () => mod as never,
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     const r = await c.inference({ messages: [{ role: "user", content: "yo" }] });
     expect(r.output).toBe("hi");
@@ -1255,7 +1243,8 @@ describe("Compute", () => {
       ...baseCfg,
       fetch: vi.fn().mockResolvedValue(new Response("no", { status: 502 })),
       loadBroker: async () => fakeBrokerMod() as never,
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     await expect(
       c.inference({ messages: [{ role: "user", content: "x" }] })
@@ -1269,16 +1258,17 @@ describe("Compute", () => {
 
   it("openai() exposes a chat.completions.create shim", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(
-        JSON.stringify({ choices: [{ message: { content: "shim" } }] }),
-        { status: 200, headers: { "content-type": "application/json" } }
-      )
+      new Response(JSON.stringify({ choices: [{ message: { content: "shim" } }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      })
     );
     const c = new Compute({
       ...baseCfg,
       fetch: fetchMock,
       loadBroker: async () => fakeBrokerMod() as never,
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     const oa = c.openai();
     const res = await oa.chat.completions.create({
@@ -1299,7 +1289,8 @@ describe("Compute", () => {
         }
         return mod as never;
       },
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     await c.listProviders();
     expect(triedNew).toBe(true);
@@ -1406,9 +1397,7 @@ export class Compute {
         `Install it: npm install ethers`
       );
     }
-    const provider = new ethers.JsonRpcProvider(
-      this.cfg.brokerRpc ?? DEFAULT_RPC
-    );
+    const provider = new ethers.JsonRpcProvider(this.cfg.brokerRpc ?? DEFAULT_RPC);
     const wallet = new ethers.Wallet(this.cfg.brokerKey, provider);
     const mod = await this.loadBrokerMod();
     this.broker = (await mod.createZGComputeNetworkBroker(wallet)) as {
@@ -1444,14 +1433,11 @@ export class Compute {
     } catch {
       /* already acknowledged — non-fatal */
     }
-    const { endpoint, model } =
-      await broker.inference.getServiceMetadata(provider);
+    const { endpoint, model } = await broker.inference.getServiceMetadata(provider);
     const body = {
       model: args.model ?? this.cfg.model ?? model,
       messages: args.messages,
-      ...(args.temperature !== undefined
-        ? { temperature: args.temperature }
-        : {}),
+      ...(args.temperature !== undefined ? { temperature: args.temperature } : {}),
     };
     const headers = await broker.inference.getRequestHeaders(
       provider,
@@ -1557,6 +1543,7 @@ git commit -m "feat(0gkit-compute): broker inference + provider discovery + Open
 - [ ] **Step 1:** For EACH of the four packages create `README.md` (actual markdown, no outer fence) following this template (substitute name/blurb/usage per package):
 
 `@0gkit/da`:
+
 ```
 # @0gkit/da
 
@@ -1581,6 +1568,7 @@ const { digest, daRef, mode } = await da.publish({ hello: "world" });
 
 MIT.
 ```
+
 `@0gkit/attestation` — blurb "Neutral 0G TEE attestation: parse, sign (EIP-191), recover, verify, report. Pure crypto."; usage shows `signEnvelope`/`verifyEnvelope`. Install line `npm install @0gkit/attestation @0gkit/core viem`.
 `@0gkit/storage` — blurb "Neutral 0G Storage: upload/download/computeRoot/exists."; note `@0gfoundation/0g-storage-ts-sdk` + `ethers` are optional peers (install for upload). Usage shows `new Storage({ network, privateKey }).upload(bytes)`.
 `@0gkit/compute` — blurb "Neutral 0G Compute: provider discovery, broker inference, OpenAI-compatible shim."; note `@0gfoundation/0g-compute-ts-sdk` + `ethers` optional peers. Usage shows `new Compute({ brokerKey, provider }).inference({ messages })`.
@@ -1611,21 +1599,21 @@ git commit -m "docs(0gkit): standalone READMEs for the four primitive packages"
 - [ ] **Step 3:** In `.github/workflows/ci.yml`, in the `web` job, immediately AFTER the existing `- run: pnpm --filter @0gkit/chain test` line, insert (6-space indent, matching siblings):
 
 ```yaml
-      - run: pnpm --filter @0gkit/da build
+- run: pnpm --filter @0gkit/da build
 
-      - run: pnpm --filter @0gkit/da test
+- run: pnpm --filter @0gkit/da test
 
-      - run: pnpm --filter @0gkit/attestation build
+- run: pnpm --filter @0gkit/attestation build
 
-      - run: pnpm --filter @0gkit/attestation test
+- run: pnpm --filter @0gkit/attestation test
 
-      - run: pnpm --filter @0gkit/storage build
+- run: pnpm --filter @0gkit/storage build
 
-      - run: pnpm --filter @0gkit/storage test
+- run: pnpm --filter @0gkit/storage test
 
-      - run: pnpm --filter @0gkit/compute build
+- run: pnpm --filter @0gkit/compute build
 
-      - run: pnpm --filter @0gkit/compute test
+- run: pnpm --filter @0gkit/compute test
 ```
 
 (The existing `pnpm boundary:check` step now covers all six packages via the glob; `pnpm typecheck`/`pnpm build` are turbo-all and pick up the new packages automatically.)

@@ -9,12 +9,8 @@ function fakeBrokerMod(over: Record<string, unknown> = {}) {
       .fn()
       .mockResolvedValue({ endpoint: "https://prov.example", model: "m1" }),
     getRequestHeaders: vi.fn().mockResolvedValue({ Authorization: "tok" }),
-    processResponse: vi
-      .fn()
-      .mockResolvedValue({ valid: true, txHash: "0xfee" }),
-    listService: vi
-      .fn()
-      .mockResolvedValue([{ provider: "0xprov", model: "m1" }]),
+    processResponse: vi.fn().mockResolvedValue({ valid: true, txHash: "0xfee" }),
+    listService: vi.fn().mockResolvedValue([{ provider: "0xprov", model: "m1" }]),
     ...over,
   };
   return {
@@ -24,8 +20,7 @@ function fakeBrokerMod(over: Record<string, unknown> = {}) {
 }
 
 const baseCfg = {
-  brokerKey:
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+  brokerKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
   provider: "0xprov",
 };
 
@@ -35,7 +30,8 @@ describe("Compute", () => {
     const c = new Compute({
       ...baseCfg,
       loadBroker: async () => mod as never,
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     const list = await c.listProviders();
     expect(list).toEqual([{ provider: "0xprov", model: "m1" }]);
@@ -44,16 +40,17 @@ describe("Compute", () => {
   it("inference calls the provider endpoint and returns output + receipt + raw", async () => {
     const mod = fakeBrokerMod();
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(
-        JSON.stringify({ choices: [{ message: { content: "hi" } }] }),
-        { status: 200, headers: { "content-type": "application/json" } }
-      )
+      new Response(JSON.stringify({ choices: [{ message: { content: "hi" } }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      })
     );
     const c = new Compute({
       ...baseCfg,
       fetch: fetchMock,
       loadBroker: async () => mod as never,
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     const r = await c.inference({ messages: [{ role: "user", content: "yo" }] });
     expect(r.output).toBe("hi");
@@ -71,7 +68,8 @@ describe("Compute", () => {
       ...baseCfg,
       fetch: vi.fn().mockResolvedValue(new Response("no", { status: 502 })),
       loadBroker: async () => fakeBrokerMod() as never,
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     await expect(
       c.inference({ messages: [{ role: "user", content: "x" }] })
@@ -85,16 +83,17 @@ describe("Compute", () => {
 
   it("openai() exposes a chat.completions.create shim", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(
-        JSON.stringify({ choices: [{ message: { content: "shim" } }] }),
-        { status: 200, headers: { "content-type": "application/json" } }
-      )
+      new Response(JSON.stringify({ choices: [{ message: { content: "shim" } }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      })
     );
     const c = new Compute({
       ...baseCfg,
       fetch: fetchMock,
       loadBroker: async () => fakeBrokerMod() as never,
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     const oa = c.openai();
     const res = await oa.chat.completions.create({
@@ -115,7 +114,8 @@ describe("Compute", () => {
         }
         return mod as never;
       },
-      loadEthers: async () => ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
     });
     await c.listProviders();
     expect(triedNew).toBe(true);

@@ -58,12 +58,8 @@ describe("parseEnvelope", () => {
 describe("digestEnvelope", () => {
   it("is stable under key reorder, changes on mutation", () => {
     const e = makeEnv();
-    expect(digestEnvelope(e)).toBe(
-      digestEnvelope({ ...e } as AttestationEnvelope)
-    );
-    expect(digestEnvelope(e)).not.toBe(
-      digestEnvelope({ ...e, baseline: 0.99 })
-    );
+    expect(digestEnvelope(e)).toBe(digestEnvelope({ ...e } as AttestationEnvelope));
+    expect(digestEnvelope(e)).not.toBe(digestEnvelope({ ...e, baseline: 0.99 }));
   });
 });
 

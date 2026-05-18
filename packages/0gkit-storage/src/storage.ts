@@ -23,9 +23,7 @@ export interface StorageSdk {
       root: string,
       opts?: unknown
     ): Promise<readonly [Blob | null, Error | null]>;
-    peekHeader(
-      root: string
-    ): Promise<readonly [unknown, Error | null]>;
+    peekHeader(root: string): Promise<readonly [unknown, Error | null]>;
   };
 }
 
@@ -121,9 +119,7 @@ export class Storage {
         ? (o.rootHash as string)
         : (o.rootHashes as string[] | undefined)?.[0];
     const txHash =
-      "txHash" in o
-        ? (o.txHash as string)
-        : (o.txHashes as string[] | undefined)?.[0];
+      "txHash" in o ? (o.txHash as string) : (o.txHashes as string[] | undefined)?.[0];
     if (!root || !txHash) {
       throw new NetworkError(
         `0G Storage upload returned an unrecognized result shape.`,

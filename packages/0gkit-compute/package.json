@@ -9,13 +9,24 @@
     "url": "https://github.com/rajkaria/foundry.git",
     "directory": "packages/0gkit-compute"
   },
-  "bugs": { "url": "https://github.com/rajkaria/foundry/issues" },
+  "bugs": {
+    "url": "https://github.com/rajkaria/foundry/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "README.md", "LICENSE"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -25,15 +36,22 @@
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
-  "dependencies": { "@0gkit/core": "workspace:*", "viem": "^2.21.0" },
+  "dependencies": {
+    "@0gkit/core": "workspace:*",
+    "viem": "^2.21.0"
+  },
   "peerDependencies": {
     "viem": "^2.21.0",
     "@0gfoundation/0g-compute-ts-sdk": "^0.8.3",
     "ethers": "^6.16.0"
   },
   "peerDependenciesMeta": {
-    "@0gfoundation/0g-compute-ts-sdk": { "optional": true },
-    "ethers": { "optional": true }
+    "@0gfoundation/0g-compute-ts-sdk": {
+      "optional": true
+    },
+    "ethers": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@0gfoundation/0g-compute-ts-sdk": "^0.8.3",
@@ -45,6 +63,14 @@
     "typescript": "^5.6.3",
     "vitest": "^2.1.8"
   },
-  "keywords": ["0g", "0g-compute", "inference", "openai", "toolkit"],
-  "publishConfig": { "access": "public" }
+  "keywords": [
+    "0g",
+    "0g-compute",
+    "inference",
+    "openai",
+    "toolkit"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

@@ -90,9 +90,7 @@ export class Compute {
         `Install it: npm install ethers`
       );
     }
-    const provider = new ethers.JsonRpcProvider(
-      this.cfg.brokerRpc ?? DEFAULT_RPC
-    );
+    const provider = new ethers.JsonRpcProvider(this.cfg.brokerRpc ?? DEFAULT_RPC);
     const wallet = new ethers.Wallet(this.cfg.brokerKey, provider);
     const mod = await this.loadBrokerMod();
     if (typeof mod.createZGComputeNetworkBroker !== "function") {
@@ -158,9 +156,7 @@ export class Compute {
     const body = {
       model: args.model ?? this.cfg.model ?? model,
       messages: args.messages,
-      ...(args.temperature !== undefined
-        ? { temperature: args.temperature }
-        : {}),
+      ...(args.temperature !== undefined ? { temperature: args.temperature } : {}),
     };
     let headers: Record<string, string>;
     try {

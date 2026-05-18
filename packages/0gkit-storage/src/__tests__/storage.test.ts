@@ -26,7 +26,9 @@ function fakeSdk(opts: {
       }
       async downloadToBlob() {
         return [
-          opts.blob === null ? null : opts.blob ?? new Blob([new Uint8Array([1, 2, 3])]),
+          opts.blob === null
+            ? null
+            : (opts.blob ?? new Blob([new Uint8Array([1, 2, 3])])),
           opts.blobErr ?? null,
         ] as const;
       }
@@ -39,8 +41,7 @@ function fakeSdk(opts: {
 
 const cfg = (over: Record<string, unknown> = {}) => ({
   network: "galileo" as const,
-  privateKey:
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+  privateKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
   ...over,
 });
 
@@ -134,7 +135,10 @@ describe("Storage", () => {
 
   it("upload throws NetworkError on an unrecognized result shape", async () => {
     const s = new Storage(
-      cfg({ loadSdk: async () => fakeSdk({ uploadResult: { rootHashes: [], txHashes: [] } }) })
+      cfg({
+        loadSdk: async () =>
+          fakeSdk({ uploadResult: { rootHashes: [], txHashes: [] } }),
+      })
     );
     await expect(s.upload(new Uint8Array([1]))).rejects.toMatchObject({
       code: "NETWORK",
@@ -143,8 +147,7 @@ describe("Storage", () => {
 
   it("uses the aristotle indexer by default", () => {
     const s = new Storage({
-      privateKey:
-        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+      privateKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
       loadSdk: async () => fakeSdk({}),
     });
     expect(s.indexerUrl).toBe("https://indexer-storage.0g.network");
