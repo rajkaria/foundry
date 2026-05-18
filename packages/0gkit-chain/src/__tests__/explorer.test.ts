@@ -29,16 +29,30 @@ describe("explorerUrl", () => {
     expect(
       explorerUrl({ ...withExplorer, explorer: "https://explorer.example/" }, { tx: "0x1" })
     ).toBe("https://explorer.example/tx/0x1");
+    expect(
+      explorerUrl(
+        { ...withExplorer, explorer: "https://explorer.example///" },
+        { tx: "0x1" }
+      )
+    ).toBe("https://explorer.example/tx/0x1");
   });
 
   it("throws ConfigError when the network has no explorer", () => {
     expect(() => explorerUrl(noExplorer, { tx: "0xabc" })).toThrowError(ConfigError);
   });
 
-  it("attachExplorerUrl adds the url when possible and is a no-op otherwise", () => {
-    const a = attachExplorerUrl({ latencyMs: 1, txHash: "0xabc" }, withExplorer);
-    expect(a.explorerUrl).toBe("https://explorer.example/tx/0xabc");
-    const b = attachExplorerUrl({ latencyMs: 1, txHash: "0xabc" }, noExplorer);
-    expect(b.explorerUrl).toBeUndefined();
+  it("attachExplorerUrl adds explorerUrl when the network has an explorer", () => {
+    const r = attachExplorerUrl({ latencyMs: 1, txHash: "0xabc" }, withExplorer);
+    expect(r.explorerUrl).toBe("https://explorer.example/tx/0xabc");
+  });
+
+  it("attachExplorerUrl is a no-op when the network has no explorer", () => {
+    const r = attachExplorerUrl({ latencyMs: 1, txHash: "0xabc" }, noExplorer);
+    expect(r.explorerUrl).toBeUndefined();
+  });
+
+  it("attachExplorerUrl is a no-op (no throw) when the receipt has no txHash", () => {
+    const r = attachExplorerUrl({ latencyMs: 1 }, withExplorer);
+    expect(r.explorerUrl).toBeUndefined();
   });
 });
