@@ -32,4 +32,19 @@ describe("ZeroGError taxonomy", () => {
       if (err instanceof ZeroGError) expect(err.hint).toBe("run `0g doctor`");
     }
   });
+
+  it("the base ZeroGError stores code, message, and hint directly", () => {
+    const e = new ZeroGError("NETWORK", "rpc unreachable", "run `0g doctor`");
+    expect(e).toBeInstanceOf(Error);
+    expect(e.code).toBe("NETWORK");
+    expect(e.name).toBe("ZeroGError");
+    expect(e.message).toBe("rpc unreachable");
+    expect(e.hint).toBe("run `0g doctor`");
+  });
+
+  it("populates a stack trace", () => {
+    const e = new ConfigError("missing env", "set it");
+    expect(e.stack).toBeDefined();
+    expect(typeof e.stack).toBe("string");
+  });
 });
