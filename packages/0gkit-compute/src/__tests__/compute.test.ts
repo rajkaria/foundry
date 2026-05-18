@@ -145,4 +145,89 @@ describe("Compute", () => {
     });
     await expect(c.listProviders()).rejects.toMatchObject({ code: "CONFIG" });
   });
+
+  it("wraps getServiceMetadata rejection in NetworkError", async () => {
+    const mod = fakeBrokerMod({
+      getServiceMetadata: vi.fn().mockRejectedValue(new Error("meta down")),
+    });
+    const c = new Compute({
+      ...baseCfg,
+      loadBroker: async () => mod as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+    });
+    await expect(
+      c.inference({ messages: [{ role: "user", content: "x" }] })
+    ).rejects.toMatchObject({ code: "NETWORK" });
+  });
+
+  it("wraps getRequestHeaders rejection in NetworkError", async () => {
+    const mod = fakeBrokerMod({
+      getRequestHeaders: vi.fn().mockRejectedValue(new Error("hdr down")),
+    });
+    const c = new Compute({
+      ...baseCfg,
+      loadBroker: async () => mod as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+    });
+    await expect(
+      c.inference({ messages: [{ role: "user", content: "x" }] })
+    ).rejects.toMatchObject({ code: "NETWORK" });
+  });
+
+  it("throws ConfigError when the SDK lacks createZGComputeNetworkBroker", async () => {
+    const c = new Compute({
+      ...baseCfg,
+      loadBroker: async () => ({}) as never, // no createZGComputeNetworkBroker
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+    });
+    await expect(c.listProviders()).rejects.toMatchObject({ code: "CONFIG" });
+  });
+
+  it("throws ConfigError when ethers cannot be loaded", async () => {
+    const c = new Compute({
+      ...baseCfg,
+      loadBroker: async () => fakeBrokerMod() as never,
+      loadEthers: async () => {
+        throw new Error("Cannot find module 'ethers'");
+      },
+    });
+    await expect(c.listProviders()).rejects.toMatchObject({ code: "CONFIG" });
+  });
+
+  it("inference still returns when processResponse throws (best-effort fee)", async () => {
+    const mod = fakeBrokerMod({
+      processResponse: vi.fn().mockRejectedValue(new Error("fee oops")),
+    });
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      })
+    );
+    const c = new Compute({
+      ...baseCfg,
+      fetch: fetchMock,
+      loadBroker: async () => mod as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+    });
+    const r = await c.inference({ messages: [{ role: "user", content: "x" }] });
+    expect(r.output).toBe("ok");
+    expect(r.receipt.txHash).toBeUndefined();
+  });
+
+  it("raw() returns the underlying broker", async () => {
+    const mod = fakeBrokerMod();
+    const c = new Compute({
+      ...baseCfg,
+      loadBroker: async () => mod as never,
+      loadEthers: async () =>
+        ({ Wallet: class {}, JsonRpcProvider: class {} }) as never,
+    });
+    const broker = (await c.raw()) as { inference: unknown };
+    expect(broker.inference).toBeDefined();
+  });
 });

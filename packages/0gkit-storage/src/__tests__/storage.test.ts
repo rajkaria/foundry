@@ -152,4 +152,11 @@ describe("Storage", () => {
     });
     expect(s.indexerUrl).toBe("https://indexer-storage.0g.network");
   });
+
+  it("raw() returns the loaded SDK module", async () => {
+    const s = new Storage(cfg({ loadSdk: async () => fakeSdk({}) }));
+    const sdk = (await s.raw()) as { MemData: unknown; Indexer: unknown };
+    expect(sdk.MemData).toBeDefined();
+    expect(sdk.Indexer).toBeDefined();
+  });
 });

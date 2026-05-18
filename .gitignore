@@ -57,6 +57,7 @@ Thumbs.db
 # Local artifacts
 *.local
 .cache/
+coverage/
 
 # Secrets — never commit
 *.pem

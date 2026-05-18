@@ -62,6 +62,8 @@ jobs:
 
       - run: pnpm --filter @0gkit/compute test
 
+      - run: pnpm --filter @0gkit/da --filter @0gkit/attestation --filter @0gkit/storage --filter @0gkit/compute run coverage
+
       - run: pnpm typecheck
 
       - run: pnpm build

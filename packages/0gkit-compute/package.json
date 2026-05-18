@@ -32,6 +32,7 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "coverage": "vitest run --coverage",
     "lint": "depcruise src --config ../../.dependency-cruiser.cjs",
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build"
@@ -56,6 +57,7 @@
   "devDependencies": {
     "@0gfoundation/0g-compute-ts-sdk": "^0.8.3",
     "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^2.1.8",
     "dependency-cruiser": "^16.0.0",
     "ethers": "^6.16.0",
     "rimraf": "^6.0.1",
