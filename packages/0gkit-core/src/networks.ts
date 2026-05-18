@@ -4,19 +4,19 @@ export type NetworkName = "aristotle" | "galileo" | "local";
 
 export interface NetworkPreset {
   /** Stable key. */
-  name: NetworkName;
+  readonly name: NetworkName;
   /** EVM chain id. `undefined` ⇒ createClient throws ConfigError. */
-  chainId?: number;
+  readonly chainId?: number;
   /** EVM JSON-RPC URL. `undefined` ⇒ createClient throws ConfigError. */
-  rpcUrl?: string;
+  readonly rpcUrl?: string;
   /** Block-explorer base, NO trailing slash. `undefined` ⇒ explorerUrl() throws. */
-  explorer?: string;
+  readonly explorer?: string;
   /** Programmatic faucet endpoint (testnet). `undefined` ⇒ faucet() throws. */
-  faucetUrl?: string;
+  readonly faucetUrl?: string;
   /** Human faucet page, surfaced in faucet()'s error hint. */
-  faucetWebUrl?: string;
+  readonly faucetWebUrl?: string;
   /** True for non-production networks. */
-  testnet: boolean;
+  readonly testnet: boolean;
 }
 
 // Aristotle: chain id + RPC are repo-proven (storage.ts DEFAULT_RPC,
@@ -47,10 +47,11 @@ export const local: NetworkPreset = {
   testnet: true,
 };
 
-export const networks = { aristotle, galileo, local } as const;
+export const networks: Record<NetworkName, NetworkPreset> = { aristotle, galileo, local };
 
 export function getNetwork(name: NetworkName): NetworkPreset {
   const preset = networks[name];
+  // Defense for JS callers and future NetworkName additions made without updating `networks`.
   if (!preset) {
     throw new ConfigError(
       `Unknown network '${String(name)}'.`,
