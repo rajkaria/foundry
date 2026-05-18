@@ -81,11 +81,7 @@ packages/0gkit-cli/
   "bin": {
     "0g": "./dist/cli.js"
   },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -114,12 +110,7 @@ packages/0gkit-cli/
     "typescript": "^5.6.3",
     "vitest": "^2.1.8"
   },
-  "keywords": [
-    "0g",
-    "0g-network",
-    "cli",
-    "toolkit"
-  ],
+  "keywords": ["0g", "0g-network", "cli", "toolkit"],
   "publishConfig": {
     "access": "public"
   }
@@ -189,7 +180,6 @@ export const __0gkitCli = "scaffold";
 - [ ] **Step 7: Append D4 to `docs/superpowers/DECISIONS.md`:**
 
 ```markdown
-
 ## D4 — `@0gkit/cli` framework & Foundry-plugin load (2026-05-18)
 
 - **Arg parser:** `commander ^14` (a normal external npm dependency — the
@@ -214,20 +204,20 @@ export const __0gkitCli = "scaffold";
 ```
 
 - [ ] **Step 8:** Run `pnpm install`, then `pnpm --filter @0gkit/core build` and `pnpm --filter @0gkit/cli build`.
-  Expected: both succeed; `packages/0gkit-cli/dist/cli.js` exists and starts with `#!/usr/bin/env node`. (Do NOT run `lint` yet — no real src.)
+      Expected: both succeed; `packages/0gkit-cli/dist/cli.js` exists and starts with `#!/usr/bin/env node`. (Do NOT run `lint` yet — no real src.)
 
 - [ ] **Step 9: Modify `.github/workflows/ci.yml`** — in job `web`, immediately after the two `@0gkit/compute` lines (`pnpm --filter @0gkit/compute build` / `... test`), insert:
 
 ```yaml
-      - run: pnpm --filter @0gkit/cli build
+- run: pnpm --filter @0gkit/cli build
 
-      - run: pnpm --filter @0gkit/cli test
+- run: pnpm --filter @0gkit/cli test
 ```
 
-  and extend the existing coverage line by appending ` --filter @0gkit/cli` so it reads:
+and extend the existing coverage line by appending ` --filter @0gkit/cli` so it reads:
 
 ```yaml
-      - run: pnpm --filter @0gkit/da --filter @0gkit/attestation --filter @0gkit/storage --filter @0gkit/compute --filter @0gkit/cli run coverage
+- run: pnpm --filter @0gkit/da --filter @0gkit/attestation --filter @0gkit/storage --filter @0gkit/compute --filter @0gkit/cli run coverage
 ```
 
 - [ ] **Step 10: Commit**
@@ -283,7 +273,11 @@ describe("createOutput", () => {
       noColor: true,
       write: (s) => lines.push(s),
     });
-    out.failure({ code: "CONFIG", message: "missing key", hint: "set ZEROG_PRIVATE_KEY" });
+    out.failure({
+      code: "CONFIG",
+      message: "missing key",
+      hint: "set ZEROG_PRIVATE_KEY",
+    });
     expect(lines.join("\n")).toContain("missing key");
     expect(lines.join("\n")).toContain("set ZEROG_PRIVATE_KEY");
   });
@@ -528,7 +522,11 @@ function fakeDeps(over: Partial<ProgramDeps> = {}): ProgramDeps {
     makeStorage: vi.fn(),
     makeCompute: vi.fn(),
     makeDA: vi.fn(),
-    attest: { parseEnvelope: vi.fn(), verifyEnvelope: vi.fn(), reportEnvelope: vi.fn() },
+    attest: {
+      parseEnvelope: vi.fn(),
+      verifyEnvelope: vi.fn(),
+      reportEnvelope: vi.fn(),
+    },
     loadFoundry: vi.fn(async () => null),
     fs: {
       readFile: vi.fn(),
@@ -573,7 +571,10 @@ describe("buildProgram", () => {
   it("renders a thrown ZeroGError through the json renderer", async () => {
     const deps = fakeDeps();
     deps.createClient = vi.fn(() => {
-      throw Object.assign(new Error("rpc dead"), { code: "NETWORK", hint: "run 0g doctor" });
+      throw Object.assign(new Error("rpc dead"), {
+        code: "NETWORK",
+        hint: "run 0g doctor",
+      });
     });
     const program = buildProgram(deps);
     program.exitOverride();
@@ -610,11 +611,7 @@ import type {
 import { Storage } from "@0gkit/storage";
 import { Compute } from "@0gkit/compute";
 import { DA } from "@0gkit/da";
-import {
-  parseEnvelope,
-  verifyEnvelope,
-  reportEnvelope,
-} from "@0gkit/attestation";
+import { parseEnvelope, verifyEnvelope, reportEnvelope } from "@0gkit/attestation";
 import { createOutput, type CommandResult } from "./output.js";
 import { resolveContext, type CliContext, type GlobalFlags } from "./context.js";
 import type { FoundryPlugin } from "./foundry-loader.js";
@@ -743,11 +740,7 @@ import {
 import { Storage } from "@0gkit/storage";
 import { Compute } from "@0gkit/compute";
 import { DA } from "@0gkit/da";
-import {
-  parseEnvelope,
-  verifyEnvelope,
-  reportEnvelope,
-} from "@0gkit/attestation";
+import { parseEnvelope, verifyEnvelope, reportEnvelope } from "@0gkit/attestation";
 import { buildProgram, type ProgramDeps } from "./program.js";
 import { loadFoundry } from "./foundry-loader.js";
 
@@ -808,7 +801,7 @@ export async function loadFoundry(): Promise<FoundryPlugin | null> {
 }
 ```
 
-  `packages/0gkit-cli/src/commands/chain.ts`, `doctor.ts`, `init.ts`, `storage.ts`, `da.ts`, `attest.ts`, `infer.ts`, `foundry.ts` — each:
+`packages/0gkit-cli/src/commands/chain.ts`, `doctor.ts`, `init.ts`, `storage.ts`, `da.ts`, `attest.ts`, `infer.ts`, `foundry.ts` — each:
 
 ```ts
 import type { Command } from "commander";
@@ -817,9 +810,9 @@ import type { ProgramDeps } from "../program.js";
 export function registerCHANGE_ME(_program: Command, _deps: ProgramDeps): void {}
 ```
 
-  Rename the exported function per file to match the import in `program.ts`:
-  `registerChain`, `registerDoctor`, `registerInit`, `registerStorage`, `registerDa`,
-  `registerAttest`, `registerInfer`, `registerFoundry`.
+Rename the exported function per file to match the import in `program.ts`:
+`registerChain`, `registerDoctor`, `registerInit`, `registerStorage`, `registerDa`,
+`registerAttest`, `registerInfer`, `registerFoundry`.
 
 - [ ] **Step 6: Adjust the `program.test.ts` expectation for stubs.** Stubs register nothing, so the first test ("registers the neutral command groups") will fail until later tasks. Mark it pending now by changing `it("registers the neutral command groups", …)` to `it.skip("registers the neutral command groups", …)` and `it("hides \`foundry\`…")` stays valid (no foundry registered). The remaining program tests (`global options`, `ZeroGError render`) must pass. (Later tasks re-enable the skipped test as they wire real commands; Task 13 verifies it is un-skipped and green.)
 
@@ -848,8 +841,13 @@ import { buildProgram, type ProgramDeps } from "../program.js";
 function deps(over: Partial<ProgramDeps> = {}) {
   const lines: string[] = [];
   const base = {
-    createClient: vi.fn(() => ({ network: { name: "galileo", explorer: "https://e" } })),
-    getNetwork: vi.fn((n: string) => ({ name: n, faucetWebUrl: "https://faucet.0g.ai" })),
+    createClient: vi.fn(() => ({
+      network: { name: "galileo", explorer: "https://e" },
+    })),
+    getNetwork: vi.fn((n: string) => ({
+      name: n,
+      faucetWebUrl: "https://faucet.0g.ai",
+    })),
     faucet: vi.fn(),
     balance: vi.fn(async () => 1500000000000000000n),
     waitForReceipt: vi.fn(async () => ({
@@ -863,7 +861,11 @@ function deps(over: Partial<ProgramDeps> = {}) {
     makeStorage: vi.fn(),
     makeCompute: vi.fn(),
     makeDA: vi.fn(),
-    attest: { parseEnvelope: vi.fn(), verifyEnvelope: vi.fn(), reportEnvelope: vi.fn() },
+    attest: {
+      parseEnvelope: vi.fn(),
+      verifyEnvelope: vi.fn(),
+      reportEnvelope: vi.fn(),
+    },
     loadFoundry: vi.fn(async () => null),
     fs: {
       readFile: vi.fn(),
@@ -1060,7 +1062,11 @@ function deps(over: Partial<ProgramDeps> = {}) {
     makeStorage: vi.fn(),
     makeCompute: vi.fn(),
     makeDA: vi.fn(),
-    attest: { parseEnvelope: vi.fn(), verifyEnvelope: vi.fn(), reportEnvelope: vi.fn() },
+    attest: {
+      parseEnvelope: vi.fn(),
+      verifyEnvelope: vi.fn(),
+      reportEnvelope: vi.fn(),
+    },
     loadFoundry: vi.fn(async () => null),
     fs: {
       readFile: vi.fn(),
@@ -1334,10 +1340,10 @@ export function registerDoctor(program: Command, deps: ProgramDeps): void {
 }
 ```
 
-  Note: `runCommand` sets `process.exitCode = 1` only on a *thrown* `ZeroGError`. `doctor` reports failures as data, so to honor "exit 1 when a required check fails" the action sets it explicitly. Add, just before `return { human, json }`:
+Note: `runCommand` sets `process.exitCode = 1` only on a _thrown_ `ZeroGError`. `doctor` reports failures as data, so to honor "exit 1 when a required check fails" the action sets it explicitly. Add, just before `return { human, json }`:
 
 ```ts
-        if (!ok) process.exitCode = 1;
+if (!ok) process.exitCode = 1;
 ```
 
 - [ ] **Step 4: Run, expect PASS** — `pnpm --filter @0gkit/cli test` → doctor suite (4) green; others green.
@@ -1375,7 +1381,11 @@ function deps(over: Partial<ProgramDeps> = {}) {
     makeStorage: vi.fn(),
     makeCompute: vi.fn(),
     makeDA: vi.fn(),
-    attest: { parseEnvelope: vi.fn(), verifyEnvelope: vi.fn(), reportEnvelope: vi.fn() },
+    attest: {
+      parseEnvelope: vi.fn(),
+      verifyEnvelope: vi.fn(),
+      reportEnvelope: vi.fn(),
+    },
     loadFoundry: vi.fn(async () => null),
     fs: {
       readFile: vi.fn(),
@@ -1452,7 +1462,7 @@ describe("0g init", () => {
 
 - [ ] **Step 3: Implement `packages/0gkit-cli/src/commands/init.ts`:**
 
-```ts
+````ts
 import type { Command } from "commander";
 import { ConfigError } from "@0gkit/core";
 import { runCommand, type ProgramDeps } from "../program.js";
@@ -1574,7 +1584,7 @@ export function registerInit(program: Command, deps: ProgramDeps): void {
       });
     });
 }
-```
+````
 
 - [ ] **Step 4: Run, expect PASS** — `pnpm --filter @0gkit/cli test` → init suite (3) green; all prior green.
 
@@ -1620,7 +1630,11 @@ function deps(over: Partial<ProgramDeps> = {}) {
     makeStorage: vi.fn(() => storage),
     makeCompute: vi.fn(),
     makeDA: vi.fn(),
-    attest: { parseEnvelope: vi.fn(), verifyEnvelope: vi.fn(), reportEnvelope: vi.fn() },
+    attest: {
+      parseEnvelope: vi.fn(),
+      verifyEnvelope: vi.fn(),
+      reportEnvelope: vi.fn(),
+    },
     loadFoundry: vi.fn(async () => null),
     fs: {
       readFile: vi.fn(async () => new Uint8Array([1, 2, 3])),
@@ -1693,9 +1707,12 @@ describe("0g storage", () => {
     const { d, lines } = deps();
     const p = buildProgram(d);
     p.exitOverride();
-    await p.parseAsync(["storage", "exists", "0xroot", "--network", "local", "--json"], {
-      from: "user",
-    });
+    await p.parseAsync(
+      ["storage", "exists", "0xroot", "--network", "local", "--json"],
+      {
+        from: "user",
+      }
+    );
     const out = JSON.parse(lines.at(-1)!);
     expect(out.ok).toBe(false);
     expect(out.error.hint).toContain("galileo");
@@ -1849,7 +1866,11 @@ function deps(over: Partial<ProgramDeps> = {}) {
     makeStorage: vi.fn(),
     makeCompute: vi.fn(),
     makeDA: vi.fn(() => da),
-    attest: { parseEnvelope: vi.fn(), verifyEnvelope: vi.fn(), reportEnvelope: vi.fn() },
+    attest: {
+      parseEnvelope: vi.fn(),
+      verifyEnvelope: vi.fn(),
+      reportEnvelope: vi.fn(),
+    },
     loadFoundry: vi.fn(async () => null),
     fs: {
       readFile: vi.fn(async () => new Uint8Array([120])), // "x"
@@ -1913,10 +1934,7 @@ describe("0g da", () => {
 import type { Command } from "commander";
 import { runCommand, type ProgramDeps } from "../program.js";
 
-async function readPayload(
-  deps: ProgramDeps,
-  fileOrDash: string
-): Promise<Uint8Array> {
+async function readPayload(deps: ProgramDeps, fileOrDash: string): Promise<Uint8Array> {
   if (fileOrDash === "-") return deps.readStdin();
   return deps.fs.readFile(fileOrDash);
 }
@@ -1926,12 +1944,9 @@ function daNetwork(network: string): "aristotle" | "galileo" | undefined {
 }
 
 export function registerDa(program: Command, deps: ProgramDeps): void {
-  const da = program
-    .command("da")
-    .description("0G Data Availability: publish, verify");
+  const da = program.command("da").description("0G Data Availability: publish, verify");
 
-  da
-    .command("publish <file>")
+  da.command("publish <file>")
     .description("publish a blob ('-' = stdin); local-digest mode off-net")
     .action(async function (this: Command, file: string) {
       await runCommand(deps, this, async (ctx) => {
@@ -1955,8 +1970,7 @@ export function registerDa(program: Command, deps: ProgramDeps): void {
       });
     });
 
-  da
-    .command("verify <file> <digest>")
+  da.command("verify <file> <digest>")
     .description("local integrity check: recompute digest and compare")
     .action(async function (this: Command, file: string, digest: string) {
       await runCommand(deps, this, async (ctx) => {
@@ -2028,7 +2042,9 @@ function deps(over: Partial<ProgramDeps> = {}) {
         checks: { digest: true, signer: true },
         signer: SIGNER,
       })),
-      reportEnvelope: vi.fn(() => "attestation foundry/eval-result/v1\n  forge 0xforge"),
+      reportEnvelope: vi.fn(
+        () => "attestation foundry/eval-result/v1\n  forge 0xforge"
+      ),
     },
     loadFoundry: vi.fn(async () => null),
     fs: {
@@ -2170,10 +2186,7 @@ export function registerAttest(program: Command, deps: ProgramDeps): void {
         }
         const signed = await loadSigned(deps, file);
         deps.attest.parseEnvelope(signed.envelope);
-        const result = await deps.attest.verifyEnvelope(
-          signed as never,
-          opts.signer
-        );
+        const result = await deps.attest.verifyEnvelope(signed as never, opts.signer);
         if (!result.ok) process.exitCode = 1;
         return {
           human: [
@@ -2207,19 +2220,19 @@ export function registerAttest(program: Command, deps: ProgramDeps): void {
 }
 ```
 
-  Note: `--signer` is declared `requiredOption`, so commander itself rejects a missing value before the action runs. The explicit in-action `ConfigError` is the `--json`-friendly fallback and keeps the contract self-documented; the test "verify requires --signer" passes because commander's `exitOverride()` makes the missing-required-option throw, which `parseAsync` rejects — wrap the assertion accordingly: if commander throws first, `lines` may be empty, so the test instead asserts on the thrown error. Adjust that test to:
+Note: `--signer` is declared `requiredOption`, so commander itself rejects a missing value before the action runs. The explicit in-action `ConfigError` is the `--json`-friendly fallback and keeps the contract self-documented; the test "verify requires --signer" passes because commander's `exitOverride()` makes the missing-required-option throw, which `parseAsync` rejects — wrap the assertion accordingly: if commander throws first, `lines` may be empty, so the test instead asserts on the thrown error. Adjust that test to:
 
 ```ts
-  it("verify requires --signer", async () => {
-    const { d } = deps();
-    const p = buildProgram(d);
-    p.exitOverride();
-    p.configureOutput({ writeOut: () => {}, writeErr: () => {} });
-    await expect(
-      p.parseAsync(["attest", "verify", "./signed.json", "--json"], { from: "user" })
-    ).rejects.toThrow(/required option/i);
-    process.exitCode = 0;
-  });
+it("verify requires --signer", async () => {
+  const { d } = deps();
+  const p = buildProgram(d);
+  p.exitOverride();
+  p.configureOutput({ writeOut: () => {}, writeErr: () => {} });
+  await expect(
+    p.parseAsync(["attest", "verify", "./signed.json", "--json"], { from: "user" })
+  ).rejects.toThrow(/required option/i);
+  process.exitCode = 0;
+});
 ```
 
 - [ ] **Step 4: Run, expect PASS** — `pnpm --filter @0gkit/cli test` → attest suite (4) green; all prior green.
@@ -2263,7 +2276,11 @@ function deps(over: Partial<ProgramDeps> = {}) {
     makeStorage: vi.fn(),
     makeCompute: vi.fn(() => compute),
     makeDA: vi.fn(),
-    attest: { parseEnvelope: vi.fn(), verifyEnvelope: vi.fn(), reportEnvelope: vi.fn() },
+    attest: {
+      parseEnvelope: vi.fn(),
+      verifyEnvelope: vi.fn(),
+      reportEnvelope: vi.fn(),
+    },
     loadFoundry: vi.fn(async () => null),
     fs: {
       readFile: vi.fn(),
@@ -2288,10 +2305,9 @@ describe("0g infer", () => {
     const { d, lines, compute } = deps();
     const p = buildProgram(d);
     p.exitOverride();
-    await p.parseAsync(
-      ["infer", "-m", "hi there", "--provider", "0xprov", "--json"],
-      { from: "user" }
-    );
+    await p.parseAsync(["infer", "-m", "hi there", "--provider", "0xprov", "--json"], {
+      from: "user",
+    });
     expect(compute.inference).toHaveBeenCalledWith({
       messages: [{ role: "user", content: "hi there" }],
       model: undefined,
@@ -2375,8 +2391,7 @@ export function registerInfer(program: Command, deps: ProgramDeps): void {
           );
         }
         const content =
-          opts.message ??
-          new TextDecoder().decode(await deps.readStdin()).trim();
+          opts.message ?? new TextDecoder().decode(await deps.readStdin()).trim();
         if (!content) {
           throw new ConfigError(
             `No prompt provided.`,
@@ -2551,19 +2566,19 @@ export function registerFoundry(program: Command, deps: ProgramDeps): void {
 }
 ```
 
-  Update `packages/0gkit-cli/src/__tests__/program.test.ts` test "hides `foundry` from help when the plugin is absent": it already asserts `foundry` is undefined when neither `--foundry` nor `foundry` is in argv (true in the vitest process). Keep as-is. Add one test to `program.test.ts`:
+Update `packages/0gkit-cli/src/__tests__/program.test.ts` test "hides `foundry` from help when the plugin is absent": it already asserts `foundry` is undefined when neither `--foundry` nor `foundry` is in argv (true in the vitest process). Keep as-is. Add one test to `program.test.ts`:
 
 ```ts
-  it("shows `foundry` only when --foundry is present in argv", () => {
-    const orig = process.argv;
-    process.argv = [...orig, "--foundry"];
-    try {
-      const program = buildProgram(fakeDeps());
-      expect(program.commands.find((c) => c.name() === "foundry")).toBeDefined();
-    } finally {
-      process.argv = orig;
-    }
-  });
+it("shows `foundry` only when --foundry is present in argv", () => {
+  const orig = process.argv;
+  process.argv = [...orig, "--foundry"];
+  try {
+    const program = buildProgram(fakeDeps());
+    expect(program.commands.find((c) => c.name() === "foundry")).toBeDefined();
+  } finally {
+    process.argv = orig;
+  }
+});
 ```
 
 - [ ] **Step 5: Run, expect PASS** — `pnpm --filter @0gkit/cli build` then `pnpm --filter @0gkit/cli test`. Expected: boundary suite (2) green (computed specifier ⇒ `boundary:check` green; loader has no static foundry import); program suite green incl. the new `--foundry` test. Also run `pnpm boundary:check` directly at repo root → exit 0.
@@ -2607,16 +2622,16 @@ npx 0g chain faucet 0xYourAddress   # Galileo → points you at https://faucet.0
 
 ## Commands
 
-| Command | What |
-|---|---|
-| `0g init [name]` | scaffold a runnable, testnet-default project |
-| `0g doctor` | RPC / signer / storage / DA / faucet checklist |
-| `0g chain faucet\|balance\|tx` | faucet guidance, native balance, await a receipt |
-| `0g storage put\|get\|exists` | upload/download/probe 0G Storage |
-| `0g infer` | chat completion against a 0G compute provider |
-| `0g da publish\|verify` | publish a blob / local integrity check |
-| `0g attest verify\|report` | verify or summarize a signed attestation |
-| `0g foundry …` | optional plugin — hidden unless installed or `--foundry` |
+| Command                        | What                                                     |
+| ------------------------------ | -------------------------------------------------------- |
+| `0g init [name]`               | scaffold a runnable, testnet-default project             |
+| `0g doctor`                    | RPC / signer / storage / DA / faucet checklist           |
+| `0g chain faucet\|balance\|tx` | faucet guidance, native balance, await a receipt         |
+| `0g storage put\|get\|exists`  | upload/download/probe 0G Storage                         |
+| `0g infer`                     | chat completion against a 0G compute provider            |
+| `0g da publish\|verify`        | publish a blob / local integrity check                   |
+| `0g attest verify\|report`     | verify or summarize a signed attestation                 |
+| `0g foundry …`                 | optional plugin — hidden unless installed or `--foundry` |
 
 Global flags: `--network aristotle|galileo|local` (default `galileo`),
 `--rpc <url>`, `--private-key <hex>`, `--json`.
@@ -2627,7 +2642,10 @@ TypeScript:
 
 ```ts
 import { Storage } from "@0gkit/storage";
-const s = new Storage({ network: "galileo", privateKey: process.env.ZEROG_PRIVATE_KEY });
+const s = new Storage({
+  network: "galileo",
+  privateKey: process.env.ZEROG_PRIVATE_KEY,
+});
 const { root } = await s.upload(new TextEncoder().encode("hi"));
 ```
 
@@ -2674,7 +2692,7 @@ pnpm typecheck
 pnpm build
 ```
 
-  Expected: every command exits 0. `coverage` shows `@0gkit/cli` ≥ 80% lines/functions/statements, ≥ 70% branches (thresholds enforced by `vitest.config.ts`). If `format:check` fails, run `pnpm format` and re-commit. If coverage is short, add focused tests to the lowest-covered command's `__tests__` file (not production-code changes) until thresholds pass.
+Expected: every command exits 0. `coverage` shows `@0gkit/cli` ≥ 80% lines/functions/statements, ≥ 70% branches (thresholds enforced by `vitest.config.ts`). If `format:check` fails, run `pnpm format` and re-commit. If coverage is short, add focused tests to the lowest-covered command's `__tests__` file (not production-code changes) until thresholds pass.
 
 - [ ] **Step 3: Smoke the real binary (no network needed):**
 
@@ -2685,7 +2703,7 @@ ls __smoke_app && cat __smoke_app/.env.example
 rm -rf __smoke_app
 ```
 
-  Expected: `--help` lists the 7 neutral groups and NOT `foundry`; `init` prints an `{ "ok": true, ... }` JSON line; `__smoke_app/.env.example` contains `ZEROG_NETWORK=galileo`.
+Expected: `--help` lists the 7 neutral groups and NOT `foundry`; `init` prints an `{ "ok": true, ... }` JSON line; `__smoke_app/.env.example` contains `ZEROG_NETWORK=galileo`.
 
 - [ ] **Step 4: Self-review against the spec.** Confirm each spec §4 CLI bullet maps to a task: `init`✓(7) `doctor`✓(6) `storage put|get|exists`✓(8) `infer`✓(11) `da publish|verify`✓(9) `chain faucet|balance|tx`✓(5) `attest verify`✓(10) `foundry` opt-in✓(12) global `--network/--json/--rpc`✓(3,4); §6 multi-language (CLI + `--json` + curl in README)✓(13); §7 every error a `ZeroGError` with hint✓(all); §8 testing (unit, snapshot-style on `--json`, attestation valid+tampered, boundary)✓; §11.3 acceptance (init+doctor+faucet path, honest faucet)✓; §12 doctor degrades gracefully✓(6). Note any gap and add a task before finishing.
 

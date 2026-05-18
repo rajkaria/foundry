@@ -66,10 +66,13 @@ describe("0g doctor", () => {
 
   it("rpc check red + exit 1 + hint when chainId mismatches", async () => {
     const { d, lines } = deps({
-      createClient: vi.fn(() => ({
-        network: { name: "galileo", chainId: 16602 },
-        public: { getChainId: vi.fn(async () => 999) },
-      })),
+      createClient: vi.fn(
+        () =>
+          ({
+            network: { name: "galileo" as const, chainId: 16602, testnet: true },
+            public: { getChainId: vi.fn(async () => 999) },
+          }) as any
+      ),
     });
     const p = buildProgram(d);
     p.exitOverride();
@@ -85,14 +88,17 @@ describe("0g doctor", () => {
 
   it("degrades gracefully when RPC throws (no crash, red check)", async () => {
     const { d, lines } = deps({
-      createClient: vi.fn(() => ({
-        network: { name: "galileo", chainId: 16602 },
-        public: {
-          getChainId: vi.fn(async () => {
-            throw new Error("ECONNREFUSED");
-          }),
-        },
-      })),
+      createClient: vi.fn(
+        () =>
+          ({
+            network: { name: "galileo" as const, chainId: 16602, testnet: true },
+            public: {
+              getChainId: vi.fn(async () => {
+                throw new Error("ECONNREFUSED");
+              }),
+            },
+          }) as any
+      ),
     });
     const p = buildProgram(d);
     p.exitOverride();
