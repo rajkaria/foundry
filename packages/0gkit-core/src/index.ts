@@ -22,3 +22,4 @@ export {
   type CreateClientOptions,
   type ZeroGClient,
 } from "./client.js";
+export { canonicalJsonStringify, digestJson } from "./canonical.js";
