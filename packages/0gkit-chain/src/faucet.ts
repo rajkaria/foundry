@@ -34,8 +34,9 @@ export async function faucet(
       body: JSON.stringify({ address }),
     });
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     throw new NetworkError(
-      `Faucet request failed: ${(err as Error).message}`,
+      `Faucet request failed: ${msg}`,
       network.faucetWebUrl
         ? `Try the web faucet: ${network.faucetWebUrl}`
         : `Check connectivity and retry.`
@@ -51,6 +52,8 @@ export async function faucet(
     );
   }
 
+  // JSON parse failure is intentionally swallowed; txHash will be undefined
+  // — Receipt.txHash is optional by design (see @0gkit/core receipt.ts).
   const body = (await res.json().catch(() => ({}))) as { txHash?: string };
   return { txHash: body.txHash, latencyMs: Date.now() - startedAt };
 }

@@ -56,4 +56,17 @@ describe("faucet", () => {
       faucet(galileoProgrammatic, "0x1111111111111111111111111111111111111111")
     ).rejects.toMatchObject({ code: "NETWORK" });
   });
+
+  it("throws NetworkError when fetch itself rejects (e.g. DNS failure)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockRejectedValue(new TypeError("Failed to fetch"))
+    );
+    await expect(
+      faucet(galileoProgrammatic, "0x1111111111111111111111111111111111111111")
+    ).rejects.toMatchObject({
+      code: "NETWORK",
+      message: expect.stringContaining("Faucet request failed"),
+    });
+  });
 });
