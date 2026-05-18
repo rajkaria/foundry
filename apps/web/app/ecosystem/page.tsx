@@ -53,11 +53,14 @@ function Monogram({ partner }: { partner: EcosystemPartner }) {
 
 function PartnerCard({ partner }: { partner: EcosystemPartner }) {
   return (
-    <article id={partner.slug} className="surface-forged scroll-mt-24 rounded-xl p-7">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-4">
+    <article
+      id={partner.slug}
+      className="surface-forged scroll-mt-24 rounded-xl p-5 sm:p-7"
+    >
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-4">
           <Monogram partner={partner} />
-          <div>
+          <div className="min-w-0">
             <h2 className="text-title-lg text-platinum-100">{partner.name}</h2>
             <p className="text-body-sm text-platinum-400 mt-1 max-w-[44ch]">
               {partner.tagline}
@@ -65,7 +68,7 @@ function PartnerCard({ partner }: { partner: EcosystemPartner }) {
           </div>
         </div>
         <span
-          className={`text-mono-sm shrink-0 rounded-full border px-3 py-1 ${statusStyle[partner.status]}`}
+          className={`text-mono-sm self-start rounded-full border px-3 py-1 whitespace-nowrap sm:shrink-0 ${statusStyle[partner.status]}`}
         >
           {STATUS_LABEL[partner.status]}
         </span>
@@ -140,7 +143,7 @@ export default function EcosystemPage() {
       <Header />
 
       <section className="border-hairline border-t">
-        <div className="mx-auto max-w-[1280px] px-6 py-16 lg:py-20">
+        <div className="mx-auto max-w-[1280px] px-5 py-12 sm:px-6 sm:py-16 lg:py-20">
           <SectionHeader
             eyebrow="Ecosystem"
             title="0G projects building on Foundry."
@@ -160,15 +163,15 @@ export default function EcosystemPage() {
         </div>
       </section>
 
-      <section className="border-hairline border-t pb-24">
-        <div className="mx-auto max-w-[1280px] px-6 py-16">
-          <div className="space-y-8">
+      <section className="border-hairline border-t pb-20 sm:pb-24">
+        <div className="mx-auto max-w-[1280px] px-5 py-12 sm:px-6 sm:py-16">
+          <div className="space-y-6 sm:space-y-8">
             {ECOSYSTEM_SORTED.map((p) => (
               <PartnerCard key={p.slug} partner={p} />
             ))}
           </div>
 
-          <div className="surface-forged mt-16 rounded-xl p-10 text-center">
+          <div className="surface-forged mt-12 rounded-xl p-6 text-center sm:mt-16 sm:p-10">
             <p className="text-caption text-ember-400">Building on 0G?</p>
             <h2 className="text-display-sm text-platinum-100 mx-auto mt-3 max-w-[24ch] text-balance">
               Add co-owned, revenue-sharing AI to your project.
