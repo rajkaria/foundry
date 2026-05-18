@@ -1,1 +1,6 @@
-export const __0gkitStorage = "scaffold";
+export {
+  Storage,
+  type StorageConfig,
+  type StorageSdk,
+  type UploadResult,
+} from "./storage.js";
