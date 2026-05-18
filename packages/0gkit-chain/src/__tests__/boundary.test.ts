@@ -19,7 +19,10 @@ function runBoundaryCheck(): { ok: boolean; out: string } {
     }).toString();
     return { ok: true, out };
   } catch (e: any) {
-    return { ok: false, out: `${e.stdout ?? ""}${e.stderr ?? ""}` };
+    return {
+      ok: false,
+      out: `${e.stdout?.toString() ?? ""}${e.stderr?.toString() ?? ""}`,
+    };
   }
 }
 
