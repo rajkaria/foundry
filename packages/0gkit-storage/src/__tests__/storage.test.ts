@@ -25,7 +25,10 @@ function fakeSdk(opts: {
         ] as const;
       }
       async downloadToBlob() {
-        return [opts.blob ?? new Blob([new Uint8Array([1, 2, 3])]), opts.blobErr ?? null] as const;
+        return [
+          opts.blob === null ? null : opts.blob ?? new Blob([new Uint8Array([1, 2, 3])]),
+          opts.blobErr ?? null,
+        ] as const;
       }
       async peekHeader() {
         return [opts.blob === null ? null : {}, opts.blobErr ?? null] as const;
@@ -117,5 +120,33 @@ describe("Storage", () => {
     await expect(s.upload(new Uint8Array([1]))).rejects.toMatchObject({
       code: "CONFIG",
     });
+  });
+
+  it("exists is false when the header is absent", async () => {
+    const s = new Storage(cfg({ loadSdk: async () => fakeSdk({ blob: null }) }));
+    expect(await s.exists("0xmissing")).toBe(false);
+  });
+
+  it("download wraps an empty blob in NetworkError", async () => {
+    const s = new Storage(cfg({ loadSdk: async () => fakeSdk({ blob: null }) }));
+    await expect(s.download("0xroot")).rejects.toMatchObject({ code: "NETWORK" });
+  });
+
+  it("upload throws NetworkError on an unrecognized result shape", async () => {
+    const s = new Storage(
+      cfg({ loadSdk: async () => fakeSdk({ uploadResult: { rootHashes: [], txHashes: [] } }) })
+    );
+    await expect(s.upload(new Uint8Array([1]))).rejects.toMatchObject({
+      code: "NETWORK",
+    });
+  });
+
+  it("uses the aristotle indexer by default", () => {
+    const s = new Storage({
+      privateKey:
+        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+      loadSdk: async () => fakeSdk({}),
+    });
+    expect(s.indexerUrl).toBe("https://indexer-storage.0g.network");
   });
 });

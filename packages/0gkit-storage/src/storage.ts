@@ -119,11 +119,17 @@ export class Storage {
     const root =
       "rootHash" in o
         ? (o.rootHash as string)
-        : ((o.rootHashes as string[])[0] as string);
+        : (o.rootHashes as string[] | undefined)?.[0];
     const txHash =
       "txHash" in o
         ? (o.txHash as string)
-        : ((o.txHashes as string[])[0] as string);
+        : (o.txHashes as string[] | undefined)?.[0];
+    if (!root || !txHash) {
+      throw new NetworkError(
+        `0G Storage upload returned an unrecognized result shape.`,
+        `Report this to the 0gkit maintainers with your @0gfoundation/0g-storage-ts-sdk version.`
+      );
+    }
     return {
       root: normalizeHex(root),
       tx: { txHash: normalizeHex(txHash), latencyMs: Date.now() - startedAt },
@@ -147,7 +153,18 @@ export class Storage {
         `The root may not be finalized yet; retry shortly.`
       );
     }
-    return new Uint8Array(await blob.arrayBuffer());
+    let buf: ArrayBuffer;
+    try {
+      buf = await blob.arrayBuffer();
+    } catch (err) {
+      throw new NetworkError(
+        `Failed to read downloaded blob: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+        `The indexer (${this.indexerUrl}) may have returned a truncated response.`
+      );
+    }
+    return new Uint8Array(buf);
   }
 
   async computeRoot(data: Uint8Array): Promise<string> {
@@ -163,6 +180,11 @@ export class Storage {
     return normalizeHex(tree.rootHash());
   }
 
+  /**
+   * True if the root's header is retrievable. Transport errors (indexer down,
+   * timeout) are treated as not-found and return false — callers polling for
+   * finalization should retry rather than treat false as definitive.
+   */
   async exists(root: string): Promise<boolean> {
     const mod = await this.sdk();
     const indexer = new mod.Indexer(this.indexerUrl);
@@ -170,7 +192,7 @@ export class Storage {
     return !err && header != null;
   }
 
-  async raw(): Promise<StorageSdk> {
+  async raw(): Promise<unknown> {
     return this.sdk();
   }
 }
