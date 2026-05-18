@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { createOutput } from "../output.js";
 
 describe("createOutput", () => {
@@ -35,7 +35,11 @@ describe("createOutput", () => {
       noColor: true,
       write: (s) => lines.push(s),
     });
-    out.failure({ code: "CONFIG", message: "missing key", hint: "set ZEROG_PRIVATE_KEY" });
+    out.failure({
+      code: "CONFIG",
+      message: "missing key",
+      hint: "set ZEROG_PRIVATE_KEY",
+    });
     expect(lines.join("\n")).toContain("missing key");
     expect(lines.join("\n")).toContain("set ZEROG_PRIVATE_KEY");
   });
