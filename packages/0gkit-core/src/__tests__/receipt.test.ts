@@ -18,4 +18,10 @@ describe("Receipt", () => {
     expect(r.blockNumber).toBe(99n);
     expect(r.txHash).toBe("0xabc");
   });
+
+  it("rejects a receipt missing latencyMs (compile-time guard)", () => {
+    // @ts-expect-error latencyMs is required; this line must not compile
+    const _bad: Receipt = {};
+    void _bad;
+  });
 });
