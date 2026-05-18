@@ -9,7 +9,9 @@
     "url": "https://github.com/rajkaria/foundry.git",
     "directory": "packages/0gkit-core"
   },
-  "bugs": { "url": "https://github.com/rajkaria/foundry/issues" },
+  "bugs": {
+    "url": "https://github.com/rajkaria/foundry/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -20,7 +22,11 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -44,6 +50,14 @@
     "typescript": "^5.6.3",
     "vitest": "^2.1.8"
   },
-  "keywords": ["0g", "0g-network", "viem", "web3", "toolkit"],
-  "publishConfig": { "access": "public" }
+  "keywords": [
+    "0g",
+    "0g-network",
+    "viem",
+    "web3",
+    "toolkit"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

@@ -17,7 +17,7 @@ or an AI agent — designed to become the **default way anyone starts building o
 
 - **Neutral-first, Foundry-optional.** The toolkit must be the best standalone
   way to use 0G. A builder who never touches Foundry gets full value. Foundry is
-  a **separately-installed, clearly-demarcated plugin** surfaced *only* where a
+  a **separately-installed, clearly-demarcated plugin** surfaced _only_ where a
   genuine ownership / revenue / verifiable-receipt need arises — never woven into
   `init`, `doctor`, or the primitive packages.
 - **Become the defacto.** Beat the raw `@0gfoundation/*` SDKs on every DX axis:
@@ -85,7 +85,7 @@ not a convention.
 **`@0gkit/core`**
 
 - `networks`: `aristotle` `{ chainId: 16661, rpcUrl: "https://evmrpc.0g.ai",
-  explorer }`, `galileo` `{ testnet, faucet }`, `local`.
+explorer }`, `galileo` `{ testnet, faucet }`, `local`.
 - `createClient({ network, rpcUrl?, privateKey? }) → { public, wallet? }` (viem).
 - `Receipt` `{ txHash?, explorerUrl?, blockNumber?, latencyMs, attestation? }`.
 - `ZeroGError` base + `ConfigError`, `NetworkError`, `ChainError`,
@@ -184,7 +184,7 @@ packages; no builder-facing backend.
 
 Rationale: `VISION.md` itself flags on-ramp friction ("will contributors trust a
 wallet?"). Testnet-first + faucet + `doctor` is the answer, and it is exactly
-what makes the toolkit the natural default for *everyone* starting with 0G.
+what makes the toolkit the natural default for _everyone_ starting with 0G.
 
 ## 6. Multi-language reach
 

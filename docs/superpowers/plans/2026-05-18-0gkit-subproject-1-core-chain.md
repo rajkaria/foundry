@@ -53,6 +53,7 @@ packages/0gkit-chain/
 ## Task 1: Resolve npm scope and record the decision
 
 **Files:**
+
 - Create: `docs/superpowers/DECISIONS.md`
 
 - [ ] **Step 1: Probe candidate scopes on npm**
@@ -80,9 +81,10 @@ Create `docs/superpowers/DECISIONS.md`:
 
 ## D1 — npm scope (2026-05-18)
 
-Resolved scope: `@0gkit`  <!-- replace with the scope your Step 2 rule selected -->
+Resolved scope: `@0gkit` <!-- replace with the scope your Step 2 rule selected -->
 
 Probe results:
+
 - `npm view @0gkit/core` → <exit code / "E404 free">
 - `npm view @zerogkit/core` → <exit code / "E404 free">
 - `npm view zerog-core` → <exit code / "E404 free">
@@ -106,6 +108,7 @@ git commit -m "docs: record 0gkit npm scope decision (D1)"
 ## Task 2: Scaffold `@0gkit/core` package
 
 **Files:**
+
 - Create: `packages/0gkit-core/package.json`
 - Create: `packages/0gkit-core/tsconfig.json`
 - Create: `packages/0gkit-core/tsup.config.ts`
@@ -231,6 +234,7 @@ git commit -m "feat(0gkit-core): scaffold neutral core package"
 ## Task 3: `ZeroGError` taxonomy
 
 **Files:**
+
 - Create: `packages/0gkit-core/src/errors.ts`
 - Test: `packages/0gkit-core/src/__tests__/errors.test.ts`
 
@@ -350,6 +354,7 @@ git commit -m "feat(0gkit-core): add ZeroGError taxonomy with actionable hints"
 ## Task 4: Research + implement network presets
 
 **Files:**
+
 - Create: `packages/0gkit-core/src/networks.ts`
 - Test: `packages/0gkit-core/src/__tests__/networks.test.ts`
 - Modify: `docs/superpowers/DECISIONS.md` (append D2)
@@ -496,6 +501,7 @@ git commit -m "feat(0gkit-core): add verified network presets (D2 research recor
 ## Task 5: `Receipt` type
 
 **Files:**
+
 - Create: `packages/0gkit-core/src/receipt.ts`
 - Test: `packages/0gkit-core/src/__tests__/receipt.test.ts`
 
@@ -567,6 +573,7 @@ git commit -m "feat(0gkit-core): add Receipt envelope type"
 ## Task 6: `createClient` viem factory
 
 **Files:**
+
 - Create: `packages/0gkit-core/src/client.ts`
 - Test: `packages/0gkit-core/src/__tests__/client.test.ts`
 
@@ -580,8 +587,7 @@ import { createClient, buildChain } from "../client.js";
 import { networks } from "../networks.js";
 import { ConfigError } from "../errors.js";
 
-const TEST_PK =
-  "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+const TEST_PK = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
 describe("createClient", () => {
   it("builds a public client on aristotle (chain id 16661)", () => {
@@ -603,8 +609,9 @@ describe("createClient", () => {
   });
 
   it("throws ConfigError when the preset has no rpcUrl/chainId and none is passed", () => {
-    expect(() => buildChain({ ...networks.galileo, rpcUrl: undefined, chainId: undefined }))
-      .toThrowError(ConfigError);
+    expect(() =>
+      buildChain({ ...networks.galileo, rpcUrl: undefined, chainId: undefined })
+    ).toThrowError(ConfigError);
   });
 });
 ```
@@ -712,6 +719,7 @@ git commit -m "feat(0gkit-core): add createClient viem factory"
 ## Task 7: `@0gkit/core` public barrel + typecheck
 
 **Files:**
+
 - Modify: `packages/0gkit-core/src/index.ts`
 
 - [ ] **Step 1: Replace `packages/0gkit-core/src/index.ts` with the real barrel**
@@ -765,6 +773,7 @@ git commit -m "feat(0gkit-core): export public barrel"
 ## Task 8: Scaffold `@0gkit/chain` package
 
 **Files:**
+
 - Create: `packages/0gkit-chain/package.json`
 - Create: `packages/0gkit-chain/tsconfig.json`
 - Create: `packages/0gkit-chain/tsup.config.ts`
@@ -887,6 +896,7 @@ git commit -m "feat(0gkit-chain): scaffold chain helpers package"
 ## Task 9: `explorerUrl` + `attachExplorerUrl`
 
 **Files:**
+
 - Create: `packages/0gkit-chain/src/explorer.ts`
 - Test: `packages/0gkit-chain/src/__tests__/explorer.test.ts`
 
@@ -924,7 +934,10 @@ describe("explorerUrl", () => {
 
   it("strips a trailing slash on the explorer base", () => {
     expect(
-      explorerUrl({ ...withExplorer, explorer: "https://explorer.example/" }, { tx: "0x1" })
+      explorerUrl(
+        { ...withExplorer, explorer: "https://explorer.example/" },
+        { tx: "0x1" }
+      )
     ).toBe("https://explorer.example/tx/0x1");
   });
 
@@ -954,10 +967,7 @@ import { ConfigError, type NetworkPreset, type Receipt } from "@0gkit/core";
 export type ExplorerTarget = { tx: string } | { address: string };
 
 /** Build a block-explorer URL. Throws ConfigError if the network has none. */
-export function explorerUrl(
-  network: NetworkPreset,
-  target: ExplorerTarget
-): string {
+export function explorerUrl(network: NetworkPreset, target: ExplorerTarget): string {
   if (!network.explorer) {
     throw new ConfigError(
       `Network '${network.name}' has no block explorer configured.`,
@@ -975,10 +985,7 @@ export function explorerUrl(
  * when the network has an explorer. No-op (returns the receipt unchanged-shaped)
  * when there is no explorer or no txHash. Never throws.
  */
-export function attachExplorerUrl(
-  receipt: Receipt,
-  network: NetworkPreset
-): Receipt {
+export function attachExplorerUrl(receipt: Receipt, network: NetworkPreset): Receipt {
   if (!network.explorer || !receipt.txHash) return receipt;
   return {
     ...receipt,
@@ -1004,6 +1011,7 @@ git commit -m "feat(0gkit-chain): add explorerUrl + attachExplorerUrl"
 ## Task 10: `balance`
 
 **Files:**
+
 - Create: `packages/0gkit-chain/src/balance.ts`
 - Test: `packages/0gkit-chain/src/__tests__/balance.test.ts`
 
@@ -1084,6 +1092,7 @@ git commit -m "feat(0gkit-chain): add balance() with NetworkError wrapping"
 ## Task 11: `waitForReceipt`
 
 **Files:**
+
 - Create: `packages/0gkit-chain/src/receipt-wait.ts`
 - Test: `packages/0gkit-chain/src/__tests__/receipt-wait.test.ts`
 
@@ -1140,9 +1149,7 @@ describe("waitForReceipt", () => {
     const client = {
       network: net,
       public: {
-        waitForTransactionReceipt: vi
-          .fn()
-          .mockRejectedValue(new Error("reverted")),
+        waitForTransactionReceipt: vi.fn().mockRejectedValue(new Error("reverted")),
       },
     } as any;
     await expect(waitForReceipt(client, "0xabc")).rejects.toMatchObject({
@@ -1205,6 +1212,7 @@ git commit -m "feat(0gkit-chain): add waitForReceipt with explorer link + latenc
 ## Task 12: `faucet`
 
 **Files:**
+
 - Create: `packages/0gkit-chain/src/faucet.ts`
 - Test: `packages/0gkit-chain/src/__tests__/faucet.test.ts`
 
@@ -1357,6 +1365,7 @@ git commit -m "feat(0gkit-chain): add faucet() with honest no-endpoint fallback"
 ## Task 13: `@0gkit/chain` barrel + the CI neutrality boundary
 
 **Files:**
+
 - Modify: `packages/0gkit-chain/src/index.ts`
 - Create: `.dependency-cruiser.cjs` (repo root)
 - Create: `packages/0gkit-chain/src/__tests__/boundary.test.ts`
@@ -1365,11 +1374,7 @@ git commit -m "feat(0gkit-chain): add faucet() with honest no-endpoint fallback"
 - [ ] **Step 1: Replace `packages/0gkit-chain/src/index.ts` with the real barrel**
 
 ```ts
-export {
-  explorerUrl,
-  attachExplorerUrl,
-  type ExplorerTarget,
-} from "./explorer.js";
+export { explorerUrl, attachExplorerUrl, type ExplorerTarget } from "./explorer.js";
 export { balance } from "./balance.js";
 export { waitForReceipt } from "./receipt-wait.js";
 export { faucet } from "./faucet.js";
@@ -1396,7 +1401,10 @@ module.exports = {
   options: {
     doNotFollow: { path: "node_modules" },
     tsConfig: { fileName: "tsconfig.json" },
-    enhancedResolveOptions: { exportsFields: ["exports"], conditionNames: ["import", "types"] },
+    enhancedResolveOptions: {
+      exportsFields: ["exports"],
+      conditionNames: ["import", "types"],
+    },
   },
 };
 ```
@@ -1490,6 +1498,7 @@ git commit -m "feat(0gkit): enforce no-Foundry boundary for @0gkit/* in CI"
 ## Task 14: Wire both packages into CI
 
 **Files:**
+
 - Modify: `.github/workflows/ci.yml`
 
 - [ ] **Step 1: Add build/test/boundary steps to the `web` job**
@@ -1499,15 +1508,15 @@ immediately **after** the existing `- run: pnpm --filter @foundryprotocol/sdk te
 line and **before** `- run: pnpm typecheck`:
 
 ```yaml
-      - run: pnpm boundary:check
+- run: pnpm boundary:check
 
-      - run: pnpm --filter @0gkit/core build
+- run: pnpm --filter @0gkit/core build
 
-      - run: pnpm --filter @0gkit/core test
+- run: pnpm --filter @0gkit/core test
 
-      - run: pnpm --filter @0gkit/chain build
+- run: pnpm --filter @0gkit/chain build
 
-      - run: pnpm --filter @0gkit/chain test
+- run: pnpm --filter @0gkit/chain test
 ```
 
 - [ ] **Step 2: Verify the full pipeline locally**
@@ -1539,12 +1548,13 @@ git commit -m "ci: build, test, and boundary-check @0gkit/core + @0gkit/chain"
 ## Task 15: Standalone READMEs (defacto DX requires per-package docs)
 
 **Files:**
+
 - Create: `packages/0gkit-core/README.md`
 - Create: `packages/0gkit-chain/README.md`
 
 - [ ] **Step 1: Write `packages/0gkit-core/README.md`**
 
-```markdown
+````markdown
 # @0gkit/core
 
 Neutral 0G foundation: network presets, a viem client factory, the `Receipt`
@@ -1555,6 +1565,7 @@ envelope, and the `ZeroGError` taxonomy. Zero Foundry dependency — enforced in
 ```bash
 npm install @0gkit/core viem
 ```
+````
 
 ## Use
 
@@ -1572,7 +1583,8 @@ and `local` presets are fully resolved; `galileo` is testnet (see the repo's
 ## License
 
 MIT.
-```
+
+````
 
 - [ ] **Step 2: Write `packages/0gkit-chain/README.md`**
 
@@ -1586,7 +1598,7 @@ Neutral 0G chain helpers built on `@0gkit/core` + `viem`: `explorerUrl`,
 
 ```bash
 npm install @0gkit/chain @0gkit/core viem
-```
+````
 
 ## Use
 
@@ -1603,13 +1615,14 @@ console.log(receipt.explorerUrl); // present iff the network has a verified expl
 ## License
 
 MIT.
-```
+
+````
 
 - [ ] **Step 3: Format check the new docs**
 
 ```bash
 pnpm format:check
-```
+````
 
 Expected: exit 0 (run `pnpm format` first if needed).
 

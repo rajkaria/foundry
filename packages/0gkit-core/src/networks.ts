@@ -47,7 +47,11 @@ export const local: NetworkPreset = {
   testnet: true,
 };
 
-export const networks: Record<NetworkName, NetworkPreset> = { aristotle, galileo, local };
+export const networks: Record<NetworkName, NetworkPreset> = {
+  aristotle,
+  galileo,
+  local,
+};
 
 export function getNetwork(name: NetworkName): NetworkPreset {
   const preset = networks[name];

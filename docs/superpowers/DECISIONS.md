@@ -5,6 +5,7 @@
 Resolved scope: `@0gkit`
 
 Probe results:
+
 - `npm view @0gkit/core` → E404 free (exit:1, HTTP 404 Not Found)
 - `npm view @zerogkit/core` → E404 free (exit:1, HTTP 404 Not Found)
 - `npm view zerog-core` → E404 free (exit:1, HTTP 404 Not Found)

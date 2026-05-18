@@ -3,8 +3,7 @@ import { createClient, buildChain } from "../client.js";
 import { networks } from "../networks.js";
 import { ConfigError } from "../errors.js";
 
-const TEST_PK =
-  "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+const TEST_PK = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
 describe("createClient", () => {
   it("builds a public client on aristotle (chain id 16661)", () => {
@@ -33,8 +32,8 @@ describe("createClient", () => {
   });
 
   it("throws ConfigError for a malformed private key", () => {
-    expect(() =>
-      createClient({ network: "local", privateKey: "0x1234" })
-    ).toThrowError(ConfigError);
+    expect(() => createClient({ network: "local", privateKey: "0x1234" })).toThrowError(
+      ConfigError
+    );
   });
 });

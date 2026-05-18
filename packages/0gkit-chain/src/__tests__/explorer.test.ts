@@ -27,7 +27,10 @@ describe("explorerUrl", () => {
 
   it("strips a trailing slash on the explorer base", () => {
     expect(
-      explorerUrl({ ...withExplorer, explorer: "https://explorer.example/" }, { tx: "0x1" })
+      explorerUrl(
+        { ...withExplorer, explorer: "https://explorer.example/" },
+        { tx: "0x1" }
+      )
     ).toBe("https://explorer.example/tx/0x1");
     expect(
       explorerUrl(

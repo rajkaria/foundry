@@ -46,9 +46,7 @@ describe("waitForReceipt", () => {
     const client = {
       network: net,
       public: {
-        waitForTransactionReceipt: vi
-          .fn()
-          .mockRejectedValue(new Error("reverted")),
+        waitForTransactionReceipt: vi.fn().mockRejectedValue(new Error("reverted")),
       },
     } as any;
     await expect(waitForReceipt(client, "0xabc")).rejects.toMatchObject({

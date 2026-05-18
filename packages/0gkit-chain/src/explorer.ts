@@ -3,10 +3,7 @@ import { ConfigError, type NetworkPreset, type Receipt } from "@0gkit/core";
 export type ExplorerTarget = { tx: string } | { address: string };
 
 /** Build a block-explorer URL. Throws ConfigError if the network has none. */
-export function explorerUrl(
-  network: NetworkPreset,
-  target: ExplorerTarget
-): string {
+export function explorerUrl(network: NetworkPreset, target: ExplorerTarget): string {
   if (!network.explorer) {
     throw new ConfigError(
       `Network '${network.name}' has no block explorer configured.`,
@@ -24,10 +21,7 @@ export function explorerUrl(
  * when the network has an explorer. No-op (returns the receipt unchanged-shaped)
  * when there is no explorer or no txHash. Never throws.
  */
-export function attachExplorerUrl(
-  receipt: Receipt,
-  network: NetworkPreset
-): Receipt {
+export function attachExplorerUrl(receipt: Receipt, network: NetworkPreset): Receipt {
   if (!network.explorer || !receipt.txHash) return receipt;
   return {
     ...receipt,
