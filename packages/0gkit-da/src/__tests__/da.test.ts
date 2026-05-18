@@ -17,6 +17,27 @@ describe("DA.digest", () => {
     // and it must differ from the (buggy) object-view digest
     expect(da.digest(bytes)).not.toBe(da.digest({ 0: 1, 1: 2, 2: 3 }));
   });
+
+  it("digests a string as raw UTF-8 (matches the upstream SDK DA contract)", async () => {
+    const { keccak256, toHex } = await import("viem");
+    const da = new DA({});
+    const expected = keccak256(toHex(new TextEncoder().encode("hello")));
+    expect(da.digest("hello")).toBe(expected);
+    // and NOT the JSON-quoted form
+    const jsonQuoted = keccak256(toHex(new TextEncoder().encode('"hello"')));
+    expect(da.digest("hello")).not.toBe(jsonQuoted);
+  });
+
+  it("object digest still equals canonical-JSON keccak (on-chain anchor unchanged)", async () => {
+    const { keccak256, toHex } = await import("viem");
+    const core = await import("@0gkit/core");
+    const da = new DA({});
+    const obj = { b: 2, a: 1 };
+    expect(da.digest(obj)).toBe(core.digestJson(obj));
+    expect(da.digest(obj)).toBe(
+      keccak256(toHex(new TextEncoder().encode(core.canonicalJsonStringify(obj))))
+    );
+  });
 });
 
 describe("DA.publish", () => {

@@ -34,18 +34,20 @@ export class DA {
     this.fetchImpl = config.fetch ?? globalThis.fetch;
   }
 
-  /** Canonical wire bytes: raw for Uint8Array, else encoded canonical JSON. */
   private toBytes(payload: unknown): Uint8Array<ArrayBuffer> {
-    return payload instanceof Uint8Array
-      ? new Uint8Array(payload)
-      : new TextEncoder().encode(canonicalJsonStringify(payload));
+    if (payload instanceof Uint8Array) return new Uint8Array(payload);
+    if (typeof payload === "string") return new TextEncoder().encode(payload);
+    return new TextEncoder().encode(canonicalJsonStringify(payload));
   }
 
   /**
-   * Digest of the exact bytes that go on the wire. For objects/strings this
-   * equals digestJson(payload) (viem toHex(str) === toHex(utf8 bytes of str)),
-   * preserving byte-parity with the Foundry SDK reference; for a Uint8Array it
-   * is the keccak of the raw bytes (NOT the JSON object-view).
+   * keccak256 of the exact bytes that go on the wire:
+   * - object → keccak of the canonical-JSON encoding (identical to
+   *   @0gkit/core digestJson, the on-chain anchor)
+   * - string → keccak of the raw UTF-8 bytes
+   * - Uint8Array → keccak of the raw bytes
+   * This matches the upstream 0G storage/DA SDK's serialize+digest contract
+   * for all three payload kinds (objects, strings, bytes).
    */
   private digestOf(payload: unknown): Hex {
     return keccak256(toHex(this.toBytes(payload)));
