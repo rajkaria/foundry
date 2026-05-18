@@ -30,6 +30,29 @@ describe("parseEnvelope", () => {
   it("throws AttestationError on a bad shape", () => {
     expect(() => parseEnvelope({ kind: "x" })).toThrowError(AttestationError);
   });
+
+  it("rejects missing/invalid fields and non-finite numbers", () => {
+    const e = {
+      kind: "foundry/eval-result/v1",
+      forge: "0xdEAD000000000000000000000000000000000123",
+      scores: [0.1],
+      baseline: 0.5,
+      teeAttestation: "0x" + "ab".repeat(32),
+      coordinator: "0xCAFE000000000000000000000000000000000456",
+      timestamp: 1747200000,
+    } as Record<string, unknown>;
+    expect(() => parseEnvelope({ ...e, forge: 42 })).toThrowError(AttestationError);
+    expect(() => parseEnvelope({ ...e, timestamp: Number.NaN })).toThrowError(
+      AttestationError
+    );
+    expect(() => parseEnvelope({ ...e, baseline: Infinity })).toThrowError(
+      AttestationError
+    );
+    expect(() => parseEnvelope({ ...e, scores: [Number.NaN] })).toThrowError(
+      AttestationError
+    );
+    expect(() => parseEnvelope({ ...e, daRef: 7 })).toThrowError(AttestationError);
+  });
 });
 
 describe("digestEnvelope", () => {
@@ -80,6 +103,22 @@ describe("sign / recover / verify", () => {
     expect(r.ok).toBe(false);
     expect(r.checks.digest).toBe(false);
   });
+
+  it("fails verify on a malformed signature and never throws", async () => {
+    const signed = await signEnvelope(makeEnv(), generatePrivateKey());
+    const badSig = { ...signed, signature: "0xdeadbeef" as `0x${string}` };
+    const r = await verifyEnvelope(
+      badSig,
+      privateKeyToAccount(generatePrivateKey()).address
+    );
+    expect(r.ok).toBe(false);
+  });
+
+  it("signEnvelope throws AttestationError on a malformed private key", async () => {
+    await expect(signEnvelope(makeEnv(), "0x1234")).rejects.toMatchObject({
+      code: "ATTESTATION",
+    });
+  });
 });
 
 describe("reportEnvelope", () => {
@@ -89,5 +128,13 @@ describe("reportEnvelope", () => {
     expect(txt).toContain("foundry/eval-result/v1");
     expect(txt).toContain(signed.digest);
     expect(txt).toContain("scores");
+  });
+
+  it("renders the daRef line when present", async () => {
+    const signed = await signEnvelope(
+      { ...makeEnv(), daRef: "0g-da:blob_9" },
+      generatePrivateKey()
+    );
+    expect(reportEnvelope(signed)).toContain("0g-da:blob_9");
   });
 });

@@ -42,12 +42,17 @@ export function parseEnvelope(value: unknown): AttestationEnvelope {
   if (!e || typeof e !== "object") bad("not an object");
   if (e!.kind !== "foundry/eval-result/v1") bad("kind");
   if (typeof e!.forge !== "string") bad("forge");
-  if (!Array.isArray(e!.scores) || e!.scores.some((n) => typeof n !== "number"))
+  if (
+    !Array.isArray(e!.scores) ||
+    e!.scores.some((n) => typeof n !== "number" || !Number.isFinite(n))
+  )
     bad("scores");
-  if (typeof e!.baseline !== "number") bad("baseline");
+  if (typeof e!.baseline !== "number" || !Number.isFinite(e!.baseline))
+    bad("baseline");
   if (typeof e!.teeAttestation !== "string") bad("teeAttestation");
   if (typeof e!.coordinator !== "string") bad("coordinator");
-  if (typeof e!.timestamp !== "number") bad("timestamp");
+  if (typeof e!.timestamp !== "number" || !Number.isFinite(e!.timestamp))
+    bad("timestamp");
   if (e!.daRef !== undefined && typeof e!.daRef !== "string") bad("daRef");
   return e as AttestationEnvelope;
 }
@@ -66,11 +71,19 @@ export async function signEnvelope(
   const pk = (
     privateKey.startsWith("0x") ? privateKey : `0x${privateKey}`
   ) as Hex;
-  const signature = await sign({
-    hash: hashMessage({ raw: digest }),
-    privateKey: pk,
-    to: "hex",
-  });
+  let signature: Hex;
+  try {
+    signature = await sign({
+      hash: hashMessage({ raw: digest }),
+      privateKey: pk,
+      to: "hex",
+    });
+  } catch {
+    throw new AttestationError(
+      "signEnvelope: invalid privateKey.",
+      "Provide a 64-char hex private key (with or without 0x), e.g. the output of `cast wallet new`."
+    );
+  }
   return { envelope, digest, signature };
 }
 
@@ -83,7 +96,12 @@ export async function recoverSigner(
   });
 }
 
-/** Verify digest integrity AND signer identity. Never throws on a bad sig. */
+/**
+ * Verify digest integrity AND signer identity. Never throws (a malformed
+ * signature yields ok:false). When checks.digest is false, checks.signer is
+ * reported false without attempting recovery (signer check is skipped, not
+ * "wrong signer").
+ */
 export async function verifyEnvelope(
   signed: SignedEnvelope,
   expectedSigner: Address | string
