@@ -50,3 +50,25 @@ does NOT call a guessed retrieval URL. It ships:
 
 A network `verify(daRef)` is deferred until an official retrieval endpoint is
 verified; if/when it is, record it here and add it without breaking the API.
+
+## D4 — `@0gkit/cli` framework & Foundry-plugin load (2026-05-18)
+
+- **Arg parser:** `commander ^14` (a normal external npm dependency — the
+  dependency-cruiser `no-foundry-in-0gkit` rule only matches `^packages/|@foundryprotocol`,
+  so `commander` is unaffected). Chosen over yargs/cac for typed nested
+  subcommands, `exitOverride()` (clean test seam), and `optsWithGlobals()`.
+- **No `chalk`:** a ~15-line internal `src/output.ts` ANSI helper, NO_COLOR-
+  and non-TTY-aware. Avoids the chalk-v5 ESM/CJS hazard and keeps the neutral
+  surface dependency-light.
+- **Foundry plugin = opt-in, zero static edge:** `src/foundry-loader.ts`
+  resolves `@foundryprotocol/sdk` via a **computed specifier**
+  `["@foundryprotocol","sdk"].join("/")` passed to `import()`. dependency-cruiser
+  performs static analysis and cannot resolve a non-literal specifier, so **no
+  graph edge is created** and `pnpm boundary:check` stays green by construction
+  (not by reviewer vigilance). `0g foundry` is hidden from `--help` unless the
+  plugin resolves at runtime or `--foundry` is passed. This is the only place
+  Foundry may appear in the CLI (spec §2, §4). `boundary.test.ts` asserts the
+  rule still passes with the loader present.
+- **Version source:** `program.version()` uses a `VERSION = "0.1.0"` constant in
+  `program.ts` kept in lockstep with `package.json` (sub-project packages are
+  all `0.1.0`; revisit when semantic-release lands in sub-project 8).
