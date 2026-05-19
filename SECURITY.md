@@ -17,7 +17,7 @@ who wish to be credited once a fix is released.
 
 In scope — the neutral toolkit and its trust boundary:
 
-- `@0gkit/*` packages (Storage, Compute, DA, Attestation, CLI, MCP, React)
+- `@foundryprotocol/0gkit-*` packages (Storage, Compute, DA, Attestation, CLI, MCP, React)
 - `create-foundry-app`
 - The attestation verification path (digest integrity + signer recovery) is
   the highest-severity surface: a verification bypass is critical.
@@ -32,6 +32,6 @@ Out of scope:
 
 ## Supported versions
 
-The latest published minor of the linked `@0gkit/*` line receives security
+The latest published minor of the linked `@foundryprotocol/0gkit-*` line receives security
 fixes. Because the packages are version-linked, a security release bumps them
 together.

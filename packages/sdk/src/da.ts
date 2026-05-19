@@ -7,7 +7,7 @@
  * independently of any HTTP endpoint we run.
  *
  * Foundry-layer thin wrapper: the actual canonical-JSON digest + encoder REST
- * call now live in the neutral `@0gkit/da` package (single source of truth,
+ * call now live in the neutral `@foundryprotocol/0gkit-da` package (single source of truth,
  * shared by the CLI, MCP server, and playground). This module preserves the
  * `@foundryprotocol/sdk` public surface (`DAClient`, `DAError`,
  * `DAClientConfig`, `DAPublishResult`) and error type for backward compat.
@@ -26,7 +26,7 @@
  */
 
 import type { Hex } from "viem";
-import { DA, type DAConfig } from "@0gkit/da";
+import { DA, type DAConfig } from "@foundryprotocol/0gkit-da";
 
 export interface DAClientConfig {
   /** REST endpoint of the 0G DA encoder. */
@@ -64,7 +64,7 @@ export class DAClient {
       this.encoderUrl = config.encoderUrl.replace(/\/$/, "");
       daConfig.encoderUrl = this.encoderUrl;
     } else if (config.network === "galileo" || config.network === "aristotle") {
-      // Network → encoder-host resolution lives in exactly one place (@0gkit/da).
+      // Network → encoder-host resolution lives in exactly one place (@foundryprotocol/0gkit-da).
       daConfig.network = config.network;
     }
     this.da = new DA(daConfig);

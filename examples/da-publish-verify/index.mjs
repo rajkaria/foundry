@@ -1,6 +1,6 @@
 // da-publish-verify — publish a payload to 0G DA, then verify it.
 // Key-free: with no encoder configured, DA runs in deterministic local mode.
-import { DA } from "@0gkit/da";
+import { DA } from "@foundryprotocol/0gkit-da";
 
 const da = new DA({ network: "galileo" });
 

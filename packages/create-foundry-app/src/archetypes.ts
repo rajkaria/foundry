@@ -9,7 +9,7 @@
  * public demo Ingot.
  *
  * Archetype templates are the Foundry (ownership/revenue) path. The neutral
- * `@0gkit/*` quickstart lives behind `0g init` and the degit-able recipes in
+ * `@foundryprotocol/0gkit-*` quickstart lives behind `0g init` and the degit-able recipes in
  * `examples/` — see this package's README.
  */
 

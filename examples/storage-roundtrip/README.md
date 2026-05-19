@@ -1,7 +1,7 @@
 # storage-roundtrip
 
 Upload bytes to 0G Storage and download them back to prove the round-trip.
-**Neutral recipe** — `@0gkit/storage` only, no Foundry.
+**Neutral recipe** — `@foundryprotocol/0gkit-storage` only, no Foundry.
 
 ```bash
 npm install

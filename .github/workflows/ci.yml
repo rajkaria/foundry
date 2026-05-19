@@ -32,72 +32,22 @@ jobs:
 
       - run: pnpm lint
 
-      # @foundryprotocol/sdk now sits on @0gkit/* — its DTS build needs the
-      # neutral packages' type declarations available first.
-      - run: pnpm --filter @0gkit/core build
-
-      - run: pnpm --filter @0gkit/da build
-
+      # The neutral 0gkit toolkit now ships from npm
+      # (@foundryprotocol/0gkit-*, repo: rajkaria/0G-ai-kit). @foundryprotocol/sdk
+      # consumes it as a normal dependency — no workspace pre-build needed.
       - run: pnpm --filter @foundryprotocol/sdk build
 
       - run: pnpm --filter @foundryprotocol/sdk test
 
-      - run: pnpm boundary:check
-
-      - run: pnpm --filter @0gkit/core build
-
-      - run: pnpm --filter @0gkit/core test
-
-      - run: pnpm --filter @0gkit/chain build
-
-      - run: pnpm --filter @0gkit/chain test
-
-      - run: pnpm --filter @0gkit/da build
-
-      - run: pnpm --filter @0gkit/da test
-
-      - run: pnpm --filter @0gkit/attestation build
-
-      - run: pnpm --filter @0gkit/attestation test
-
-      - run: pnpm --filter @0gkit/storage build
-
-      - run: pnpm --filter @0gkit/storage test
-
-      - run: pnpm --filter @0gkit/compute build
-
-      - run: pnpm --filter @0gkit/compute test
-
-      - run: pnpm --filter @0gkit/react build
-
-      - run: pnpm --filter @0gkit/react test
-
-      - run: pnpm --filter @0gkit/cli build
-
-      - run: pnpm --filter @0gkit/cli test
-
-      - run: pnpm --filter @0gkit/mcp build
-
-      - run: pnpm --filter @0gkit/mcp test
-
       - run: pnpm --filter create-foundry-app build
 
       - run: pnpm --filter create-foundry-app test
-
-      - run: pnpm --filter @0gkit/da --filter @0gkit/attestation --filter @0gkit/storage --filter @0gkit/compute --filter @0gkit/cli --filter @0gkit/mcp --filter create-foundry-app --filter @0gkit/react --filter @0gkit/playground run coverage
 
       - run: pnpm examples:check
 
       - run: pnpm typecheck
 
       - run: pnpm build
-
-      # Playground golden-path smoke (spec §11.7): console renders,
-      # attestation verify runs live, copy-code works for all 4 forms.
-      # The Playwright webServer rebuilds + serves the production bundle.
-      - run: pnpm --filter @0gkit/playground exec playwright install --with-deps chromium
-
-      - run: pnpm --filter @0gkit/playground exec playwright test
 
   contracts:
     name: contracts · forge build + test
@@ -219,11 +169,6 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-
-      # SDK DTS build needs the neutral @0gkit/* type declarations first.
-      - run: pnpm --filter @0gkit/core build
-
-      - run: pnpm --filter @0gkit/da build
 
       - run: pnpm --filter @foundryprotocol/sdk build
 

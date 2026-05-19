@@ -29,17 +29,17 @@ standalone, publicly-published, fully-documented repository.
 
 ## 3. Package rename map
 
-| Old (`workspace:*` in Foundry) | New (npm, standalone repo)        |
-| ------------------------------ | --------------------------------- |
-| `@0gkit/core`                  | `@foundryprotocol/0gkit-core`     |
-| `@0gkit/chain`                 | `@foundryprotocol/0gkit-chain`    |
-| `@0gkit/storage`               | `@foundryprotocol/0gkit-storage`  |
-| `@0gkit/compute`               | `@foundryprotocol/0gkit-compute`  |
-| `@0gkit/da`                    | `@foundryprotocol/0gkit-da`       |
-| `@0gkit/attestation`           | `@foundryprotocol/0gkit-attestation` |
-| `@0gkit/cli`                   | `@foundryprotocol/0gkit-cli` (bin `0g`) |
-| `@0gkit/mcp`                   | `@foundryprotocol/0gkit-mcp`      |
-| `@0gkit/react`                 | `@foundryprotocol/0gkit-react`    |
+| Old (`workspace:*` in Foundry) | New (npm, standalone repo)                      |
+| ------------------------------ | ----------------------------------------------- |
+| `@0gkit/core`                  | `@foundryprotocol/0gkit-core`                   |
+| `@0gkit/chain`                 | `@foundryprotocol/0gkit-chain`                  |
+| `@0gkit/storage`               | `@foundryprotocol/0gkit-storage`                |
+| `@0gkit/compute`               | `@foundryprotocol/0gkit-compute`                |
+| `@0gkit/da`                    | `@foundryprotocol/0gkit-da`                     |
+| `@0gkit/attestation`           | `@foundryprotocol/0gkit-attestation`            |
+| `@0gkit/cli`                   | `@foundryprotocol/0gkit-cli` (bin `0g`)         |
+| `@0gkit/mcp`                   | `@foundryprotocol/0gkit-mcp`                    |
+| `@0gkit/react`                 | `@foundryprotocol/0gkit-react`                  |
 | `@0gkit/playground` (private)  | stays private, lives in new repo, not published |
 
 ## 4. Target structure — `rajkaria/0G-ai-kit`
@@ -95,10 +95,10 @@ churn). Internal cross-package deps use `workspace:*` again inside this repo.
 - **Token exposure.** The npm token was pasted in chat → used only as an
   ephemeral env var locally + an encrypted GitHub secret; never written to any
   committed file. User to rotate it post-cutover.
-- **Cross-repo dependency window.** Foundry only switches to npm deps *after*
+- **Cross-repo dependency window.** Foundry only switches to npm deps _after_
   publish succeeds, so there is no broken intermediate state on `main`.
 - **Build order in new repo.** `core` is the root dep; turbo `^build` ordering
-  + CI ensure `core` builds before dependents and `dts` has declarations.
+  - CI ensure `core` builds before dependents and `dts` has declarations.
 - **Neutrality.** Structurally guaranteed in the standalone repo (no
   `@foundryprotocol/*` source to import); boundary check retained for the
   `0gkit-*/src` import-direction invariant.

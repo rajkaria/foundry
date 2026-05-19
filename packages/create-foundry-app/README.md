@@ -47,8 +47,8 @@ ownership/revenue path.
 
 This scaffolder is the **Foundry (ownership/revenue) entrypoint**. For the
 neutral, Foundry-free quickstart use `0g init` from
-[`@0gkit/cli`](../0gkit-cli). Copy-paste-runnable recipes — both neutral
-`@0gkit/*` and Foundry-tagged — live in [`examples/`](../../examples) and are
+[`@foundryprotocol/0gkit-cli`](../0gkit-cli). Copy-paste-runnable recipes — both neutral
+`@foundryprotocol/0gkit-*` and Foundry-tagged — live in [`examples/`](../../examples) and are
 degit-able:
 
 ```bash

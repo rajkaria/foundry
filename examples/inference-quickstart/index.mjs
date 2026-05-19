@@ -1,6 +1,6 @@
 // inference-quickstart — run TEE inference through a 0G compute broker.
-// Neutral recipe — @0gkit/compute only, no Foundry.
-import { Compute } from "@0gkit/compute";
+// Neutral recipe — @foundryprotocol/0gkit-compute only, no Foundry.
+import { Compute } from "@foundryprotocol/0gkit-compute";
 
 const brokerKey = process.env.ZEROG_BROKER_KEY;
 if (!brokerKey) {

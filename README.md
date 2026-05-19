@@ -112,18 +112,18 @@ Detailed architecture: [`docs/03-tech-architecture.md`](./docs/03-tech-architect
 
 ## What's in this repo
 
-| Path                                                  | What                                                                                                                                      |
-| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| [`docs/`](./docs)                                     | The build spec, the brand, the design system, the architecture, the sprint plan, the enhancements menu, the real-vs-roadmap honesty table |
-| [`apps/web/`](./apps/web)                             | Next.js 16 — landing, app, dashboard, lineage graph, docs                                                                                 |
-| [`packages/sdk/`](./packages/sdk)                     | `@foundryprotocol/sdk` — install via `pnpm add @foundryprotocol/sdk`                                                                      |
-| [`packages/mcp-foundry/`](./packages/mcp-foundry)     | `@foundryprotocol/mcp` — MCP server, run via `npx @foundryprotocol/mcp` (Claude Desktop / Cursor / any MCP-capable agent)                 |
-| [`packages/0gkit-*/`](./packages)                     | **`@0gkit/*`** — the neutral 0G builder toolkit (core, chain, storage, compute, da, attestation, cli, mcp, react). No Foundry dependency. |
-| [`apps/playground/`](./apps/playground)               | `@0gkit/playground` — zero-setup web console; copy working code in CLI / TS / curl / MCP form                                             |
-| [`packages/indexer/`](./packages/indexer)             | TypeScript indexer feeding the dashboard                                                                                                  |
-| [`packages/design-tokens/`](./packages/design-tokens) | Color, type, motion, spacing tokens                                                                                                       |
-| [`contracts/`](./contracts)                           | Solidity (Foundry toolkit). 6 contracts. 100% line coverage.                                                                              |
-| [`eval/`](./eval)                                     | Python attribution coordinator. TEE-aware.                                                                                                |
+| Path                                                  | What                                                                                                                                                      |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`docs/`](./docs)                                     | The build spec, the brand, the design system, the architecture, the sprint plan, the enhancements menu, the real-vs-roadmap honesty table                 |
+| [`apps/web/`](./apps/web)                             | Next.js 16 — landing, app, dashboard, lineage graph, docs                                                                                                 |
+| [`packages/sdk/`](./packages/sdk)                     | `@foundryprotocol/sdk` — install via `pnpm add @foundryprotocol/sdk`                                                                                      |
+| [`packages/mcp-foundry/`](./packages/mcp-foundry)     | `@foundryprotocol/mcp` — MCP server, run via `npx @foundryprotocol/mcp` (Claude Desktop / Cursor / any MCP-capable agent)                                 |
+| [`packages/0gkit-*/`](./packages)                     | **`@foundryprotocol/0gkit-*`** — the neutral 0G builder toolkit (core, chain, storage, compute, da, attestation, cli, mcp, react). No Foundry dependency. |
+| [`apps/playground/`](./apps/playground)               | `@foundryprotocol/0gkit-playground` — zero-setup web console; copy working code in CLI / TS / curl / MCP form                                             |
+| [`packages/indexer/`](./packages/indexer)             | TypeScript indexer feeding the dashboard                                                                                                                  |
+| [`packages/design-tokens/`](./packages/design-tokens) | Color, type, motion, spacing tokens                                                                                                                       |
+| [`contracts/`](./contracts)                           | Solidity (Foundry toolkit). 6 contracts. 100% line coverage.                                                                                              |
+| [`eval/`](./eval)                                     | Python attribution coordinator. TEE-aware.                                                                                                                |
 
 ## Documentation
 
@@ -288,7 +288,7 @@ If you want to improve the toolkit — contributions are very welcome:
   and the [Recipes](https://github.com/rajkaria/foundry/discussions/categories/recipes)
   category for proposing `examples/` recipes.
 - **[CHANGELOG.md](./CHANGELOG.md)** — the public, semver changelog (the
-  `@0gkit/*` packages are version-linked).
+  `@foundryprotocol/0gkit-*` packages are version-linked).
 - **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** ·
   **[SECURITY.md](./SECURITY.md)** (report vulnerabilities privately).
 

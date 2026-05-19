@@ -1,7 +1,7 @@
 # inference-quickstart
 
 Run TEE-attested inference through a 0G compute broker.
-**Neutral recipe** — `@0gkit/compute` only, no Foundry.
+**Neutral recipe** — `@foundryprotocol/0gkit-compute` only, no Foundry.
 
 ```bash
 npm install

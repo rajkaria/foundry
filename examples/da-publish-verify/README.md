@@ -1,7 +1,7 @@
 # da-publish-verify
 
 Publish a JSON payload to 0G Data Availability and verify it round-trips.
-**Neutral recipe** — `@0gkit/da` only, no Foundry.
+**Neutral recipe** — `@foundryprotocol/0gkit-da` only, no Foundry.
 
 ```bash
 npm install

@@ -10,7 +10,7 @@ issue (label `good-first-issue`) before you start so we don't double up.
 ## Docs & DX
 
 1. **Add a curl + CLI block to every neutral package README.**
-   Spec §9 wants each `@0gkit/*` README to show the TS **and** the
+   Spec §9 wants each `@foundryprotocol/0gkit-*` README to show the TS **and** the
    curl/CLI path plus the documented escape hatch. Several are TS-only.
    Start: `packages/0gkit-*/README.md`. Done: each README has all three.
 
@@ -25,17 +25,17 @@ issue (label `good-first-issue`) before you start so we don't double up.
 
 ## Primitives
 
-4. **`@0gkit/storage` exists-with-retry helper.**
+4. **`@foundryprotocol/0gkit-storage` exists-with-retry helper.**
    `exists()` treats transport errors as not-found by design; add an
    opt-in `waitForRoot(root, { timeoutMs })` that polls. Start:
    `packages/0gkit-storage/src/storage.ts`. Done: unit-tested, ≥80% cov.
 
-5. **`@0gkit/da` payload size guard.**
+5. **`@foundryprotocol/0gkit-da` payload size guard.**
    Surface a clear `ZeroGError` with a remedy when a payload exceeds the
    encoder limit, instead of a generic network failure. Start:
    `packages/0gkit-da/src/da.ts`.
 
-6. **`@0gkit/attestation` fixture corpus.**
+6. **`@foundryprotocol/0gkit-attestation` fixture corpus.**
    Add more tampered-envelope fixtures (mutated `scores`, swapped
    `coordinator`, truncated signature) — each must be rejected with the
    correct failing check. Start:
