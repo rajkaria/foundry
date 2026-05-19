@@ -27,6 +27,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   type Tool,
+  type CallToolResult,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
@@ -161,22 +162,31 @@ function jsonText(payload: unknown): string {
   return JSON.stringify(payload, null, 2);
 }
 
-export function createFoundryMcpServer(options: FoundryMcpOptions = {}): Server {
+export interface ToolCallResult {
+  content: Array<{ type: "text"; text: string }>;
+  isError?: boolean;
+}
+
+/**
+ * The Foundry capability set, decoupled from the MCP transport. This is the
+ * adapter `@0gkit/mcp` loads (via a computed specifier) as its opt-in Foundry
+ * plugin — neutral by construction: `@0gkit/*` never imports this statically.
+ */
+export interface FoundryMcpPlugin {
+  name: string;
+  tools: Tool[];
+  call(name: string, args: Record<string, unknown>): Promise<ToolCallResult>;
+}
+
+export function foundryMcpPlugin(options: FoundryMcpOptions = {}): FoundryMcpPlugin {
   const baseUrl = options.baseUrl ?? DEFAULT_BASE;
   const fetchImpl = options.fetch ?? globalThis.fetch;
   const defaultIngotId = options.defaultIngotId;
 
-  const server = new Server(
-    { name: "foundry", version: "0.1.0" },
-    { capabilities: { tools: {} } }
-  );
-
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: TOOLS,
-  }));
-
-  server.setRequestHandler(CallToolRequestSchema, async (req) => {
-    const { name, arguments: rawArgs } = req.params;
+  async function call(
+    name: string,
+    rawArgs: Record<string, unknown>
+  ): Promise<ToolCallResult> {
     const args = rawArgs ?? {};
 
     try {
@@ -332,7 +342,28 @@ export function createFoundryMcpServer(options: FoundryMcpOptions = {}): Server 
         isError: true,
       };
     }
-  });
+  }
+
+  return { name: "foundry", tools: TOOLS, call };
+}
+
+export function createFoundryMcpServer(options: FoundryMcpOptions = {}): Server {
+  const plugin = foundryMcpPlugin(options);
+
+  const server = new Server(
+    { name: "foundry", version: "0.1.0" },
+    { capabilities: { tools: {} } }
+  );
+
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({
+    tools: plugin.tools,
+  }));
+
+  server.setRequestHandler(
+    CallToolRequestSchema,
+    async (req) =>
+      (await plugin.call(req.params.name, req.params.arguments ?? {})) as CallToolResult
+  );
 
   return server;
 }
