@@ -169,8 +169,8 @@ export interface ToolCallResult {
 
 /**
  * The Foundry capability set, decoupled from the MCP transport. This is the
- * adapter `@0gkit/mcp` loads (via a computed specifier) as its opt-in Foundry
- * plugin — neutral by construction: `@0gkit/*` never imports this statically.
+ * adapter `@foundryprotocol/0gkit-mcp` loads (via a computed specifier) as its opt-in Foundry
+ * plugin — neutral by construction: `@foundryprotocol/0gkit-*` never imports this statically.
  */
 export interface FoundryMcpPlugin {
   name: string;

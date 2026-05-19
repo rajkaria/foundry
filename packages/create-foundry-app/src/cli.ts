@@ -6,7 +6,7 @@
  *   npm create foundry-app@latest my-app -- --archetype B --network galileo
  *   npm create foundry-app@latest my-demo -- --demo      # one-command live demo
  *
- * The neutral, Foundry-free path is `0g init` (@0gkit/cli); the degit-able
+ * The neutral, Foundry-free path is `0g init` (@foundryprotocol/0gkit-cli); the degit-able
  * recipes live in `examples/`. This scaffolder is the Foundry
  * (ownership/revenue) entrypoint.
  */

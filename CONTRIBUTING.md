@@ -1,7 +1,7 @@
 # Contributing
 
 Thanks for helping make **0gkit** the defacto toolkit for building on 0G.
-This repo is a pnpm + turbo monorepo: the neutral, publishable `@0gkit/*`
+This repo is a pnpm + turbo monorepo: the neutral, publishable `@foundryprotocol/0gkit-*`
 packages live in `packages/`, and an optional Foundry layer sits on top of
 them. Almost all contributions belong in the neutral layer.
 
@@ -22,8 +22,8 @@ A green local run of the above is the same gate CI enforces.
 
 ## The neutrality invariant (read this first)
 
-`@0gkit/*` is **neutral**: nothing under `packages/0gkit-*/src` may import
-`@foundryprotocol/*` or any non-`@0gkit/*` workspace package. Foundry depends
+`@foundryprotocol/0gkit-*` is **neutral**: nothing under `packages/0gkit-*/src` may import
+`@foundryprotocol/*` or any non-`@foundryprotocol/0gkit-*` workspace package. Foundry depends
 on 0gkit, never the reverse. This is not a style preference — it is enforced
 mechanically:
 
@@ -41,7 +41,7 @@ Work lands in **dependency-ordered sub-projects**, one per branch/PR:
 
 1. Branch off the latest `origin/main`.
 2. Implement with tests. Neutral packages target **≥80% line coverage**;
-   trust-critical code (`@0gkit/attestation`) is held to a higher bar with
+   trust-critical code (`@foundryprotocol/0gkit-attestation`) is held to a higher bar with
    valid **and** tampered fixtures.
 3. Get the full local gate green (the TL;DR block).
 4. Add a changeset (`pnpm changeset`) for any change to a published package.
@@ -64,7 +64,7 @@ Every PR that changes a published package **must include a changeset**:
 pnpm changeset   # pick packages, pick semver bump, write the changelog line
 ```
 
-The `@0gkit/*` packages are version-**linked** (they move together). On merge
+The `@foundryprotocol/0gkit-*` packages are version-**linked** (they move together). On merge
 to `main`, the Release workflow opens a **Version Packages** PR; merging that
 PR publishes to npm and writes each package's `CHANGELOG.md`. The curated
 human-readable history lives in the root [`CHANGELOG.md`](./CHANGELOG.md).

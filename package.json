@@ -19,7 +19,6 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "boundary:check": "depcruise \"packages/0gkit-*/src\" --config .dependency-cruiser.cjs",
     "examples:check": "node scripts/check-examples.mjs",
     "changeset": "changeset",
     "version-packages": "changeset version",
@@ -30,7 +29,6 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.10",
-    "dependency-cruiser": "^16.0.0",
     "next": "^16.0.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.8.0",

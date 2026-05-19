@@ -9,7 +9,7 @@ cp .env.example .env   # fill in if the recipe needs a key
 npm start
 ```
 
-## Neutral recipes (the default path — `@0gkit/*`)
+## Neutral recipes (the default path — `@foundryprotocol/0gkit-*`)
 
 | Recipe                                         | What it shows                                                          |
 | ---------------------------------------------- | ---------------------------------------------------------------------- |
@@ -17,7 +17,7 @@ npm start
 | [`storage-roundtrip`](storage-roundtrip)       | Upload bytes to 0G Storage and download them back.                     |
 | [`inference-quickstart`](inference-quickstart) | Run TEE inference through a 0G compute broker.                         |
 
-These import only `@0gkit/*` — no Foundry, no ownership layer. This is the
+These import only `@foundryprotocol/0gkit-*` — no Foundry, no ownership layer. This is the
 recommended starting point.
 
 ## Foundry recipes — the ownership / revenue path

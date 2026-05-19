@@ -94,8 +94,8 @@
     }
   },
   "dependencies": {
-    "@0gkit/core": "workspace:*",
-    "@0gkit/da": "workspace:*",
+    "@foundryprotocol/0gkit-core": "^0.1.0",
+    "@foundryprotocol/0gkit-da": "^0.1.0",
     "viem": "^2.21.0"
   },
   "keywords": [

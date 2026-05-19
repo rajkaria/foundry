@@ -19,8 +19,8 @@ export default defineConfig({
   sourcemap: true,
   target: "es2022",
   external: [
-    "@0gkit/core",
-    "@0gkit/da",
+    "@foundryprotocol/0gkit-core",
+    "@foundryprotocol/0gkit-da",
     "viem",
     "ethers",
     "@0gfoundation/0g-storage-ts-sdk",

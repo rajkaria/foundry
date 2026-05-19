@@ -19,7 +19,7 @@
 
 import { type Hex, isHex, recoverAddress, hashMessage, type Address } from "viem";
 import { sign } from "viem/accounts";
-import { digestJson } from "@0gkit/core";
+import { digestJson } from "@foundryprotocol/0gkit-core";
 
 export interface AttestationEnvelope {
   kind: "foundry/eval-result/v1";
@@ -46,7 +46,7 @@ export interface SignedEnvelope {
 
 /**
  * Canonicalise + hash an envelope. The same logical envelope → same digest.
- * Delegates to the neutral `@0gkit/core` canonical-JSON digest so the SDK,
+ * Delegates to the neutral `@foundryprotocol/0gkit-core` canonical-JSON digest so the SDK,
  * CLI, MCP server, and the on-chain anchor all agree byte-for-byte.
  */
 export function digestEnvelope(envelope: AttestationEnvelope): Hex {

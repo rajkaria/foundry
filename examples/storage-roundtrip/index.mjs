@@ -1,6 +1,6 @@
 // storage-roundtrip — upload bytes to 0G Storage and download them back.
 // Needs a funded Galileo key (the upload is an on-chain tx).
-import { Storage } from "@0gkit/storage";
+import { Storage } from "@foundryprotocol/0gkit-storage";
 
 const privateKey = process.env.ZEROG_PRIVATE_KEY;
 if (!privateKey) {

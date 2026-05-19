@@ -6,7 +6,7 @@
 
 ## Sub-project / area
 
-<!-- e.g. "@0gkit/storage", "playground", "docs", or the roadmap sub-project. -->
+<!-- e.g. "@foundryprotocol/0gkit-storage", "playground", "docs", or the roadmap sub-project. -->
 
 ## Checklist
 

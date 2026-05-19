@@ -1,12 +1,14 @@
 name: Release
 
-# Coordinated versioning + npm publish for the neutral @0gkit/* packages
-# (and create-foundry-app), driven by changesets. On a push to main:
+# Coordinated versioning + npm publish for create-foundry-app, driven by
+# changesets. On a push to main:
 #   - if there are pending changesets → open/update a "Version Packages" PR
 #   - if versions are bumped + an NPM_TOKEN is configured → publish to npm
 # This is intentionally NOT part of the CI gate (ci.yml). It degrades
-# gracefully: with no NPM_TOKEN it only maintains the Version PR, so main
-# stays green before npm publishing is wired up.
+# gracefully: with no NPM_TOKEN it only maintains the Version PR.
+#
+# The neutral 0gkit toolkit was extracted to its own repo
+# (rajkaria/0G-ai-kit) and publishes @foundryprotocol/0gkit-* from there.
 
 on:
   push:
@@ -42,8 +44,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # The neutral packages' DTS chain must build before publish/version.
-      - run: pnpm --filter "@0gkit/*" build
+      - run: pnpm --filter create-foundry-app build
 
       - id: npmtoken
         run: echo "has=${{ secrets.NPM_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
