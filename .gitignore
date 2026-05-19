@@ -59,6 +59,11 @@ Thumbs.db
 .cache/
 coverage/
 
+# Playwright (apps/playground e2e)
+playwright-report/
+test-results/
+.playwright/
+
 # Secrets — never commit
 *.pem
 *.key

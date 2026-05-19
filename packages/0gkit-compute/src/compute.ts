@@ -50,9 +50,18 @@ export class Compute {
   private async loadBrokerMod(): Promise<{
     createZGComputeNetworkBroker: (signer: unknown) => Promise<unknown>;
   }> {
+    // The optional broker SDK is resolved at runtime, never bundled. The
+    // specifier is a variable *and* carries bundler-ignore magic comments so
+    // every toolchain leaves it alone: esbuild/vite skip the unresolvable
+    // `import(var)`, vitest consumers don't try to resolve a peer that isn't
+    // installed, and Turbopack (the playground's bundler) honours
+    // `turbopackIgnore` instead of hard-failing on a dynamic specifier.
     const load =
       this.cfg.loadBroker ??
-      ((name: string) => import(name as string) as Promise<unknown>);
+      ((name: string) =>
+        import(
+          /* webpackIgnore: true */ /* turbopackIgnore: true */ /* @vite-ignore */ name as string
+        ) as Promise<unknown>);
     try {
       return (await load(PKG_NEW)) as never;
     } catch {

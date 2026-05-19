@@ -68,6 +68,10 @@ jobs:
 
       - run: pnpm --filter @0gkit/compute test
 
+      - run: pnpm --filter @0gkit/react build
+
+      - run: pnpm --filter @0gkit/react test
+
       - run: pnpm --filter @0gkit/cli build
 
       - run: pnpm --filter @0gkit/cli test
@@ -80,13 +84,20 @@ jobs:
 
       - run: pnpm --filter create-foundry-app test
 
-      - run: pnpm --filter @0gkit/da --filter @0gkit/attestation --filter @0gkit/storage --filter @0gkit/compute --filter @0gkit/cli --filter @0gkit/mcp --filter create-foundry-app run coverage
+      - run: pnpm --filter @0gkit/da --filter @0gkit/attestation --filter @0gkit/storage --filter @0gkit/compute --filter @0gkit/cli --filter @0gkit/mcp --filter create-foundry-app --filter @0gkit/react --filter @0gkit/playground run coverage
 
       - run: pnpm examples:check
 
       - run: pnpm typecheck
 
       - run: pnpm build
+
+      # Playground golden-path smoke (spec §11.7): console renders,
+      # attestation verify runs live, copy-code works for all 4 forms.
+      # The Playwright webServer rebuilds + serves the production bundle.
+      - run: pnpm --filter @0gkit/playground exec playwright install --with-deps chromium
+
+      - run: pnpm --filter @0gkit/playground exec playwright test
 
   contracts:
     name: contracts · forge build + test
