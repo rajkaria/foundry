@@ -76,7 +76,13 @@ jobs:
 
       - run: pnpm --filter @0gkit/mcp test
 
-      - run: pnpm --filter @0gkit/da --filter @0gkit/attestation --filter @0gkit/storage --filter @0gkit/compute --filter @0gkit/cli --filter @0gkit/mcp run coverage
+      - run: pnpm --filter create-foundry-app build
+
+      - run: pnpm --filter create-foundry-app test
+
+      - run: pnpm --filter @0gkit/da --filter @0gkit/attestation --filter @0gkit/storage --filter @0gkit/compute --filter @0gkit/cli --filter @0gkit/mcp --filter create-foundry-app run coverage
+
+      - run: pnpm examples:check
 
       - run: pnpm typecheck
 
