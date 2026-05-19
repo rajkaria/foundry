@@ -3,17 +3,14 @@
  *
  * Attribution receipts (the score vector emitted by the eval coordinator) are
  * the most security-sensitive artefacts in the protocol. They're posted to
- * 0G DA so that:
+ * 0G DA so that anyone can replay them and the signed envelope is recoverable
+ * independently of any HTTP endpoint we run.
  *
- *   - Anyone can replay them.
- *   - The receipt is cheaper to publish than calldata on Aristotle.
- *   - A signed envelope is recoverable independently of any HTTP endpoint we run.
- *
- * 0G DA does not yet ship a canonical TS SDK; this module talks to the
- * encoder via REST. When the DA endpoint isn't configured, the client
- * degrades to a content-addressed digest so callers can keep working
- * (and we can wire the real DA call as soon as the endpoint is published
- * for a given environment).
+ * Foundry-layer thin wrapper: the actual canonical-JSON digest + encoder REST
+ * call now live in the neutral `@0gkit/da` package (single source of truth,
+ * shared by the CLI, MCP server, and playground). This module preserves the
+ * `@foundryprotocol/sdk` public surface (`DAClient`, `DAError`,
+ * `DAClientConfig`, `DAPublishResult`) and error type for backward compat.
  *
  * @example
  * ```ts
@@ -28,10 +25,8 @@
  * ```
  */
 
-import { keccak256, toHex, type Hex } from "viem";
-
-const ARISTOTLE_DA_ENCODER = "https://da-encoder.0g.network";
-const GALILEO_DA_ENCODER = "https://da-encoder-testnet.0g.ai";
+import type { Hex } from "viem";
+import { DA, type DAConfig } from "@0gkit/da";
 
 export interface DAClientConfig {
   /** REST endpoint of the 0G DA encoder. */
@@ -60,18 +55,19 @@ export interface DAPublishResult {
 export class DAClient {
   readonly encoderUrl?: string;
   readonly apiKey?: string;
-  private readonly fetchImpl: typeof fetch;
+  private readonly da: DA;
 
   constructor(config: DAClientConfig = {}) {
+    this.apiKey = config.apiKey;
+    const daConfig: DAConfig = { apiKey: this.apiKey, fetch: config.fetch };
     if (config.encoderUrl) {
       this.encoderUrl = config.encoderUrl.replace(/\/$/, "");
-    } else if (config.network === "galileo") {
-      this.encoderUrl = GALILEO_DA_ENCODER;
-    } else if (config.network === "aristotle") {
-      this.encoderUrl = ARISTOTLE_DA_ENCODER;
+      daConfig.encoderUrl = this.encoderUrl;
+    } else if (config.network === "galileo" || config.network === "aristotle") {
+      // Network → encoder-host resolution lives in exactly one place (@0gkit/da).
+      daConfig.network = config.network;
     }
-    this.apiKey = config.apiKey;
-    this.fetchImpl = config.fetch ?? globalThis.fetch.bind(globalThis);
+    this.da = new DA(daConfig);
   }
 
   /**
@@ -80,7 +76,7 @@ export class DAClient {
    * if DA isn't configured yet.
    */
   digest(payload: unknown): Hex {
-    return keccak256(toHex(serialize(payload)));
+    return this.da.digest(payload);
   }
 
   /**
@@ -89,45 +85,21 @@ export class DAClient {
    * mode when no encoder is configured.
    */
   async publish(payload: unknown): Promise<DAPublishResult> {
-    const start = Date.now();
-    const data = serialize(payload);
-    const digest = keccak256(toHex(data));
-
-    if (!this.encoderUrl) {
-      return { digest, mode: "local", latencyMs: Date.now() - start };
-    }
-
     try {
-      const headers: Record<string, string> = {
-        "content-type": "application/octet-stream",
-      };
-      if (this.apiKey) headers.authorization = `Bearer ${this.apiKey}`;
-      const res = await this.fetchImpl(`${this.encoderUrl}/blob`, {
-        method: "POST",
-        headers,
-        // Fetch's BodyInit accepts ArrayBuffer; we narrow to a fresh ArrayBuffer
-        // (not ArrayBufferLike) to satisfy strict TypeScript across runtimes.
-        body: toArrayBuffer(data),
-      });
-      if (!res.ok) {
-        throw new DAError(res.status, await res.text().catch(() => ""));
-      }
-      const body = (await res.json().catch(() => ({}))) as {
-        blobId?: string;
-        ref?: string;
-      };
+      const r = await this.da.publish(payload);
       return {
-        digest,
-        mode: "live",
-        blobId: body.blobId,
-        daRef: body.ref ?? body.blobId,
-        latencyMs: Date.now() - start,
+        digest: r.digest,
+        mode: r.mode,
+        blobId: r.blobId,
+        daRef: r.daRef,
+        latencyMs: r.latencyMs,
       };
     } catch (err) {
-      // We keep the digest deterministic so the caller can still on-chain
-      // anchor the envelope; we surface the failure so retries are possible.
-      if (err instanceof DAError) throw err;
-      throw new DAError(0, err instanceof Error ? err.message : String(err));
+      // Preserve the historical `DAError` type + "<status>" message so
+      // existing callers / tests keep working unchanged.
+      const msg = err instanceof Error ? err.message : String(err);
+      const status = Number(/HTTP (\d{3})/.exec(msg)?.[1] ?? 0);
+      throw new DAError(status, msg);
     }
   }
 }
@@ -140,30 +112,4 @@ export class DAError extends Error {
     super(`[foundry-sdk:da] ${status} ${body.slice(0, 200)}`);
     this.name = "DAError";
   }
-}
-
-function toArrayBuffer(u8: Uint8Array): ArrayBuffer {
-  const out = new ArrayBuffer(u8.byteLength);
-  new Uint8Array(out).set(u8);
-  return out;
-}
-
-function serialize(payload: unknown): Uint8Array {
-  if (payload instanceof Uint8Array) return payload;
-  if (typeof payload === "string") return new TextEncoder().encode(payload);
-  return new TextEncoder().encode(canonicalJsonStringify(payload));
-}
-
-/** Sort-keys JSON stringify so the same logical payload produces the same digest. */
-function canonicalJsonStringify(value: unknown): string {
-  if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) {
-    return `[${value.map(canonicalJsonStringify).join(",")}]`;
-  }
-  const keys = Object.keys(value as Record<string, unknown>).sort();
-  const entries = keys.map(
-    (k) =>
-      `${JSON.stringify(k)}:${canonicalJsonStringify((value as Record<string, unknown>)[k])}`
-  );
-  return `{${entries.join(",")}}`;
 }

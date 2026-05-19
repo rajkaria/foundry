@@ -94,6 +94,8 @@
     }
   },
   "dependencies": {
+    "@0gkit/core": "workspace:*",
+    "@0gkit/da": "workspace:*",
     "viem": "^2.21.0"
   },
   "keywords": [

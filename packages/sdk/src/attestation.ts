@@ -17,16 +17,9 @@
  * `WalletClient`, or a raw 32-byte private key (server-side).
  */
 
-import {
-  keccak256,
-  toHex,
-  type Hex,
-  isHex,
-  recoverAddress,
-  hashMessage,
-  type Address,
-} from "viem";
+import { type Hex, isHex, recoverAddress, hashMessage, type Address } from "viem";
 import { sign } from "viem/accounts";
+import { digestJson } from "@0gkit/core";
 
 export interface AttestationEnvelope {
   kind: "foundry/eval-result/v1";
@@ -51,9 +44,13 @@ export interface SignedEnvelope {
   signature: Hex;
 }
 
-/** Canonicalise + hash an envelope. The same logical envelope → same digest. */
+/**
+ * Canonicalise + hash an envelope. The same logical envelope → same digest.
+ * Delegates to the neutral `@0gkit/core` canonical-JSON digest so the SDK,
+ * CLI, MCP server, and the on-chain anchor all agree byte-for-byte.
+ */
 export function digestEnvelope(envelope: AttestationEnvelope): Hex {
-  return keccak256(toHex(canonicalJsonStringify(envelope)));
+  return digestJson(envelope);
 }
 
 /** Sign an envelope with a raw private key (server-side coordinator). */
@@ -118,17 +115,4 @@ function encodeSignature(sig: { r: Hex; s: Hex; v?: bigint; yParity?: number }):
       ? Number(sig.v).toString(16).padStart(2, "0")
       : ((sig.yParity ?? 0) + 27).toString(16).padStart(2, "0");
   return `0x${r}${s}${v}` as Hex;
-}
-
-function canonicalJsonStringify(value: unknown): string {
-  if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) {
-    return `[${value.map(canonicalJsonStringify).join(",")}]`;
-  }
-  const keys = Object.keys(value as Record<string, unknown>).sort();
-  const entries = keys.map(
-    (k) =>
-      `${JSON.stringify(k)}:${canonicalJsonStringify((value as Record<string, unknown>)[k])}`
-  );
-  return `{${entries.join(",")}}`;
 }

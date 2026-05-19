@@ -32,6 +32,12 @@ jobs:
 
       - run: pnpm lint
 
+      # @foundryprotocol/sdk now sits on @0gkit/* — its DTS build needs the
+      # neutral packages' type declarations available first.
+      - run: pnpm --filter @0gkit/core build
+
+      - run: pnpm --filter @0gkit/da build
+
       - run: pnpm --filter @foundryprotocol/sdk build
 
       - run: pnpm --filter @foundryprotocol/sdk test
@@ -196,6 +202,11 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+
+      # SDK DTS build needs the neutral @0gkit/* type declarations first.
+      - run: pnpm --filter @0gkit/core build
+
+      - run: pnpm --filter @0gkit/da build
 
       - run: pnpm --filter @foundryprotocol/sdk build
 
