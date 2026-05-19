@@ -1,30 +1,29 @@
 # Foundry Protocol — Project Instructions
 
-## Session Context (Last updated: 2026-05-19 14:00)
+## Session Context (Last updated: 2026-05-19 16:05)
 
 ### Current State
 
-- **0gkit toolkit roadmap** (spec: `docs/superpowers/specs/2026-05-18-0gkit-0g-builder-toolkit-design.md` §11) is being built in 8 dependency-ordered sub-projects.
-- **Merged to main:** SP1 (core+chain), SP2 (primitives), SP3 (CLI), **SP4 `@0gkit/mcp` (PR #26)**, **SP5 Foundry SDK refactor (PR #27)**, **SP6 scaffolder + recipes (PR #29)**.
-- **Remaining:** SP7 playground + `@0gkit/react`, SP8 community/docs.
-- CI is green on main. All `@0gkit/*` packages build/test; `pnpm boundary:check` enforces neutrality.
+- **0gkit toolkit roadmap is COMPLETE** (spec: `docs/superpowers/specs/2026-05-18-0gkit-0g-builder-toolkit-design.md` §11). All 8 sub-projects merged to `main`.
+- **Merged:** SP1 core+chain, SP2 primitives, SP3 CLI, SP4 `@0gkit/mcp` (#26), SP5 Foundry SDK refactor (#27), SP6 scaffolder+recipes (#29), **SP7 playground + `@0gkit/react` (#30)**, **SP8 community + release infra (#31)**.
+- CI green on main. All `@0gkit/*` build/test; `pnpm boundary:check` enforces neutrality; Playwright golden-path smoke wired.
 
-### Recent Changes (this session — SP6)
+### Recent Changes (this session — SP7 + SP8, done in one session at user request)
 
-- `packages/create-foundry-app/` — `create-foundry-forge` evolved (git-mv, clean rename, no compat shim) into `create-foundry-app`. Split into testable modules: `archetypes.ts` (A–E + zero-setup `demo` catalog), `generate.ts` (pure `generateProject → FileMap`), `cli.ts` (flags `--archetype/--network/--demo/--yes` + interactive picker). 21 vitest tests, **100% coverage** on the pure modules (`cli.ts` excluded like `@0gkit/cli`). README rewritten.
-- A–E archetypes map to `docs/0G-HACKATHON-INTEGRATION-PLAN.md` §2 value-props; `demo` archetype is the one-command live-Ingot path (`--demo` → Galileo, no key, public demo Ingot `ingot:0x8e2af4a0…001`).
-- `examples/` (new, top-level, **not** a workspace glob so not installed) — 5 degit-able recipes: 3 neutral `@0gkit/*` (da-publish-verify, storage-roundtrip, inference-quickstart) + 2 Foundry-tagged ownership/revenue (foundry-own-a-model, foundry-revenue-split). `examples/README.md` indexes them and tags the Foundry path as non-default.
-- `scripts/check-examples.mjs` + root `examples:check` script — cheap CI gate (required files, valid pkg JSON, name==dir, start entry exists; no installs/network).
-- `.github/workflows/ci.yml` web job — added `create-foundry-app` build/test, folded it into the coverage aggregation `--filter` line, added `pnpm examples:check`.
+- **SP7 `@0gkit/react`** — `useUpload/useDownload/useInference/useAttestation`; one `{data,error,loading,reset}`+runner shape via `useAsyncAction` (ref-read config so callers can recompute per render); `react` peer dep; 7 vitest tests, 100% line cov; boundary-clean.
+- **SP7 `apps/playground`** — Next.js zero-setup console (Storage/Compute/Attestation panels + explorer links). Pure `lib/codegen.ts` emits CLI/TS/curl/MCP for every action (9 vitest tests, 100% cov). Attestation verify runs **live in-browser** (pure crypto). `e2e/golden-path.spec.ts` Playwright smoke (build+serve prod bundle).
+- **SP7 `@0gkit/compute` fix** — the optional broker dynamic import is a _variable_ `import()` carrying `/* webpackIgnore */ /* turbopackIgnore */ /* @vite-ignore */` so it survives every toolchain (esbuild/vite skip, vitest consumers don't resolve an uninstalled peer, Turbopack honours the ignore). esbuild preserves comments inside `import()`. No API/behaviour change.
+- **SP7 playground browser stub** — `lib/browser-sdk-stub.ts` + `next.config.ts` `turbopack.resolveAlias` aliases the Node-only `@0gfoundation/*`/`@0glabs/*` SDKs out of the client bundle; live upload/infer then surface a clean ConfigError (honest — those need a server/CLI). `turbopack.root`+`outputFileTracingRoot` pin the workspace root (worktree lockfile ambiguity).
+- **SP8 community/release** — CONTRIBUTING/CODE_OF_CONDUCT/SECURITY, root CHANGELOG, `docs/GOOD-FIRST-ISSUES.md`, issue/PR/discussion templates. **changesets**: `.changeset/config.json` (`linked: [["@0gkit/*"]]`, `ignore: ["@0gkit/playground"]` since linked-glob would bump the private app), root `@changesets/cli` + scripts. `.github/workflows/release.yml` opens a Version PR and publishes only when `NPM_TOKEN` set (degrades green, separate from CI gate).
 
 ### Next Steps
 
-1. **SP7 — `apps/playground` + `@0gkit/react`.** Branch fresh off `origin/main` (`git fetch && git checkout -b claude/0gkit-sp7 origin/main && pnpm install`). `@0gkit/react` hooks (`useUpload`, `useDownload`, `useInference`, `useAttestation`) + Next.js playground (zero-setup web console; copy-code in CLI/TS/curl/MCP forms). Acceptance (spec §11.7): golden-path Playwright smoke green; copy-code works for all 4 forms. `apps/*` IS a workspace glob. Mirror conventions; wire CI; own PR; squash-merge.
-2. Then SP8 — one per session, `/save-context` between (see memory `feedback_0gkit_pacing.md`).
+- Roadmap done. Possible follow-ups (not started): enabling the GitHub Discussions tab + Recipes category (one-click repo setting), wiring `NPM_TOKEN` to actually publish, enriching neutral package READMEs with curl/CLI blocks (good-first-issue #1).
 
 ### Key Decisions
 
-- **One sub-project per session**, fresh branch off `origin/main`, full CI-green, own PR, squash-merge, then `/save-context`. User explicitly chose this over a single marathon session (burn-rate).
+- **One sub-project per session** is the default (memory `feedback_0gkit_pacing.md`); **the final session overrode it once** — user explicitly asked for SP7+SP8 together. Workflow still: fresh branch off `origin/main`, full CI-green, own PR, squash-merge.
+- **Optional-peer dynamic imports must stay non-analyzable + ignore-commented** (`@0gkit/compute`). A literal `import("pkg")` breaks both esbuild build and vitest consumers when the peer isn't installed; a bare `import(var)` breaks Turbopack. The variable + triple ignore-comment form is the only one that satisfies all toolchains — don't "tidy" it to a literal.
 - **SP5 left `packages/sdk/src/storage.ts` untouched** — its per-call ethers `signer` is documented public API; `@0gkit/storage`'s constructor-key model would break it (out of scope for "API unchanged"). Net deletion came from da/attestation.
 - **Neutrality invariant**: `packages/0gkit-*/src` never imports `@foundryprotocol/*` or non-`@0gkit/*` workspace pkgs (`pnpm boundary:check`). Foundry→@0gkit is the allowed direction. Opt-in Foundry uses computed specifiers so dependency-cruiser builds no edge.
 - **CI build-order**: any new workspace dep of `packages/sdk` must be built before `@foundryprotocol/sdk build` in the `web` and `mainnet-smoke` jobs (DTS needs declarations). Local green ≠ CI green here — always verify CI.
