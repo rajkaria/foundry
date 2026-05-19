@@ -20,6 +20,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "boundary:check": "depcruise \"packages/0gkit-*/src\" --config .dependency-cruiser.cjs",
+    "examples:check": "node scripts/check-examples.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,mdx,json,css,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,md,mdx,json,css,yml,yaml}\"",
     "clean": "turbo run clean && rimraf node_modules"

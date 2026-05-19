@@ -1,0 +1,12 @@
+{
+  "name": "da-publish-verify",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "dependencies": {
+    "@0gkit/da": "^0.1.0"
+  }
+}

@@ -1,28 +1,30 @@
 {
-  "name": "create-foundry-forge",
+  "name": "create-foundry-app",
   "version": "1.0.0",
-  "description": "Scaffold a starter Foundry project — create a Forge, contribute data, mint an Ingot, run inference.",
+  "description": "Scaffold a Foundry app for any of the five builder archetypes (A–E), or run the zero-setup live-Ingot demo.",
   "license": "MIT",
   "homepage": "https://foundryprotocol.xyz",
   "repository": {
     "type": "git",
     "url": "https://github.com/rajkaria/foundry.git",
-    "directory": "packages/create-foundry-forge"
+    "directory": "packages/create-foundry-app"
   },
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/cli.js",
   "bin": {
-    "create-foundry-forge": "./dist/index.js"
+    "create-foundry-app": "./dist/cli.js"
   },
   "files": [
     "dist",
-    "templates",
     "README.md"
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsx src/index.ts",
+    "dev": "tsx src/cli.ts",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint": "depcruise src --config ../../.dependency-cruiser.cjs",
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
@@ -33,10 +35,13 @@
   "devDependencies": {
     "@types/node": "^22.10.2",
     "@types/prompts": "^2.4.9",
+    "@vitest/coverage-v8": "^2.1.8",
+    "dependency-cruiser": "^16.0.0",
     "rimraf": "^6.0.1",
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
   },
   "publishConfig": {
     "access": "public"
