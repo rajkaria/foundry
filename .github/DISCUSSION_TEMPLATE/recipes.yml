@@ -1,0 +1,38 @@
+title: "[Recipe] "
+labels: ["recipe"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Propose a new `examples/` recipe here before opening a PR so we can
+        shape the scope. Recipes are small, degit-able, and runnable.
+  - type: input
+    id: name
+    attributes:
+      label: Recipe name (kebab-case, becomes the examples/ directory)
+      placeholder: "da-publish-verify"
+    validations:
+      required: true
+  - type: dropdown
+    id: track
+    attributes:
+      label: Track
+      options:
+        - "Neutral @0gkit/* (default path)"
+        - "Foundry ownership/revenue (tagged, non-default)"
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: What does it teach?
+      description: The one thing a builder walks away able to do.
+    validations:
+      required: true
+  - type: textarea
+    id: sketch
+    attributes:
+      label: Rough entrypoint sketch
+      render: typescript
+    validations:
+      required: false

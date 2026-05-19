@@ -118,6 +118,8 @@ Detailed architecture: [`docs/03-tech-architecture.md`](./docs/03-tech-architect
 | [`apps/web/`](./apps/web)                             | Next.js 16 — landing, app, dashboard, lineage graph, docs                                                                                 |
 | [`packages/sdk/`](./packages/sdk)                     | `@foundryprotocol/sdk` — install via `pnpm add @foundryprotocol/sdk`                                                                      |
 | [`packages/mcp-foundry/`](./packages/mcp-foundry)     | `@foundryprotocol/mcp` — MCP server, run via `npx @foundryprotocol/mcp` (Claude Desktop / Cursor / any MCP-capable agent)                 |
+| [`packages/0gkit-*/`](./packages)                     | **`@0gkit/*`** — the neutral 0G builder toolkit (core, chain, storage, compute, da, attestation, cli, mcp, react). No Foundry dependency. |
+| [`apps/playground/`](./apps/playground)               | `@0gkit/playground` — zero-setup web console; copy working code in CLI / TS / curl / MCP form                                             |
 | [`packages/indexer/`](./packages/indexer)             | TypeScript indexer feeding the dashboard                                                                                                  |
 | [`packages/design-tokens/`](./packages/design-tokens) | Color, type, motion, spacing tokens                                                                                                       |
 | [`contracts/`](./contracts)                           | Solidity (Foundry toolkit). 6 contracts. 100% line coverage.                                                                              |
@@ -271,9 +273,24 @@ Live protocol counters (Forges, Ingots, contributions, revenue distributed) are 
 
 [MIT](./LICENSE) — except `contracts/` (also MIT, but a separate copy for clarity if a future audit firm prefers Apache-2.0).
 
-## Contributing
+## Contributing & community
 
-Foundry is an open protocol. If you're building on 0G and need a model — [build on Foundry](https://foundryprotocol.xyz/build-on-foundry). If you have a dataset or compute and want a share of what gets made — [join a Forge](https://foundryprotocol.xyz/forges). If you want to improve the protocol — open a PR.
+Foundry is an open protocol and **0gkit** is its neutral, MIT toolkit. If
+you're building on 0G and need a model — [build on Foundry](https://foundryprotocol.xyz/build-on-foundry).
+If you have a dataset or compute and want a share — [join a Forge](https://foundryprotocol.xyz/forges).
+If you want to improve the toolkit — contributions are very welcome:
+
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — dev setup, the neutrality
+  invariant, testing bar, and the changesets release flow.
+- **[Good first issues](./docs/GOOD-FIRST-ISSUES.md)** — a curated, scoped
+  backlog with pointers into the code.
+- **[Discussions](https://github.com/rajkaria/foundry/discussions)** — Q&A
+  and the [Recipes](https://github.com/rajkaria/foundry/discussions/categories/recipes)
+  category for proposing `examples/` recipes.
+- **[CHANGELOG.md](./CHANGELOG.md)** — the public, semver changelog (the
+  `@0gkit/*` packages are version-linked).
+- **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** ·
+  **[SECURITY.md](./SECURITY.md)** (report vulnerabilities privately).
 
 ---
 

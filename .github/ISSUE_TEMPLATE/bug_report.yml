@@ -1,0 +1,52 @@
+name: Bug report
+description: Something in a @0gkit/* package, the CLI, MCP, or the playground is broken.
+labels: ["bug", "needs-triage"]
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected package
+      options:
+        - "@0gkit/core"
+        - "@0gkit/chain"
+        - "@0gkit/storage"
+        - "@0gkit/compute"
+        - "@0gkit/da"
+        - "@0gkit/attestation"
+        - "@0gkit/cli"
+        - "@0gkit/mcp"
+        - "@0gkit/react"
+        - "create-foundry-app"
+        - "playground"
+        - "not sure"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: "e.g. 0.1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you expected vs. what actually happened.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: Smallest code/CLI invocation that reproduces it. Redact keys.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "node version, OS, network (galileo/aristotle/local)"
+    validations:
+      required: true

@@ -21,11 +21,15 @@
     "test": "turbo run test",
     "boundary:check": "depcruise \"packages/0gkit-*/src\" --config .dependency-cruiser.cjs",
     "examples:check": "node scripts/check-examples.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,mdx,json,css,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,md,mdx,json,css,yml,yaml}\"",
     "clean": "turbo run clean && rimraf node_modules"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.10",
     "dependency-cruiser": "^16.0.0",
     "next": "^16.0.0",
     "prettier": "^3.3.3",

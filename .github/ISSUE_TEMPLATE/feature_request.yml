@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a capability for the neutral toolkit.
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What can a 0G builder not do today, and why does it matter?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: API sketch / CLI shape / MCP tool. Keep it neutral — Foundry-specific asks belong in the Foundry layer.
+    validations:
+      required: true
+  - type: checkboxes
+    id: neutrality
+    attributes:
+      label: Neutrality
+      options:
+        - label: This stays free of any @foundryprotocol/* dependency (or I've noted why it can't).
+          required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
