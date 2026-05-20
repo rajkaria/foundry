@@ -62,6 +62,32 @@ export const ECOSYSTEM: EcosystemPartner[] = [
     accent: "#7c5cff",
     weight: -10,
   },
+  {
+    slug: "sealedmind",
+    name: "SealedMind",
+    tagline: "Sovereign, encrypted memory for AI agents on 0G",
+    summary:
+      "SealedMind gives every wallet a private, TEE-attested Mind — a vault for facts, conversations, and capabilities that an agent can `remember`, `recall`, `grant`, and `revoke` on chain. The SealedMind team built and ships `@sealedmind/mcp`, a stdio MCP companion that drops in beside `@foundryprotocol/mcp` so any Ingot-powered agent gains persistent encrypted memory with zero Foundry-side changes.",
+    zeroGStack: ["0G Chain (Aristotle)", "0G Storage", "0G Compute (TEE)"],
+    integration:
+      "`@sealedmind/mcp` is a standalone stdio MCP server published by the SealedMind team that wraps their hosted backend. Users add it to their MCP config alongside `@foundryprotocol/mcp`; the agent runtime orchestrates both. Memory operations emit on-chain `MemoryAccessLog` events on the same 0G Aristotle network Ingots settle on, so a single agent turn can run inference on a co-owned Ingot and seal the result into the user's Mind — both independently verifiable on chainscan.",
+    highlights: [
+      "Side-by-side MCP — one config block, two servers, no coupling",
+      "BYOK auth (`SEALEDMIND_API_KEY`) — Foundry holds no keys",
+      "Six tools: remember, recall, grant/revoke/list capability, verify attestation",
+      "Built and maintained entirely by the SealedMind team",
+    ],
+    category: "Infrastructure",
+    status: "live",
+    links: {
+      github: "https://github.com/SealedMind/SealedMindMonoRepo",
+      site: "https://sealedmind.vercel.app",
+      docs: "https://www.npmjs.com/package/@sealedmind/mcp",
+      twitter: "https://x.com/SealedMind_0G",
+    },
+    accent: "#22c55e",
+    weight: -5,
+  },
 ];
 
 export const ECOSYSTEM_SORTED = [...ECOSYSTEM].sort(
