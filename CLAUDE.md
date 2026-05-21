@@ -10,11 +10,95 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check` (dependency-cruiser). Foundry is always a separately-loaded opt-in plugin.
 
-## Session Context (Last updated: 2026-05-21 ~15:55 IST)
+## Session Context (Last updated: 2026-05-22 ~01:05 IST)
 
 ### Current State
 
-**0gkit lives at `rajkaria/0gkit`** (renamed from `0G-ai-kit` this session — GitHub redirects the old slug). **Phase 1 (SP1–SP3) is released; Phase 2 SP4 + SP5 shipped and merged.** Next is **SP6 — `0gkit-indexer`** (reorg-safe event subscriptions built on SP4 typed contracts + SP5 fixtures).
+**0gkit at `rajkaria/0gkit`.** **Phase 1 (SP1–SP3) released; Phase 2 (SP4 + SP5) shipped; Phase 3 SP6 shipped this session.** Next is **SP7 — cost estimator + dry-run** (Phase 3).
+
+**Phase 1+2+3 status:**
+
+- ✅ SP1 — `create-0gkit-app` ([PR #4](https://github.com/rajkaria/0gkit/pull/4), fix [PR #6](https://github.com/rajkaria/0gkit/pull/6), release [PR #7](https://github.com/rajkaria/0gkit/pull/7)).
+- ✅ SP2 — `0g dev` local stack ([PR #3](https://github.com/rajkaria/0gkit/pull/3)).
+- ✅ SP3 — `0gkit-wallet` + `0gkit-wallet-react` ([PR #5](https://github.com/rajkaria/0gkit/pull/5), 342 tests, 95.9%/95.96% coverage).
+- ✅ Phase 1 npm release — 12 packages live at v0.2.0; `create-0gkit-app@0.3.0`.
+- ✅ SP4 — `0gkit-contracts` ([PR #8](https://github.com/rajkaria/0gkit/pull/8), `b9e8c23`) + repo rename. Hotfix [PR #10](https://github.com/rajkaria/0gkit/pull/10) `e8a9855`.
+- ✅ SP5 — `0gkit-testing` ([PR #11](https://github.com/rajkaria/0gkit/pull/11), `c4fc6fe`). 50 tests at 94/93.
+- ✅ SP6 — `0gkit-indexer` + `useEvent`/`useLogs` ([PR #12](https://github.com/rajkaria/0gkit/pull/12), squash-merged this session). 45 new tests at 88.4%/75% (indexer) and 100%/90.24% (react).
+- ⏭ SP7 — cost estimator + dry-run (next). Plan not yet written.
+
+**Pending publish** (waiting on `changeset version`): `@foundryprotocol/0gkit-contracts` (minor → 0.1.0), `@foundryprotocol/0gkit-testing` (minor → 0.1.0), `@foundryprotocol/0gkit-indexer` (minor → 0.1.0, first publish), `@foundryprotocol/0gkit-react` (minor — SP6 hooks), plus patch bumps from SP5 suite migrations.
+
+**SP6 ship (this session):**
+
+- New `packages/0gkit-indexer/` — polling indexer with reorg-safe event subscriptions. Public surface: `new Indexer({ network, cursor, pollIntervalMs?, reorgDepth?, confirmations? })`, `indexer.subscribe({ contract, event, fromBlock?, onEvent, onReorg? })`, `start()` / `stop()` / `status()`.
+- Cursor backends with sub-path exports: `MemoryCursorStore` (default), `SqliteCursorStore` (`./cursors/sqlite`, `better-sqlite3` direct dep), `RedisCursorStore` (`./cursors/redis`, `ioredis` optional peer with lazy import).
+- Reorg detection: bounded `BlockTracker` window (default 64), per-poll hash re-fetch, `findCommonAncestor` walk, `onReorg(rolledBack)` callback. Rolled-back `DecodedEvent`s carry `{ blockNumber, blockHash (old), eventName, address }`; full args are not preserved across reorgs in v0 — documented in README.
+- Multi-subscription multiplexing on a single poll loop (any number of `subscribe()` calls share one timer).
+- Decorrelated exponential backoff with jitter (AWS pattern, attempt-aware, `[base·2ⁿ, base·2ⁿ⁺¹]` band, clamped to `maxMs`).
+- Tooling: `tsup` ESM build with 3 entries (`index`, `cursors/sqlite`, `cursors/redis`); vitest gate 80/70; boundary test scoped to file-grep (the global `pnpm boundary:check` is exercised by 0gkit-chain's existing test — running both in turbo races against chain's temp violation fixture, hotfix `0889be8`).
+- 31 indexer tests across 9 suites at 88.4% lines / 75% branches.
+- React: `ZeroGIndexerProvider` + `useEvent` + `useLogs` + `useIndexer` in `0gkit-react`. `useEvent` accumulates events and on `onReorg` filters out rolled-back block numbers; `useLogs` is a one-shot historical query. 14 react tests at 100% lines / 90.24% branches.
+
+Latest `main` after SP6 merge: `<post-merge SHA from squash>` (the PR squash-merged via `gh pr merge --squash --delete-branch`).
+
+**Roadmap status (per `docs/specs/2026-05-20-essentials-roadmap.md` in 0gkit):**
+
+- ✅ Phase 1 — SP1, SP2, SP3 live on npm.
+- ✅ Phase 2 — SP4, SP5 shipped.
+- ✅ Phase 3 SP6 — `0gkit-indexer` shipped.
+- ⏭ Phase 3 SP7 — cost estimator + dry-run (next).
+- ⏭ Phase 3 SP8 — expanded template library.
+- ⏭ Phase 4 — SP9–SP12.
+
+**Plan deviations (documented in PR body / inline comments):**
+
+- `indexer-basic.test.ts` first assertion: `safeHead = head - confirmations + 1` (head=5, conf=1 → deliver blocks 1..5). Plan's draft assertion was [1..4]; corrected to [1..5] to match the actual math.
+- `indexer-reorg.test.ts` assertions: the fixture's `h(phase, n)` differs across phases for ALL blocks, so `findCommonAncestor` returns `null` and the indexer rewinds to `fromBlock - 1n`. Assertions changed to: rolled-back length > 0 + every phase-B value in [201, 206] after the rewind (stronger than plan's "delivered > 5 times").
+- `useLogs.ts` types `contract` as `SubscribeOptions["contract"]` (structural alias) rather than importing `Abi`/`Address` from `viem` directly — keeps `0gkit-react` from picking up `viem` as a direct dep.
+- `log-decoder.ts` uses `decoded.eventName ?? ""` to satisfy viem's `string | undefined` typing under strict mode. Unreachable in practice (a matched topic0 always yields a name).
+
+### Recent Changes (this session)
+
+**0gkit repo:**
+
+- [PR #12](https://github.com/rajkaria/0gkit/pull/12) — SP6 `0gkit-indexer` + SP6 react hooks. **Squash-merged this session.** Branch `sp6-indexer` deleted post-merge. 13 implementation commits + 1 boundary-race hotfix:
+  - `4edd03d` package scaffold
+  - `fbadc8d` backoff
+  - `57976fb` public types
+  - `0f0ca12` BlockTracker
+  - `a652e34` log decoder
+  - `1f94ed0` MemoryCursorStore + exports
+  - `df1de9b` SqliteCursorStore
+  - `f8243c5` RedisCursorStore
+  - `469f696` Indexer core
+  - `ae9e718` reorg detection
+  - `7d595a8` multi-sub tests
+  - `8d52de1` react hooks
+  - `3e86f97` docs (README + changeset + DECISIONS D19/D20 + roadmap)
+  - `0889be8` hotfix: scope indexer boundary test to file-grep only
+
+**Foundryprotocol repo:** `CLAUDE.md` (this file) updated to reflect SP6 ship. No source changes to app code.
+
+### Next Steps
+
+**Immediate next session:**
+
+1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git checkout main && git pull`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/` (the harmless local rename was deferred).
+2. **Write SP7 plan + execute.** Cost estimator + dry-run for storage uploads, compute jobs, DA publishes, contract writes. Public surface per roadmap §SP7: `0g estimate <op>` CLI + `client.dryRun(...)` on every primitive returning `{ gas, fee, breakdown }`. Probably touches `0gkit-storage`, `0gkit-compute`, `0gkit-da`, `0gkit-contracts`, `0gkit-cli`.
+3. **Then SP8 — expanded template library** (chat, storage-app, ai-agent, tee-attested-api, nft-with-storage; degit-able).
+4. **Run `changeset version` + release** when SP7 lands so the pending publishes ship together: `0gkit-contracts`, `0gkit-testing`, `0gkit-indexer` (first publishes) + `0gkit-react` minor + SP5 patch bumps.
+
+**Workflow:** plan-per-SP via `superpowers:writing-plans` → execute via `superpowers:subagent-driven-development` → squash-merge after CI. `--auto` merge disabled (`enablePullRequestAutoMerge: false`); use `gh pr merge --squash --delete-branch`.
+
+### Key Decisions (this session)
+
+- **D19 — `0gkit-indexer` cursor backends: sqlite direct dep, redis optional peer.** `better-sqlite3` ships with the package (small, synchronous, persistent cursors out of the box). `ioredis` is `optionalPeerDependency` with lazy `import("ioredis")` — multi-process / clustered deployment is opt-in. Sub-path exports (`./cursors/sqlite`, `./cursors/redis`) let tree-shaking strip unused backends.
+- **D20 — `0gkit-indexer` uses polling, not WebSocket subscriptions.** EVM RPC WSS is notoriously unreliable (drops, missed reconnects, provider differences). Polling with `getLogs` works against every RPC, is restartable across crashes via the persisted cursor, and gives one place to insert reorg detection. Default `pollIntervalMs: 2000`, `reorgDepth: 64`, `confirmations: 1`.
+- **(Carried) D13–D18 from prior sessions:** D13 repo rename to 0gkit; D14 wagmi-style typed contracts; D15 Foundry artifacts as v0 codegen input; D16 template-string codegen (no ts-morph); D17 `testWallet` re-uses anvil dev mnemonic; D18 matchers under `/matchers` sub-path with self-registration.
+- **(Carried) D11 Signer in `0gkit-core`, D12 `create-0gkit-app` canonical, D9 SCREAMING_SNAKE codes, D10 no mainnet timing dependency, D8 jobs memory/sqlite/redis, D7 wallet RSC-first split, D6 dev storage CAS is filesystem.**
+
+### Previous Session Notes
 
 **Phase 1+2 status:**
 
