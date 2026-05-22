@@ -10,11 +10,11 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check` (dependency-cruiser). Foundry is always a separately-loaded opt-in plugin.
 
-## Session Context (Last updated: 2026-05-22 ~08:15 IST)
+## Session Context (Last updated: 2026-05-22 ~13:05 IST)
 
 ### Current State
 
-**0gkit at `rajkaria/0gkit`.** **Phase 1 (SP1–SP3) released; Phase 2 (SP4 + SP5) shipped; Phase 3 SP6 + SP7 shipped this session.** Next is **SP8 — expanded template library** (Phase 3).
+**0gkit at `rajkaria/0gkit`.** **Phase 1 (SP1–SP3) released; Phase 2 (SP4 + SP5) shipped; Phase 3 SP6 + SP7 + SP8 all shipped.** Next is **SP9 — error taxonomy** (Phase 4 kickoff).
 
 **Phase 1+2+3 status:**
 
@@ -26,9 +26,10 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - ✅ SP5 — `0gkit-testing` ([PR #11](https://github.com/rajkaria/0gkit/pull/11), `c4fc6fe`). 50 tests at 94/93.
 - ✅ SP6 — `0gkit-indexer` + `useEvent`/`useLogs` ([PR #12](https://github.com/rajkaria/0gkit/pull/12), `eb4a61f`). 45 new tests at 88.4%/75% (indexer) and 100%/90.24% (react).
 - ✅ SP7 — cost estimator + dryRun across storage/compute/da/contracts/cli ([PR #13](https://github.com/rajkaria/0gkit/pull/13), `c834d6a`, squash-merged this session). 42+ new tests; 0gkit-cli at 85.4/78.0 coverage.
-- ⏭ SP8 — expanded template library (next).
+- ✅ SP8 — expanded template library ([PR #14](https://github.com/rajkaria/0gkit/pull/14), `61cd0a9`). Five archetypes shipped: `chat` (Next.js + indexer + react), `storage-app` refresh (SP7 dry-run + dedup), `ai-agent` (ReAct on 0G Compute + attestation gate), `tee-attested-api` (Hono + `X-0G-Attestation` per response), `nft-with-storage` (Foundry ERC-721 + SP4 typed contracts). 37 new tests across templates; per-template coverage all ≥ 80/70. `create-0gkit-app` registry: 5 → 9 templates; `OGKIT_TEMPLATE_REF` default bumped to `v0.3.x`. DECISIONS D24/D25/D26 on template layout + deps-injection seam + SP10/SP11 hand-off doctrine.
+- ⏭ SP9 — error taxonomy (next; Phase 4 kickoff).
 
-**Pending publish** (waiting on `changeset version`): `@foundryprotocol/0gkit-contracts` (minor → 0.1.0), `@foundryprotocol/0gkit-testing` (minor → 0.1.0), `@foundryprotocol/0gkit-indexer` (minor → 0.1.0, first publish), `@foundryprotocol/0gkit-react` (minor — SP6 hooks), plus SP7 minor bumps for `0gkit-core` / `0gkit-storage` / `0gkit-compute` / `0gkit-da` / `0gkit-contracts` / `0gkit-cli`, plus patch bumps from SP5 suite migrations.
+**Live on npm at v0.3.0** (released in this session via PR #9 squash-merge → release workflow): all 14 `@foundryprotocol/0gkit-*` packages including the first publishes of `0gkit-contracts`, `0gkit-testing`, `0gkit-indexer`, plus the SP7 minor bumps and SP5 patch bumps. **Pending publish**: `create-0gkit-app` and `create-0g-app` minor bumps from SP8 (waiting on next `changeset version` run — changeset for the template registry expansion is checked in at `.changeset/sp8-templates.md`).
 
 **SP7 ship (this session):**
 
@@ -96,10 +97,10 @@ Latest `main` after SP6 merge: `<post-merge SHA from squash>` (the PR squash-mer
 
 **Immediate next session:**
 
-1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git checkout main && git pull`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/`.
-2. **Write SP8 plan + execute.** Expanded template library — five canonical archetypes per roadmap §SP8: `chat`, `storage-app` (upgrade), `ai-agent`, `tee-attested-api`, `nft-with-storage`. Each degit-able via `npm create 0gkit-app --template <name>`, each built on SP3–SP7 idiomatically (Signer abstraction, typed contracts, indexer hooks where relevant, `.estimate()` in startup docs).
-3. **Run `changeset version` + release** before or with SP8 so the pending publishes ship together: SP4 `0gkit-contracts` (first publish), SP5 `0gkit-testing` (first publish), SP6 `0gkit-indexer` (first publish) + `0gkit-react` minor + SP7 minors on `0gkit-core` / `0gkit-storage` / `0gkit-compute` / `0gkit-da` / `0gkit-contracts` / `0gkit-cli` + SP5 patch bumps.
-4. **Then SP9** — error taxonomy with docs anchors (Phase 4 kickoff).
+1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git checkout main && git pull`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/`. SP8 is at `61cd0a9`.
+2. **Run `changeset version` + release** for SP8 so `create-0gkit-app` + `create-0g-app` minor bumps publish to npm and the v0.3.x template tag exists (CI smoke now uses `github.event.pull_request.head.sha` so PRs don't need the tag, but `npm create 0gkit-app@latest` users do).
+3. **Write SP9 plan + execute.** Error taxonomy with docs anchors — per roadmap §SP9. Phase 4 kickoff. Every `ZeroGError` code links to a docs page that fixes it; one MDX page per code with cause/fix/example.
+4. **Then SP10** — `0gkit-jobs` durable runner (the `ai-agent` and `tee-attested-api` templates have inline hand-off comments documenting the expected migration shape).
 
 **Workflow:** plan-per-SP via `superpowers:writing-plans` → execute via `superpowers:subagent-driven-development` → squash-merge after CI. `--auto` merge disabled (`enablePullRequestAutoMerge: false`); use `gh pr merge --squash --delete-branch`.
 
