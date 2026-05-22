@@ -63,6 +63,29 @@ export const ECOSYSTEM: EcosystemPartner[] = [
     weight: -10,
   },
   {
+    slug: "vamvault",
+    name: "VAMVault",
+    tagline: "Verifiable AI-managed vaults with on-chain execution memory",
+    summary:
+      "VAMVault is an AI-managed asset vault on 0G where every action an agent takes — rebalance, swap, hedge, signal — is recorded as a verifiable execution memory. The VAMVault team integrated Foundry's attribution layer so each execution can carry the receipt of the Ingot that produced the decision: which co-owned model was called, the on-chain inference tx, the revenue settlement, and the TEE attestation. Depositors get a full provenance trail; the smiths who trained the model earn revenue from every vault action it drives.",
+    zeroGStack: ["0G Chain (Aristotle)", "0G Storage", "0G Compute (TEE)"],
+    integration:
+      "Each vault execution record can attach a Foundry Ingot receipt — `ingotId`, `inferenceTxHash`, `revenueTxHash`, `attestationRef` — turning VAMVault's memory history into a chain of co-owned, attested AI decisions. Foundry doesn't touch the vault's main 0G flow; it bolts on as an optional attribution field that any auditor or smith can verify independently against 0G Chain and 0G Storage.",
+    highlights: [
+      "Every vault action carries a verifiable Foundry receipt",
+      "Co-owned Ingots earn on every decision they drive",
+      "TEE-attested execution, end to end on 0G",
+      "Optional attribution — zero impact on the main vault flow",
+    ],
+    category: "Consumer",
+    status: "live",
+    links: {
+      site: "https://vamvault.xyz",
+    },
+    accent: "#06b6d4",
+    weight: -3,
+  },
+  {
     slug: "sealedmind",
     name: "SealedMind",
     tagline: "Sovereign, encrypted memory for AI agents on 0G",
