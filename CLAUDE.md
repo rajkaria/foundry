@@ -10,7 +10,64 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check` (dependency-cruiser). Foundry is always a separately-loaded opt-in plugin.
 
-## Session Context (Last updated: 2026-05-22 ~16:02 IST)
+## Session Context (Last updated: 2026-05-22 ~20:49 IST)
+
+### SP10 — `@foundryprotocol/0gkit-jobs` ✅ Shipped
+
+**0gkit repo:** [PR #18](https://github.com/rajkaria/0gkit/pull/18) — SP10 squash-merged this session as `296c1d8`. Branch `sp10-0gkit-jobs` deleted post-merge.
+
+**What shipped (all 10 tasks from the SP10 plan):**
+
+- **New `@foundryprotocol/0gkit-jobs` package** — durable async job runner. Public surface: `JobRunner` (with `enqueue` / `start` / `stop` / `waitFor` / `register` / `hasDefinition`), `jobs.define()` factory (zod-typed input/output schemas + handler + maxAttempts + backoffMs), `jobs.signWebhookBody` / `jobs.verifyWebhook` HMAC helpers, and the `JobBackend` interface + concrete `MemoryBackend` / `SqliteBackend` / `RedisBackend` implementations under `./backends/<kind>` sub-path exports.
+- **Three backends, one conformance contract** — 9 scenarios (enqueue+status round-trip, FIFO claim, claim-on-empty, complete, fail-with-retry, fail-without-retry, cancel, status-of-unknown, terminal-state cancel no-op + JOBS_JOB_NOT_FOUND on missing) run against memory + sqlite via `describe.each`. Redis is gated on `JOBS_TEST_REDIS_URL` (CI doesn't run it by default). `better-sqlite3` is a direct dep; `ioredis` is an optional peer lazy-loaded via computed-specifier `["ioredis"].join("/")` (D29).
+- **Graceful shutdown** — `runner.stop({ drain: true, timeoutMs })` lets in-flight handlers finish; `runner.stop({ drain: false })` aborts via the `AbortSignal` exposed in the handler ctx. Designed for Vercel Fluid Compute `beforeExit` (25s grace).
+- **Webhook delivery** — HMAC-SHA256, hex, with `sha256=` prefix tolerated. `timingSafeEqual` comparison; `verifyWebhook` returns false (never throws) on garbage input. The signed payload is the exact request body bytes — receivers must read raw bytes before verifying. Retry default 2 (3 total attempts), webhook failures don't affect job state (D30).
+- **At-least-once delivery (D31)** — a crash between handler completion and `backend.complete()` returning will retry. Handlers must be idempotent on input; webhook receivers should dedupe on `(jobId, newState)`. Documented in the `/concepts/durable-jobs` page.
+- **`0gkit-cli`** — new `0g jobs status <id> [--backend memory|sqlite] [--path ./.jobs.db] [--json]` subcommand. `jobsBackendFactory` added to `ProgramDeps` so the read-only inspector is fully testable. Default factory in `cli.ts` constructs `MemoryBackend` / `SqliteBackend` based on the `--backend` flag.
+- **`ai-agent` template migrated** — each ReAct iteration is now a durable `agent.step` job. `buildStepJob({ compute, verifyStep })` returns the JobDefinition; `runAgent({ runner, stepJob, tools, log, maxSteps, stepTimeoutMs })` enqueues per-iteration and waits via `runner.waitFor`. Default `MemoryBackend` keeps the tutorial infra-free; README documents the one-line swap to sqlite/redis. SP8 D26 hand-off resolved.
+- **Docs site** — new `apps/docs/app/packages/jobs/page.mdx` (quickstart + backends matrix + webhook server-side example + Vercel Fluid Compute pattern) and `apps/docs/app/concepts/durable-jobs/page.mdx` (delivery model, backoff, lifecycle diagram, when-not-to-use). Sidebar nav gains a Jobs package entry + a Durable jobs concept entry.
+- **Decisions D29–D31** appended to `docs/DECISIONS.md`.
+
+**Test/coverage rollup (workspace-wide, pre-merge):** 42 new vitest tests in `0gkit-jobs` at 97% lines / 91% branches (gate 85/75) — full coverage on memory.ts + sqlite.ts + define.ts; 5 new CLI tests cover the jobs subcommand; 7 ai-agent template tests cover the six original branches plus a new end-to-end retry-exhaustion path that exercises the JobRunner + StepJob integration. Workspace totals: 32 packages green via turbo (lint/typecheck/build/test), `pnpm format:check`, `pnpm boundary:check` (284 modules, 0 violations), `pnpm docs:check` (13 codes thrown, all documented — JOBS_* codes were forward-defined in SP9 so SP10 only had to start throwing them), `pnpm test:scripts` (9 docs-check unit tests), `pnpm templates:check` (9 templates OK) — all green.
+
+**Implementation deviations (documented in PR body):**
+
+- `JobBackend.cancel(id)` for an **unknown** id throws `JOBS_JOB_NOT_FOUND` (not silent no-op as the plan suggested) — symmetric with `complete()` and `fail()` and easier to debug. Cancelling a terminal-state job (done/failed/cancelled) is still a no-op.
+- `RedisBackend.cancel()` also throws `JOBS_JOB_NOT_FOUND` for missing ids (the plan's draft was silent), keeping the conformance contract uniform across backends.
+- `runner.workerLoop` checks `abortController.signal.aborted` at the top of each loop iteration so a `stop({ drain: false })` exits the loop immediately even before claiming the next job. Added a private `runOne(rec)` extraction to keep the loop readable.
+- Added a `hasDefinition(name): boolean` test/inspection helper on JobRunner. Cheap, makes the register() side-effect observable from tests, doesn't pollute the public docs surface (typed but not advertised in README).
+- `define.ts` default backoff is `min(500ms · 2^attempt, 60_000ms)` with decorrelated jitter — explicitly bounded so a misconfigured `maxAttempts: 30` can't sleep for hours. Coverage test loops attempts 1..30 and asserts `0 < delay ≤ 60_000`.
+- Webhook integration test in `webhook.test.ts` uses `vi.fn` to replace `globalThis.fetch` then restores; asserts the `X-0gkit-Signature` header round-trips through `verifyWebhook` against the request body (proves the runner signs the same bytes the receiver verifies).
+- Template install can't be tested locally — `pnpm install --ignore-workspace` in `templates/ai-agent/` fails on `@foundryprotocol/0gkit-jobs ^0.1.0` until publish. Scaffolder smoke (`pnpm --filter create-0g-app test`) still green (73 pass / 2 skipped). The static `pnpm templates:check` passes. Template's own `pnpm test` will work once SP10's changeset publishes.
+
+**Pending publish:** the changeset at `.changeset/sp10-0gkit-jobs.md` cuts a minor on `0gkit-jobs` (first publish) + `0gkit-cli` and patches on `create-0gkit-app` + `create-0g-app` (template registry update). Will release with the next `changeset version` run.
+
+**Release this session before SP10:** [PR #15](https://github.com/rajkaria/0gkit/pull/15) (`a9e7ec3`) — changeset versioned + published all 16 packages to npm at **v0.4.0** including the SP8 template registry bumps (`create-0gkit-app@0.4.0` / `create-0g-app@0.4.0`) and the SP9 minor bumps (`0gkit-core`, `0gkit-cli`, `0gkit-react`, plus patch bumps on 12 other packages). All v0.4.0 tags pushed to GitHub.
+
+**Roadmap status:**
+
+- ✅ Phase 1 (SP1 / SP2 / SP3) — live on npm at v0.4.0.
+- ✅ Phase 2 (SP4 / SP5) — shipped.
+- ✅ Phase 3 (SP6 / SP7 / SP8) — shipped.
+- ✅ Phase 4 SP9 — shipped.
+- ✅ Phase 4 SP10 — shipped this session.
+- ⏭ Phase 4 SP11 (`0gkit-observability`) — plan already written at [docs/superpowers/plans/2026-05-22-sp11-0gkit-observability.md](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-22-sp11-0gkit-observability.md).
+- ⏭ SP12 — plan on main.
+
+### Next Steps
+
+**Immediate next session:**
+
+1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git pull --ff-only`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/`. SP10 is at `296c1d8`.
+2. **Run `changeset version` + release** to ship the SP10 minor bumps (`0gkit-jobs` first publish + `0gkit-cli`) and the `create-*-app` patch bumps. Once published, the `ai-agent` template's local `pnpm install` will work for users running `npm create 0gkit-app@latest ai-agent`.
+3. **Execute SP11 — `0gkit-observability`.** Plan is at `docs/superpowers/plans/2026-05-22-sp11-0gkit-observability.md`. Start via `superpowers:executing-plans` or `superpowers:subagent-driven-development`. SP11 codes (`OBSERVABILITY_EXPORTER_FAILED` etc.) are pre-defined in SP9's `ERROR_CODES` so the enum doesn't need to widen — just start throwing them.
+4. **Then SP12** (community + CI templates + docs polish + cut v1.0.0).
+
+**Workflow:** plan-already-written → execute via `superpowers:executing-plans` → squash-merge after CI. `--auto` merge disabled (`enablePullRequestAutoMerge: false`); use `gh pr merge --squash --delete-branch`.
+
+---
+
+## Previous Session Context (SP9 shipped; last updated 2026-05-22 ~16:02 IST)
 
 ### SP9 — Error taxonomy + `helpUrl` + `docs:check` CI gate ✅ Shipped
 
