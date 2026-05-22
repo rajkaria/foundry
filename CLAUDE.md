@@ -71,27 +71,33 @@ Latest `main` after SP6 merge: `<post-merge SHA from squash>` (the PR squash-mer
 - `useLogs.ts` types `contract` as `SubscribeOptions["contract"]` (structural alias) rather than importing `Abi`/`Address` from `viem` directly — keeps `0gkit-react` from picking up `viem` as a direct dep.
 - `log-decoder.ts` uses `decoded.eventName ?? ""` to satisfy viem's `string | undefined` typing under strict mode. Unreachable in practice (a matched topic0 always yields a name).
 
-### Recent Changes (this session)
+### Recent Changes (this session — SP8 template expansion)
 
-**0gkit repo:**
+**0gkit repo:** [PR #14](https://github.com/rajkaria/0gkit/pull/14) — SP8 five-archetype template expansion. **Squash-merged this session as `61cd0a9`.** Branch `sp8-templates` deleted post-merge.
 
-- [PR #12](https://github.com/rajkaria/0gkit/pull/12) — SP6 `0gkit-indexer` + SP6 react hooks. **Squash-merged this session.** Branch `sp6-indexer` deleted post-merge. 13 implementation commits + 1 boundary-race hotfix:
-  - `4edd03d` package scaffold
-  - `fbadc8d` backoff
-  - `57976fb` public types
-  - `0f0ca12` BlockTracker
-  - `a652e34` log decoder
-  - `1f94ed0` MemoryCursorStore + exports
-  - `df1de9b` SqliteCursorStore
-  - `f8243c5` RedisCursorStore
-  - `469f696` Indexer core
-  - `ae9e718` reorg detection
-  - `7d595a8` multi-sub tests
-  - `8d52de1` react hooks
-  - `3e86f97` docs (README + changeset + DECISIONS D19/D20 + roadmap)
-  - `0889be8` hotfix: scope indexer boundary test to file-grep only
+- `templates/chat/` — Next.js 16 App Router + wallet + storage + indexer + react. Wire format codec in `lib/message.ts` (6 tests at 100/100). Server-side `/api/post` writes via `Storage.upload` + `createTypedContract.write.post`. Client side renders `useEvent({ contract, event: "MessagePosted" })` with reorg-safe semantics.
+- `templates/storage-app/` — full rewrite. Adds `runStorageFlow(input, deps)` in `src/storage-flow.ts` using SP7 `{ dryRun: true }` preflight + `storage.exists(predictedRoot)` dedup short-circuit. 6 tests at 100/80.
+- `templates/ai-agent/` — `runAgent(prompt, deps)` ReAct loop in `src/agent.ts` with `verifyStep` attestation gate. Tool registry in `src/tools.ts`. 8 tests at 100/91 (six branches: done, tool, max-steps, bad-attestation, unknown-tool, non-JSON fallback).
+- `templates/tee-attested-api/` — `buildApp(deps)` Hono server in `src/app.ts`. `withAttestation` + `withAccessLog` middlewares in `src/middleware.ts`. Every response carries `X-0G-Attestation`; provider failures fall back to `X-0G-Attestation-Error`. 6 tests at 100/93.
+- `templates/nft-with-storage/` — Foundry `contracts/StorageNFT.sol` (inline ERC-721, `tokenURI` returns `0g-storage://<root>`). `runMintFlow` in `src/mint-flow.ts` uploads media → metadata → typed `mint()` call. 11 tests at 100/90.
+- `packages/create-0g-app/` — `TemplateName` union + `TEMPLATES` registry expanded 5 → 9; `OGKIT_TEMPLATE_REF` default `v0.2.x` → `v0.3.x`. SP8 scaffold smoke test parametric across all 9 templates (`src/__tests__/sp8-scaffold-smoke.test.ts`).
+- `apps/docs/app/templates/page.mdx` — refreshed with 5 SP8 archetypes promoted + 4 Phase-1 starters below.
+- `.changeset/sp8-templates.md` — minor bump for `create-0gkit-app` + `create-0g-app` (pending publish).
+- `docs/DECISIONS.md` — D24 (templates layout + workspace exclusion), D25 (separate flow.ts testable surface), D26 (SP10/SP11 hand-off doctrine documented inline in README + verifyStep stub + fixtureAttestation wiring — no fabricated package imports).
+- `docs/specs/2026-05-20-essentials-roadmap.md` — SP8 marked ✅ shipped 2026-05-22.
+- `.github/workflows/ci.yml` — scaffold smoke uses `pull_request.head.sha || github.sha` for `OGKIT_TEMPLATE_REF` so PR runs fetch from the branch instead of the not-yet-published `v0.3.x` tag.
 
-**Foundryprotocol repo:** `CLAUDE.md` (this file) updated to reflect SP6 ship. No source changes to app code.
+**Test/coverage rollup (per-template, offline):** 37 new tests across templates, every flow file ≥ 80/70. `pnpm format:check`, `pnpm boundary:check` (251 modules, 0 violations), `pnpm --filter create-0g-app test` (73 pass / 2 skipped) all green pre-merge.
+
+**API surface findings (recorded so SP9+ planning doesn't re-discover):**
+
+- `Compute.inference(args)` returns `{ output: string, receipt: Receipt, raw: unknown }` — no `attestation` field. Attestation has to be fetched out-of-band (template wires a stub + documents the swap).
+- `Storage.upload(data, { dryRun: true })` returns `{ dryRun: true, estimate: Estimate, result: { root, tx: { latencyMs: 0 }, raw } }`. Live shape is `{ root, tx: Receipt, raw }`.
+- `0gkit-attestation` exports `verifyEnvelope(signed, expectedSigner)` — no `fetchTeeQuote`. Real attestation feed has to come from the compute provider sidecar.
+- `0gkit-testing` mocks (`mockStorageClient`, `mockComputeClient`) have stale shapes vs the real SP6/SP7 classes (mock compute has `chat()` not `inference()`, mock storage has no `estimate()` / no dry-run overload). SP8 templates use inline fakes matching the real published shapes. **Worth fixing in SP9-SP12 cleanup pass.**
+- `pnpm-workspace.yaml` deliberately does **not** include `templates/*` (D24). Existing templates' stale 0gfoundation deps prevented workspace-level install.
+
+**Foundryprotocol repo:** `CLAUDE.md` (this file) updated to reflect SP8 ship + Phase 4 next steps. Commit `5e3c6c9` on main. No source changes to app code.
 
 ### Next Steps
 
