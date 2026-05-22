@@ -10,11 +10,11 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check` (dependency-cruiser). Foundry is always a separately-loaded opt-in plugin.
 
-## Session Context (Last updated: 2026-05-22 ~01:05 IST)
+## Session Context (Last updated: 2026-05-22 ~08:15 IST)
 
 ### Current State
 
-**0gkit at `rajkaria/0gkit`.** **Phase 1 (SP1–SP3) released; Phase 2 (SP4 + SP5) shipped; Phase 3 SP6 shipped this session.** Next is **SP7 — cost estimator + dry-run** (Phase 3).
+**0gkit at `rajkaria/0gkit`.** **Phase 1 (SP1–SP3) released; Phase 2 (SP4 + SP5) shipped; Phase 3 SP6 + SP7 shipped this session.** Next is **SP8 — expanded template library** (Phase 3).
 
 **Phase 1+2+3 status:**
 
@@ -24,10 +24,22 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - ✅ Phase 1 npm release — 12 packages live at v0.2.0; `create-0gkit-app@0.3.0`.
 - ✅ SP4 — `0gkit-contracts` ([PR #8](https://github.com/rajkaria/0gkit/pull/8), `b9e8c23`) + repo rename. Hotfix [PR #10](https://github.com/rajkaria/0gkit/pull/10) `e8a9855`.
 - ✅ SP5 — `0gkit-testing` ([PR #11](https://github.com/rajkaria/0gkit/pull/11), `c4fc6fe`). 50 tests at 94/93.
-- ✅ SP6 — `0gkit-indexer` + `useEvent`/`useLogs` ([PR #12](https://github.com/rajkaria/0gkit/pull/12), squash-merged this session). 45 new tests at 88.4%/75% (indexer) and 100%/90.24% (react).
-- ⏭ SP7 — cost estimator + dry-run (next). Plan not yet written.
+- ✅ SP6 — `0gkit-indexer` + `useEvent`/`useLogs` ([PR #12](https://github.com/rajkaria/0gkit/pull/12), `eb4a61f`). 45 new tests at 88.4%/75% (indexer) and 100%/90.24% (react).
+- ✅ SP7 — cost estimator + dryRun across storage/compute/da/contracts/cli ([PR #13](https://github.com/rajkaria/0gkit/pull/13), `c834d6a`, squash-merged this session). 42+ new tests; 0gkit-cli at 85.4/78.0 coverage.
+- ⏭ SP8 — expanded template library (next).
 
-**Pending publish** (waiting on `changeset version`): `@foundryprotocol/0gkit-contracts` (minor → 0.1.0), `@foundryprotocol/0gkit-testing` (minor → 0.1.0), `@foundryprotocol/0gkit-indexer` (minor → 0.1.0, first publish), `@foundryprotocol/0gkit-react` (minor — SP6 hooks), plus patch bumps from SP5 suite migrations.
+**Pending publish** (waiting on `changeset version`): `@foundryprotocol/0gkit-contracts` (minor → 0.1.0), `@foundryprotocol/0gkit-testing` (minor → 0.1.0), `@foundryprotocol/0gkit-indexer` (minor → 0.1.0, first publish), `@foundryprotocol/0gkit-react` (minor — SP6 hooks), plus SP7 minor bumps for `0gkit-core` / `0gkit-storage` / `0gkit-compute` / `0gkit-da` / `0gkit-contracts` / `0gkit-cli`, plus patch bumps from SP5 suite migrations.
+
+**SP7 ship (this session):**
+
+- `0gkit-core`: new `Estimate` envelope (`{ kind, gas, fee, breakdown, expectedSeconds? }`) + `DryRunResult<T>` (`{ dryRun: true, estimate, result }`) + `formatEstimate(est)` + `formatNative(wei)` (4/6/9-decimal magnitude tiering with scientific fallback for sub-gwei).
+- `0gkit-storage`: `Storage.estimate(bytes) → StorageEstimate` (256 KiB segment math, 80k gas + 1 gwei per segment); `Storage.upload(bytes, { dryRun: true })` computes Merkle root locally + returns `DryRunResult<UploadResult>` without broadcasting.
+- `0gkit-compute`: `Compute.estimate({ messages, model?, maxOutputTokens? })` (chars/4 token heuristic, 1 gwei/token placeholder, default 512 max output); `Compute.inference(args, { dryRun: true })` short-circuits the broker entirely.
+- `0gkit-da`: `DA.estimate(payload)` (live → bytes × 1e6 wei; local → 0); `DA.publish(payload, { dryRun: true })` returns digest + estimate without POSTing to the encoder.
+- `0gkit-contracts`: new `typedContract.estimate.<method>(...args)` namespace via viem `estimateContractGas` + `getGasPrice`; `typedContract.write.<method>([args], { dryRun: true })` runs `simulateContract` (surfaces EVM reverts) but never broadcasts.
+- `0gkit-cli`: new `0g estimate storage|compute|da|contracts` subcommands with `--json` support + `bigintsToStrings` JSON serializer; `--dry-run` flag on `0g storage put`, `0g da publish`, `0g infer` — dry-run bypasses the key/provider preflight so estimates are offline-only.
+
+Latest `main` after SP7 merge: `c834d6a` (squash). Branch `sp7-cost-estimator-dryrun` deleted post-merge.
 
 **SP6 ship (this session):**
 
@@ -47,8 +59,8 @@ Latest `main` after SP6 merge: `<post-merge SHA from squash>` (the PR squash-mer
 - ✅ Phase 1 — SP1, SP2, SP3 live on npm.
 - ✅ Phase 2 — SP4, SP5 shipped.
 - ✅ Phase 3 SP6 — `0gkit-indexer` shipped.
-- ⏭ Phase 3 SP7 — cost estimator + dry-run (next).
-- ⏭ Phase 3 SP8 — expanded template library.
+- ✅ Phase 3 SP7 — cost estimator + dry-run shipped.
+- ⏭ Phase 3 SP8 — expanded template library (next).
 - ⏭ Phase 4 — SP9–SP12.
 
 **Plan deviations (documented in PR body / inline comments):**
@@ -84,17 +96,19 @@ Latest `main` after SP6 merge: `<post-merge SHA from squash>` (the PR squash-mer
 
 **Immediate next session:**
 
-1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git checkout main && git pull`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/` (the harmless local rename was deferred).
-2. **Write SP7 plan + execute.** Cost estimator + dry-run for storage uploads, compute jobs, DA publishes, contract writes. Public surface per roadmap §SP7: `0g estimate <op>` CLI + `client.dryRun(...)` on every primitive returning `{ gas, fee, breakdown }`. Probably touches `0gkit-storage`, `0gkit-compute`, `0gkit-da`, `0gkit-contracts`, `0gkit-cli`.
-3. **Then SP8 — expanded template library** (chat, storage-app, ai-agent, tee-attested-api, nft-with-storage; degit-able).
-4. **Run `changeset version` + release** when SP7 lands so the pending publishes ship together: `0gkit-contracts`, `0gkit-testing`, `0gkit-indexer` (first publishes) + `0gkit-react` minor + SP5 patch bumps.
+1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git checkout main && git pull`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/`.
+2. **Write SP8 plan + execute.** Expanded template library — five canonical archetypes per roadmap §SP8: `chat`, `storage-app` (upgrade), `ai-agent`, `tee-attested-api`, `nft-with-storage`. Each degit-able via `npm create 0gkit-app --template <name>`, each built on SP3–SP7 idiomatically (Signer abstraction, typed contracts, indexer hooks where relevant, `.estimate()` in startup docs).
+3. **Run `changeset version` + release** before or with SP8 so the pending publishes ship together: SP4 `0gkit-contracts` (first publish), SP5 `0gkit-testing` (first publish), SP6 `0gkit-indexer` (first publish) + `0gkit-react` minor + SP7 minors on `0gkit-core` / `0gkit-storage` / `0gkit-compute` / `0gkit-da` / `0gkit-contracts` / `0gkit-cli` + SP5 patch bumps.
+4. **Then SP9** — error taxonomy with docs anchors (Phase 4 kickoff).
 
 **Workflow:** plan-per-SP via `superpowers:writing-plans` → execute via `superpowers:subagent-driven-development` → squash-merge after CI. `--auto` merge disabled (`enablePullRequestAutoMerge: false`); use `gh pr merge --squash --delete-branch`.
 
 ### Key Decisions (this session)
 
-- **D19 — `0gkit-indexer` cursor backends: sqlite direct dep, redis optional peer.** `better-sqlite3` ships with the package (small, synchronous, persistent cursors out of the box). `ioredis` is `optionalPeerDependency` with lazy `import("ioredis")` — multi-process / clustered deployment is opt-in. Sub-path exports (`./cursors/sqlite`, `./cursors/redis`) let tree-shaking strip unused backends.
-- **D20 — `0gkit-indexer` uses polling, not WebSocket subscriptions.** EVM RPC WSS is notoriously unreliable (drops, missed reconnects, provider differences). Polling with `getLogs` works against every RPC, is restartable across crashes via the persisted cursor, and gives one place to insert reorg detection. Default `pollIntervalMs: 2000`, `reorgDepth: 64`, `confirmations: 1`.
+- **D21 — Compute token-count heuristic: `ceil(chars / 4)`.** OpenAI's documented English approximation. Estimates are explicitly order-of-magnitude; precise tokenizers (`tiktoken` ~6 MB of vocab files) would inflate every install for sub-cent precision nobody asked for.
+- **D22 — Storage segment math: `ceil(bytes / 256 KiB)`.** Matches `@0gfoundation/0g-storage-ts-sdk` default chunking. Per-segment gas/fee defaults (80k gas, 1 gwei) are heuristics for Galileo mid-2026; the SDK's actual cost function will override once a programmatic feed exists.
+- **D23 — `DryRunResult<T>` envelope shape.** Every write path that accepts `{ dryRun: true }` returns `{ dryRun: true, estimate: Estimate, result: T }` where `T` is the existing success shape with `txHash` / `blockNumber` left undefined. Lets callers narrow with `if (res.dryRun) {...}` and share Receipt-handling logic across dry-run and live. DA `DEFAULT_DA_RATE_WEI_PER_BYTE = 1e6 wei/byte` is a placeholder until 0G publishes a programmatic DA pricing feed.
+- **(Carried) D19/D20 from earlier in this session:** D19 indexer cursor backends (sqlite direct dep, redis optional peer); D20 indexer polling not WSS.
 - **(Carried) D13–D18 from prior sessions:** D13 repo rename to 0gkit; D14 wagmi-style typed contracts; D15 Foundry artifacts as v0 codegen input; D16 template-string codegen (no ts-morph); D17 `testWallet` re-uses anvil dev mnemonic; D18 matchers under `/matchers` sub-path with self-registration.
 - **(Carried) D11 Signer in `0gkit-core`, D12 `create-0gkit-app` canonical, D9 SCREAMING_SNAKE codes, D10 no mainnet timing dependency, D8 jobs memory/sqlite/redis, D7 wallet RSC-first split, D6 dev storage CAS is filesystem.**
 
