@@ -10,18 +10,69 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check` (dependency-cruiser). Foundry is always a separately-loaded opt-in plugin.
 
-## Session Context (Last updated: 2026-05-22 ~13:55 IST)
+## Session Context (Last updated: 2026-05-22 ~16:02 IST)
 
-### Phase 4 plans ready (SP9–SP12 batched, this session)
+### SP9 — Error taxonomy + `helpUrl` + `docs:check` CI gate ✅ Shipped
 
-All four Phase 4 implementation plans written upfront in a single session so subsequent execution sessions skip the roadmap re-reading step. Open at [0gkit#16](https://github.com/rajkaria/0gkit/pull/16), branch `sp9-12-plans`.
+**0gkit repo:** [PR #17](https://github.com/rajkaria/0gkit/pull/17) — SP9 squash-merged this session as `eca1540`. Branch `sp9-error-taxonomy` deleted post-merge.
 
-- [SP9 plan](https://github.com/rajkaria/0gkit/blob/sp9-12-plans/docs/superpowers/plans/2026-05-22-sp9-error-taxonomy.md) — Error taxonomy: ~40 SCREAMING_SNAKE codes + `helpUrl` + per-code MDX page + `pnpm docs:check` CI gate + `<ZeroGErrorBoundary>`.
-- [SP10 plan](https://github.com/rajkaria/0gkit/blob/sp9-12-plans/docs/superpowers/plans/2026-05-22-sp10-0gkit-jobs.md) — `0gkit-jobs`: JobRunner + `jobs.define()` + memory/sqlite/redis backends + HMAC webhooks + ai-agent template migration.
-- [SP11 plan](https://github.com/rajkaria/0gkit/blob/sp9-12-plans/docs/superpowers/plans/2026-05-22-sp11-0gkit-observability.md) — `0gkit-observability`: `instrument0g()` prototype-patch + `0gkit.*` OTel attributes + `0g cost` CLI + tee-attested-api template migration + <20 KB bundle.
-- [SP12 plan](https://github.com/rajkaria/0gkit/blob/sp9-12-plans/docs/superpowers/plans/2026-05-22-sp12-community-cicd-docs.md) — Polish: `--ci` flag + Vercel deploy buttons + issue/PR templates + CONTRIBUTING refresh + Pagefind search + Lighthouse CI + cut v1.0.0.
+**What shipped (all 7 tasks from the SP9 plan):**
 
-Decisions D27–D37 pre-allocated across plans. SP10/SP11 error codes pre-listed in SP9's `ERROR_CODES` so later sprints don't amend earlier ones. Next session: pull `main` (after this PR merges), then start SP9 via `superpowers:subagent-driven-development docs/superpowers/plans/2026-05-22-sp9-error-taxonomy.md`.
+- **`0gkit-core`** — `ZeroGError` rewritten to require `{ code: ErrorCode, message, hint }` and derive `helpUrl` deterministically from the code. `ERROR_CODES` is a frozen 45-entry tuple namespaced by prefix (CONFIG / WALLET / CHAIN / STORAGE / COMPUTE / DA / ATTESTATION / CONTRACTS / INDEXER / JOBS / OBSERVABILITY — the JOBS_* and OBSERVABILITY_* codes are forward-defined for SP10/SP11). New exports: `ERROR_CODES`, `ErrorCode`, `isErrorCode()`, `errorNamespace()`, `helpUrlFor()`, `ERROR_HELP_BASE`. Subclass constructors (`ConfigError`, `NetworkError`, `ChainError`, `AttestationError`) preserve `(message, hint)` signatures and default their `code` based on the namespace — most existing callsites compile unchanged.
+- **Every `0gkit-*` package** — every `throw new Error(...)` retyped to a canonical code. 18 stale broad-category test assertions (`code === "CONFIG"` etc.) migrated to specific SCREAMING_SNAKE codes. Added focused `*-errors.test.ts` suites per package asserting `(code, helpUrl, instanceof Error)`.
+- **`0gkit-cli`** — `RenderedError` gains `helpUrl`; `--json` output now carries `{ code, message, hint, helpUrl }`; human mode adds a `Help: <url>` line under the hint. Fallback for unrecognized thrown shapes uses `CONFIG_INVALID_ARGUMENT` (not the old broad `"CONFIG"`).
+- **`0gkit-react`** — new `<ZeroGErrorBoundary>` component. Catches errors in its subtree, renders code + message + hint + clickable helpUrl. Supports `fallback` (custom render) and `onError` (analytics side-effect) props. For non-ZeroGError, renders a generic alert with no link.
+- **Docs site** — `apps/docs/app/errors/<CODE>/page.mdx` × 45 (substantive cause/fix/example for the 11 currently-thrown codes; forward-defined stubs for SP10/SP11 codes), `apps/docs/app/errors/page.mdx` namespace-grouped index, sidebar nav entry.
+- **CI gate** — `pnpm docs:check` (orphan detector + scripts test suite) wired into CI between `pnpm test` and `pnpm templates:check`. Missing pages or orphan pages fail red. Codes in the enum but not yet thrown are warnings only.
+- **`pnpm test:scripts`** — new npm script that runs `node --test scripts/__tests__/*.test.mjs`. The docs-check unit tests are pure Node ESM via the built-in `node:test` runner — no `tsx` or `vitest` added to root devDeps.
+- **Decisions** — D27 (helpUrl is computed from the code, not stored per-throw) + D28 (`docs:check` is a CI gate, not just a lint).
+
+**Test/coverage rollup (workspace-wide, pre-merge):** 587 vitest tests passing (up from 545 pre-SP9) + 9 docs-check unit tests via `node:test`. `pnpm format:check`, `pnpm boundary:check` (266 modules, 0 violations), `pnpm typecheck`, `pnpm docs:check` (11 codes thrown, all documented), `pnpm templates:check` (9 templates OK) all green.
+
+**Implementation deviations (documented in PR body):**
+
+- `docs-check` written as `scripts/docs-check.mjs` (pure Node ESM) instead of `scripts/docs-check.ts` with `tsx`. The plan called for tsx but adding a TS runtime to root devDeps wasn't justified for a small extraction-and-diff script. Tests use `node --test` instead of vitest for the same reason — no root-level test runner exists today.
+- `scaffold-error-pages.mjs` (one-shot scaffold) emits MDX pages by reading the built `packages/0gkit-core/dist/index.js` to source `ERROR_CODES`. Per-code `CONTENT` dictionary has substantive entries for the 11 thrown codes; forward-defined codes (SP10/SP11) get a sensible generic template that doesn't pretend the package exists.
+- `testWallet-errors.test.ts` was split — the sendTransaction assertion moved into the main `test-wallet.test.ts` (which already covered the codepath) to avoid a `vi.doUnmock` + `vi.resetModules` race between describe blocks. Net: one new error test file, no duplication.
+- `0gkit-cli/program.ts` runCommand fallback for non-ZeroGError shapes was changed from `code: "CONFIG"` → `code: "CONFIG_INVALID_ARGUMENT"` and now computes the `helpUrl` via `helpUrlFor()` so the JSON shape is always uniform.
+- `apps/docs/lib/nav.ts` got an `Error codes` entry in the Guides section (the plan didn't explicitly call out the sidebar but the page wouldn't be discoverable otherwise).
+
+**Pending publish:** the changeset at `.changeset/sp9-error-taxonomy.md` cuts a minor on `0gkit-core` + `0gkit-react` + `0gkit-cli` and patches on 12 other packages. It will release with the next `changeset version` run. Also still pending from SP8: `create-0gkit-app` + `create-0g-app` minor bumps.
+
+**Roadmap status:**
+
+- ✅ Phase 1 (SP1 / SP2 / SP3) — live on npm at v0.3.0.
+- ✅ Phase 2 (SP4 / SP5) — shipped.
+- ✅ Phase 3 (SP6 / SP7 / SP8) — shipped.
+- ✅ Phase 4 SP9 — shipped this session.
+- ⏭ Phase 4 SP10 (`0gkit-jobs`) — plan already written at [docs/superpowers/plans/2026-05-22-sp10-0gkit-jobs.md](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-22-sp10-0gkit-jobs.md) (now on main as of [PR #16](https://github.com/rajkaria/0gkit/pull/16)).
+- ⏭ SP11 / SP12 — plans on main.
+
+### Next Steps
+
+**Immediate next session:**
+
+1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git pull --ff-only`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/`. SP9 is at `eca1540`.
+2. **Run `changeset version` + release** to ship the SP9 minor bumps + the pending SP8 create-* bumps.
+3. **Execute SP10 — `0gkit-jobs`.** Plan is at `docs/superpowers/plans/2026-05-22-sp10-0gkit-jobs.md`. Start via `superpowers:executing-plans` or `superpowers:subagent-driven-development`. SP10 codes (`JOBS_BACKEND_UNREACHABLE` / `JOBS_JOB_NOT_FOUND` / `JOBS_HANDLER_THREW` / `JOBS_WEBHOOK_BAD_SIGNATURE`) are pre-defined in SP9's `ERROR_CODES` so the enum doesn't need to widen — just start throwing them.
+4. **Then SP11** (`0gkit-observability`), **then SP12** (community + CI templates + docs polish + cut v1.0.0).
+
+**Workflow:** plan-already-written → execute via `superpowers:executing-plans` → squash-merge after CI. `--auto` merge disabled (`enablePullRequestAutoMerge: false`); use `gh pr merge --squash --delete-branch`.
+
+---
+
+## Previous Session Context (SP9–SP12 plans batched; last updated 2026-05-22 ~13:55 IST)
+
+### Phase 4 plans ready (SP9–SP12 batched, prior session)
+
+All four Phase 4 implementation plans written upfront in a single session so subsequent execution sessions skip the roadmap re-reading step. Landed at [0gkit#16](https://github.com/rajkaria/0gkit/pull/16) as `9575a1c`.
+
+- [SP9 plan](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-22-sp9-error-taxonomy.md) — Error taxonomy: ~40 SCREAMING_SNAKE codes + `helpUrl` + per-code MDX page + `pnpm docs:check` CI gate + `<ZeroGErrorBoundary>`. **Executed this session — see above.**
+- [SP10 plan](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-22-sp10-0gkit-jobs.md) — `0gkit-jobs`: JobRunner + `jobs.define()` + memory/sqlite/redis backends + HMAC webhooks + ai-agent template migration.
+- [SP11 plan](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-22-sp11-0gkit-observability.md) — `0gkit-observability`: `instrument0g()` prototype-patch + `0gkit.*` OTel attributes + `0g cost` CLI + tee-attested-api template migration + <20 KB bundle.
+- [SP12 plan](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-22-sp12-community-cicd-docs.md) — Polish: `--ci` flag + Vercel deploy buttons + issue/PR templates + CONTRIBUTING refresh + Pagefind search + Lighthouse CI + cut v1.0.0.
+
+Decisions D27–D37 pre-allocated across plans. SP10/SP11 error codes pre-listed in SP9's `ERROR_CODES` so later sprints don't amend earlier ones.
 
 New skill: `multi-sprint-planning` at `~/.claude/skills/multi-sprint-planning/SKILL.md` — use it when ≥3 sprints remain on a known roadmap.
 
