@@ -10,7 +10,24 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check` (dependency-cruiser). Foundry is always a separately-loaded opt-in plugin.
 
-## Session Context (Last updated: 2026-05-22 ~13:05 IST)
+## Session Context (Last updated: 2026-05-22 ~13:55 IST)
+
+### Phase 4 plans ready (SP9–SP12 batched, this session)
+
+All four Phase 4 implementation plans written upfront in a single session so subsequent execution sessions skip the roadmap re-reading step. Open at [0gkit#16](https://github.com/rajkaria/0gkit/pull/16), branch `sp9-12-plans`.
+
+- [SP9 plan](https://github.com/rajkaria/0gkit/blob/sp9-12-plans/docs/superpowers/plans/2026-05-22-sp9-error-taxonomy.md) — Error taxonomy: ~40 SCREAMING_SNAKE codes + `helpUrl` + per-code MDX page + `pnpm docs:check` CI gate + `<ZeroGErrorBoundary>`.
+- [SP10 plan](https://github.com/rajkaria/0gkit/blob/sp9-12-plans/docs/superpowers/plans/2026-05-22-sp10-0gkit-jobs.md) — `0gkit-jobs`: JobRunner + `jobs.define()` + memory/sqlite/redis backends + HMAC webhooks + ai-agent template migration.
+- [SP11 plan](https://github.com/rajkaria/0gkit/blob/sp9-12-plans/docs/superpowers/plans/2026-05-22-sp11-0gkit-observability.md) — `0gkit-observability`: `instrument0g()` prototype-patch + `0gkit.*` OTel attributes + `0g cost` CLI + tee-attested-api template migration + <20 KB bundle.
+- [SP12 plan](https://github.com/rajkaria/0gkit/blob/sp9-12-plans/docs/superpowers/plans/2026-05-22-sp12-community-cicd-docs.md) — Polish: `--ci` flag + Vercel deploy buttons + issue/PR templates + CONTRIBUTING refresh + Pagefind search + Lighthouse CI + cut v1.0.0.
+
+Decisions D27–D37 pre-allocated across plans. SP10/SP11 error codes pre-listed in SP9's `ERROR_CODES` so later sprints don't amend earlier ones. Next session: pull `main` (after this PR merges), then start SP9 via `superpowers:subagent-driven-development docs/superpowers/plans/2026-05-22-sp9-error-taxonomy.md`.
+
+New skill: `multi-sprint-planning` at `~/.claude/skills/multi-sprint-planning/SKILL.md` — use it when ≥3 sprints remain on a known roadmap.
+
+---
+
+## Previous Session Context (Last updated: 2026-05-22 ~13:05 IST)
 
 ### Current State
 
