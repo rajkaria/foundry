@@ -10,11 +10,86 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check` (dependency-cruiser). Foundry is always a separately-loaded opt-in plugin.
 
-## Session Context (Last updated: 2026-05-22 ~20:49 IST)
+## Session Context (Last updated: 2026-05-22 ~22:15 IST)
+
+### SP11 — `@foundryprotocol/0gkit-observability` ✅ Shipped
+
+**0gkit repo:** [PR #20](https://github.com/rajkaria/0gkit/pull/20) — SP11 squash-merged this session as `2f7a022`. Branch `sp11-0gkit-observability` deleted post-merge.
+
+**What shipped (all 8 tasks from the SP11 plan):**
+
+- **New `@foundryprotocol/0gkit-observability` package** — OpenTelemetry instrumentation for 0gkit primitives. Public surface: `instrument0g(config)` (async — patches `Storage` / `Compute` / `DA` prototypes; `Attestation` deferred — see D32), `disinstrument0g()`, `ATTR` frozen const namespace with 15 `0gkit.*` semantic attribute keys (`NETWORK`, `OP`, `SIZE_BYTES`, `SEGMENTS`, `GAS_NATIVE`, `FEE_NATIVE`, `CONFIRM_SECONDS`, `ROOT`, `TX_HASH`, `BLOCK_NUMBER`, `MODEL`, `INPUT_TOKENS`, `OUTPUT_TOKENS`, `ERROR_CODE`, `DRY_RUN`). Tracer name `@foundryprotocol/0gkit-observability` per OTel convention.
+- **Prototype-patching strategy (D32)** — `instrument0g` mutates `Storage.prototype.upload` etc. directly. ES module live-bindings mean every consumer that imported the class is instrumented from the next call onward. `mode: "attach"` skips SDK setup (caller-owned tracer); default path lazy-imports `@opentelemetry/sdk-node` + exporter via computed-specifier `["@opentelemetry","sdk-node"].join("/")` to keep peers out of static dependency graphs.
+- **Wired primitives in `defaultTargets()`** — `Storage`: `upload` / `download` / `estimate` / `exists`; `Compute`: `inference` / `estimate`; `DA`: `publish` / `estimate`. **Attestation dropped** (no class with a prototype — only free functions `verifyEnvelope` / `signEnvelope`). Documented in D32; users can pass explicit `targets.attestation` once a future `AttestationClient` ships.
+- **Error mapping** — `0gkit.error_code` attribute set from `err.code` when `instanceof ZeroGError`; span status set to `ERROR` with the exception recorded; original error re-thrown unchanged (instrumentation is non-invasive).
+- **Optional SDK auto-setup (`sdk.ts`)** — lazy-imports `@opentelemetry/sdk-node` + `@opentelemetry/exporter-trace-otlp-http` when `exporter: { kind: 'otlp', ... }` is passed without `mode: 'attach'`. Throws `OBSERVABILITY_EXPORTER_FAILED` (SP9-defined) with install hint on missing peers.
+- **Bundle budget enforced (D34)** — `bundle-size.test.ts` uses `esbuild --bundle --metafile` + `gzipSync`. Measured size: **2,231 bytes gzipped** (10.9% of the 20,480 B budget). `@opentelemetry/api` and `@foundryprotocol/0gkit-core` externalised.
+- **`0g cost forecast` CLI** — new subcommand aggregates SP7 `Estimate` envelopes across `--storage <bytes...>`, `--compute "prompt|model|max"`, `--da <bytes>` flags into a per-op breakdown + total native fee/gas. `--json` mode emits `{ byOp: { storage, compute, da }, totalGas, totalFeeWei }`. BigInts serialized as strings. `ProgramDeps` extended with `storageEstimate` / `computeEstimate` / `daEstimate` injection points (SP7 had them as inline calls in `commands/estimate.ts`; SP11 lifted them to deps for testability).
+- **`tee-attested-api` template migrated** — `src/index.ts` boots `await instrument0g({ serviceName, exporter })` (OTLP if `OTEL_EXPORTER_OTLP_ENDPOINT` env present, else noop). `withAccessLog` middleware no longer `console.log`s — it sets `http.method` / `http.route` / `http.status_code` attributes on the active OTel span. SP8 D26 hand-off resolved.
+- **Docs site** — new `apps/docs/app/packages/0gkit-observability/page.mdx` + `apps/docs/app/concepts/observability/page.mdx` (OTel + cost attribution concept) + three exporter wire-up guides under `concepts/observability/exporters/` (Honeycomb, Datadog, Vercel) — each with a runnable `instrument0g({...})` snippet, auth notes, and a prose description of the trace destination.
+- **Decisions D32–D34** appended to `docs/DECISIONS.md`.
+
+**Test/coverage rollup:** 32 new vitest tests across 5 files in `0gkit-observability` (4 attributes + 1 boundary + 1 bundle-size + 21 instrument + 5 sdk). **Coverage: 99.16% lines / 77.77% branches** (gate 85/75 — exceeds both). `instrument.ts` and `sdk.ts` excluded from coverage (their auto-path dynamic imports are integration-tested in `tee-attested-api`); on-list files (`attribute-mappers.ts` 98.78/75.47, `attributes.ts` 100/100, `wrap.ts` 100/84.21) carry the full bar. Workspace totals after merge: **589 tests across 17 packages**, `pnpm boundary:check` 301 modules / 0 violations (was 284 pre-SP11), `pnpm format:check`, `pnpm typecheck`, `pnpm build`, `pnpm docs:check` (14 codes thrown, all documented), `pnpm templates:check` (9 OK) all green.
+
+**Implementation deviations (documented in PR body):**
+
+- `instrument0g` is **async** (plan flagged this in self-review). Default `defaultTargets()` path uses computed-specifier dynamic imports for `0gkit-storage` / `0gkit-compute` / `0gkit-da`; `await instrument0g({...})` is the contract. Test path with explicit `targets` resolves synchronously (no dynamic imports). The `tee-attested-api` template's boot site uses `await`.
+- Bundle-size test uses `fileURLToPath(import.meta.url)` (ESM-safe) — the plan's `__dirname` would have thrown.
+- **Attestation primitive dropped from `defaultTargets()`** (no patchable class). D32 documents the rationale and the opt-in path.
+- `ProgramDeps.storageEstimate` / `computeEstimate` / `daEstimate` added (SP7 had them inline, not as deps). Wired through to real primitives in `cli.ts`.
+- `sdk.test.ts` cold-init tests carry a 30 s timeout (default 5 s). Real `@opentelemetry/sdk-node` cold-import is heavy under turbo's parallel scheduler; standalone `pnpm --filter` runs are fast (~3 s total). Documented inline.
+- Vitest coverage `exclude` widened to skip `src/index.ts`, `src/sdk.ts`, `src/instrument.ts` — the auto-path dynamic imports primitive packages that are deliberately not static deps (D32). Integration-tested in `tee-attested-api`'s suite. Rationale in `vitest.config.ts`.
+- Docs pages use folder-based MDX routes (`concepts/observability/exporters/honeycomb/page.mdx`) per Next.js App Router convention; the existing concepts index page (`/concepts/page.mdx`) does **not** yet link to the new pages — flagged for SP12 polish.
+- The `0gkit-testing` package has a pre-existing flake (`test-wallet-errors.test.ts`, `fixtures.test.ts`) that occasionally times out at the 5 s default under turbo's parallel scheduler when CPU is contended. **Reproduces on `main` at `00bc221` (pre-SP11), not introduced by this PR.** SP12 polish item: bump per-test timeouts on those suites or set concurrency=1.
+
+**OTel peer versions used:** `@opentelemetry/api ^1.9.0`, `@opentelemetry/sdk-node ^0.55.0`, `@opentelemetry/sdk-trace-base ^1.30.0`, `@opentelemetry/exporter-trace-otlp-http ^0.55.0`. All verified via `npm view`.
+
+**SP10 release published to npm:** PR #19 (`00bc221`) merged at the top of this session shipped:
+
+- `@foundryprotocol/0gkit-jobs@0.5.0` (first publish on npm — SP10).
+- `@foundryprotocol/0gkit-cli@0.5.0` (SP10 minor — adds `0g jobs status`).
+- `create-0gkit-app@0.4.1` + `create-0g-app@0.4.1` (template registry patches).
+
+**Pending publish:** the changeset at `.changeset/sp11-0gkit-observability.md` cuts a minor on `@foundryprotocol/0gkit-observability` (first publish) + minor on `0gkit-cli` (adds `0g cost forecast`) + patches on `create-0gkit-app` / `create-0g-app`. Auto-generated changeset PR will appear next.
+
+**Roadmap status:**
+
+- ✅ Phase 1 (SP1 / SP2 / SP3) — live on npm.
+- ✅ Phase 2 (SP4 / SP5) — shipped.
+- ✅ Phase 3 (SP6 / SP7 / SP8) — shipped.
+- ✅ Phase 4 SP9 — shipped.
+- ✅ Phase 4 SP10 — shipped + released to npm at v0.5.0 this session.
+- ✅ Phase 4 SP11 — shipped this session, release pending.
+- ⏭ Phase 4 SP12 — plan already written at [docs/superpowers/plans/2026-05-22-sp12-community-cicd-docs.md](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-22-sp12-community-cicd-docs.md).
+
+### Next Steps
+
+**Immediate next session:**
+
+1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git pull --ff-only`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/`. SP11 is at `2f7a022`.
+2. **Merge the auto-generated changeset release PR** to publish `0gkit-observability@0.1.0` + `0gkit-cli@0.6.0` + create-* patches to npm.
+3. **Execute SP12 — community + CI templates + docs polish + cut v1.0.0.** Plan is at `docs/superpowers/plans/2026-05-22-sp12-community-cicd-docs.md`. Start via `superpowers:executing-plans` or `superpowers:subagent-driven-development`.
+4. **SP12 polish pickup items from SP11:**
+   - Concept index at `/concepts/page.mdx` doesn't link to the new observability sub-routes — fix as part of SP12's Pagefind search + docs polish pass.
+   - `0gkit-testing` package's `test-wallet-errors.test.ts` and `fixtures.test.ts` flake under turbo parallel scheduler — bump per-test timeouts to 30 s or set concurrency=1 for those suites.
+   - `0g cost forecast --from-jaeger <path>` flag (trace replay → cost) — scoped out of SP11 v0 and explicitly deferred to SP12.
+
+**Workflow:** plan-already-written → execute via `superpowers:executing-plans` → squash-merge after CI. `--auto` merge disabled (`enablePullRequestAutoMerge: false`); use `gh pr merge --squash --delete-branch`.
+
+### Key Decisions (this session — SP11)
+
+- **D32 — Observability via prototype patching, not module rewriting.** `instrument0g()` mutates `Storage.prototype.upload` etc. directly at call time. ES module live-bindings make this propagate to every consumer that already imported the class. Tests inject explicit `targets` for sync isolation; production uses async `defaultTargets()` via computed-specifier dynamic imports. Attestation deferred because the package exports free functions, not a class — explicit opt-in via `targets.attestation` documented as the path forward.
+- **D33 — Span attribute namespace is `0gkit.*`, frozen const in `ATTR`.** Single source of truth for all attribute keys. Standard OTel `http.*` / `rpc.*` attributes layered on top by user instrumentation; we don't duplicate them. The `0gkit.*` prefix follows OTel's vendor namespace convention so collectors can filter on prefix.
+- **D34 — Bundle budget 20 KB gzipped for the public entry.** Asserted by `bundle-size.test.ts` via esbuild + gzip. `@opentelemetry/api` externalised (peer); SDK + exporter peers are optional and never reach the bundle unless explicitly imported via `mode: 'auto'`. Protects the "free observability" promise — observability bundle cost must never be a toolkit decision factor.
+- **(Carried) D29–D31 from SP10**, D27–D28 from SP9, D24–D26 from SP8, D21–D23 from SP7, D19–D20 from SP6, D13–D18 from SP4/SP5.
+
+---
+
+## Previous Session Context (SP10 shipped + released)
 
 ### SP10 — `@foundryprotocol/0gkit-jobs` ✅ Shipped
 
-**0gkit repo:** [PR #18](https://github.com/rajkaria/0gkit/pull/18) — SP10 squash-merged this session as `296c1d8`. Branch `sp10-0gkit-jobs` deleted post-merge.
+**0gkit repo:** [PR #18](https://github.com/rajkaria/0gkit/pull/18) — SP10 squash-merged previous session as `296c1d8`. Released to npm at v0.5.0 via PR #19 (`00bc221`) at the top of this session.
 
 **What shipped (all 10 tasks from the SP10 plan):**
 
