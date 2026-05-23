@@ -10,9 +10,81 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 
-## Session Context (Last updated: 2026-05-23 19:10 IST)
+## Session Context (Last updated: 2026-05-23 20:02 IST)
 
 ### Current State
+
+**One PR opened + one big planning artefact committed on `rajkaria/0gkit`.**
+
+- **[#42](https://github.com/rajkaria/0gkit/pull/42)** `feat(cli): 0g cost forecast --from-jaeger <path>` — **OPEN**, CI running. Branch `cli/cost-forecast-from-jaeger` at `e623c4e`. Closes the last SP11 carryover (was deferred from v0). 20 new vitest tests, all 107 0gkit-cli tests green pre-push; `pnpm boundary:check` (302 modules / 0 violations), `pnpm format:check`, `pnpm docs:check` (14 codes, 16 packages) all green. Changeset cuts a minor on `@foundryprotocol/0gkit-cli`.
+- **`docs/superpowers/plans/2026-05-23-post-v1-roadmap.md`** committed to `main` as `10ee6f6`. Consolidated post-v1 roadmap covering SP13–SP25 (13 sprints across four themed waves) — distillation of the 13-item P0/P1/P2 backlog user submitted this session plus the four open carryovers.
+
+No work in flight on the Foundryprotocol repo. Earlier this session started a `sdk/refresh-onto-0gkit-1.0.x` branch for the Foundry SDK refresh (storage adapter draft) but **the user aborted mid-implementation**; branch deleted, `packages/sdk/package.json` reverted to its origin state. The aborted work is now sequenced as SP21 in the roadmap doc.
+
+### Recent Changes
+
+**0gkit repo (this session):**
+
+- `packages/0gkit-cli/src/commands/jaeger.ts` — new. Jaeger v1 trace JSON parser + per-op cost aggregator. Pure function `aggregateJaegerDump(parsed)` + `renderForecast(forecast, source)` + `forecastToJson(forecast, source)`. Tolerant of string/number/bigint tag values; sorts byOp alphabetically for deterministic output.
+- `packages/0gkit-cli/src/commands/cost.ts` — extended. New `--from-jaeger <path>` flag mutually exclusive with `--storage`/`--compute`/`--da`. Reads file via `deps.fs.readFile`, parses JSON, surfaces clean `ConfigError` for missing file / malformed JSON.
+- `packages/0gkit-cli/src/__tests__/jaeger.test.ts` — new. 20 tests: aggregator (10 — happy path, mixed ops, skip dry-run, skip errored, string-vs-bool dry_run, missing fee/gas → 0, empty trace, malformed input, multi-trace merge); renderer (3); JSON serialiser (1); CLI wiring (6 — happy path, human mode, mutex with --storage, unreadable file, malformed JSON, zero-attributed).
+- `apps/docs/app/cli/page.mdx` — new `## 0g cost` section. Two-mode table + worked examples for both `--storage/--compute/--da` (synthesis) and `--from-jaeger` (replay). Documents dry-run + error skip semantics and the JSON envelope shape.
+- `.changeset/cost-forecast-from-jaeger.md` — minor bump on `@foundryprotocol/0gkit-cli`.
+- `docs/superpowers/plans/2026-05-23-post-v1-roadmap.md` — new. SP13–SP25 plan; dependency graph; four-wave sequence; planned decisions D58–D61; explicit out-of-scope list.
+
+**Foundryprotocol repo:** only this `CLAUDE.md` updated. No source changes (the SDK refresh was aborted at user request).
+
+### Next Steps
+
+**Immediate:**
+
+1. **Watch PR #42 CI; squash-merge when green** via `gh pr merge --squash --delete-branch`. After merge, the changesets bot auto-opens a "version packages" PR — merge that to publish `@foundryprotocol/0gkit-cli@1.1.0` (minor) to npm.
+2. **Pick the next SP from `docs/superpowers/plans/2026-05-23-post-v1-roadmap.md`.** The doc recommends **SP13** (docs cleanup + migration guide + version-sync CI gate) as the next start — cheapest win, single PR, immediate trust improvement. The other Wave A items (SP14 `0g traces`, SP15 `--copy-issue-context`) ship after.
+
+**Roadmap shape (from the new plan doc):**
+
+- **Wave A — Trust & truth:** SP13 (docs cleanup + migration page + version-sync CI), SP14 (land PR #42 + local `0g traces` reading `.0gkit/traces/`), SP15 (error polish + `--copy-issue-context`).
+- **Wave B — Golden path:** SP16 (`define0GConfig` in `0gkit-core` + per-template golden path with first-success banner), SP17 (`0g doctor --fix` + `0g test` conformance runner).
+- **Wave C — AI tools + Router:** SP18 (`0g mcp init cursor/claude/windsurf/codex`), SP19 (`Compute.router()` first-class — research-gated on 0G's Router API).
+- **Wave D — Contracts + carryover:** SP20 (`0g contracts import <address|abi>` chain-explorer fetch), SP21 (Foundry SDK refresh onto `^1.0.x` — the aborted work from this session), SP22 (showcase app on `apps.0gkit.com`), SP23 (Discussions + community).
+
+**Carryover items rolled in:** Foundry SDK refresh → SP21, Showcase app → SP22, Community → SP23. The `0g cost --from-jaeger` carryover is PR #42 in flight; SP14 extends it.
+
+### Key Decisions
+
+- **D58 (planned)** — `OGKIT_TRACE_DIR` env opts in to local trace mirroring in `0gkit-observability`. Off by default for privacy; when set, writes JSONL alongside the configured OTel exporter, never replaces it. Drives SP14's `0g traces list/inspect`.
+- **D59 (planned)** — `define0GConfig` lives in `0gkit-core`, not a new package. Keeps install graph flat; same validation everywhere (CLI, templates, MCP).
+- **D60 (planned)** — `Compute.router()` becomes the template default; `Compute.direct()` kept and documented for advanced users. No deprecation of direct.
+- **D61 (planned)** — `0g test` lazy-imports `0gkit-testing` via computed specifier (D39 pattern) to keep CLI cold-start under SP13's perf budget.
+- **Items already shipped that the user listed as backlog:** #17 error pages (DONE since SP9, 45 pages with cause/fix/example), #16 contract registry (mostly DONE since SP4 — only `0g contracts import <address>` is missing → SP20), #5 cold-start (PARTIAL since D39 lazy-jobs — SP13 adds CI benchmark).
+- **Clubbing logic:** #1 + #14 → SP13 (same MDX surface); #4 + #11 → SP18/SP19 (DX tooling); #2 + #12 → SP16 (per-template touch); #3 + #9 → SP17 (doctor extensions); #15 + PR #42 → SP14 (observability story).
+- **(Carried) D51–D57** from earlier today: D51 landing version reads from npm registry; D52 async server components no `@ts-expect-error`; D53 testing mocks reproduce types locally; D54 template migration not bundled into the mock widening PR; D55 the template inline-fake migration shipped as standalone PR #40; D56 `vi.spyOn` is the supported way to tamper with mock storage state; D57 `mockComputeClient` has no "throw" responder knob.
+
+### Previous Session Notes
+
+#### Earlier today (2026-05-23 19:10 IST) — four-PR template-mock migration session
+
+Five PRs landed (`#37`, `#38`, `#39`, `#40`, `#41`). PR #40 was the only net-new work this session — templates' inline `fakeCompute`/`fakeStorage` migrated to use `@foundryprotocol/0gkit-testing@^1.1.0`. `mockComputeClient` and `mockStorageClient` synced to SP6/SP7 class shapes (`.inference()`, `.estimate()`, dry-run overload). Released `@foundryprotocol/0gkit-testing@1.1.0` + patch bumps on `create-0gkit-app` + `create-0g-app`.
+
+#### Earlier today (2026-05-23 15:20 IST) — cookbook + brand + onboarding
+
+PR #35 (llms.txt phrasing), PR #32 (docs UI brand overhaul + a11y), PR #36 (cookbook tutorials chat/ai-agent/NFT). D48 dark-only docs, D49 prose-link underline, D50 cookbook at `/cookbook`.
+
+#### Earlier today (2026-05-23 14:06 IST) — 0gkit v1.0.2 onboarding bundle
+
+PRs #28 (errors redirect), #29 (5-fix onboarding bundle), #30 (maintainer footer + llms.txt), #31 (sentinel workflows), #33 (release v1.0.2). D39–D47.
+
+#### Earlier today (2026-05-23 11:21 IST) — 0gkit.com landing page
+
+PR #26 (landing app), PR #27 (helpUrl rebase to 0gkit.com). Published v1.0.1 of all 18 packages. D38.
+
+#### Pre-domain — v1.0.0 + SP1–SP12
+
+Full 0gkit toolkit shipped. 18 packages live at v1.0.0 on npm. See git log on `rajkaria/0gkit` for sprint commits.
+
+---
+
+## Pre-this-session context (trimmed — see prior commits)
 
 **Four PRs landed this session on `rajkaria/0gkit` main; npm publishes in flight.**
 
