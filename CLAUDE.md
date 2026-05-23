@@ -10,9 +10,13 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 
-## Session Context (Last updated: 2026-05-23 20:02 IST)
+## Session Context (Last updated: 2026-05-23 20:08 IST)
 
 ### Current State
+
+**Brief planning hand-off session — no code changes.** User asked "start with next development sprint"; agreed the next session will (a) land PR #42 on `rajkaria/0gkit` first (squash-merge once CI green via `gh pr merge --squash --delete-branch`, then merge the auto-opened version-packages PR to publish `@foundryprotocol/0gkit-cli@1.1.0`), then (b) plan + execute **SP13** (docs cleanup + migration guide + version-sync CI gate) per `docs/superpowers/plans/2026-05-23-post-v1-roadmap.md` on the 0gkit repo. Session compacted at 8 prompts / ~21M tokens — context preserved by this save.
+
+### Previous Session State (carried — still authoritative)
 
 **One PR opened + one big planning artefact committed on `rajkaria/0gkit`.**
 
