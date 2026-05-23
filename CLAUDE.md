@@ -1,6 +1,167 @@
 # Foundry Protocol — Claude Code session context
 
 Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `main`
+0gkit toolkit: `rajkaria/0gkit` · Domain: `0gkit.com` (live + v1.0.2 published 2026-05-23)
+
+## Always-on rules for this project
+
+- **Squash-merge own PRs** after CI passes; never leave open as a review gate.
+- Commit/push/merge every change without per-change approval; no narration between tool calls.
+- Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
+- **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
+
+## Session Context (Last updated: 2026-05-23 14:06 IST)
+
+### Current State
+
+**0gkit v1.0.2 LIVE on npm — public dev onboarding path unbroken end-to-end.** User dropped an audit identifying 6 bugs that broke the first-minute experience for a fresh dev. All 6 fixed and verified live.
+
+**End-to-end verified after publish:**
+- `npm create 0gkit-app@latest demo --template storage-app` SUCCEEDS (was `tarball/v0.3.x: 404`)
+- Generated `demo/package.json` pins `^1.0.0` (was `^0.3.0`)
+- `npx @foundryprotocol/0gkit-cli@1.0.2 --version` → `1.0.2` in ~11s (was hardcoded `0.1.0`, took minutes due to better-sqlite3 compile)
+- `https://0gkit.com/errors/<CODE>` → 200 OK via 308 redirect to docs subdomain (was 404)
+- `https://0gkit.com/llms.txt` → 3.5KB markdown index (new)
+- Footer credits **Raj Karia** (NOT Foundry Protocol) with X + Telegram + GitHub icon buttons
+
+**Shipped this session (7 PRs):**
+
+1. **[#28](https://github.com/rajkaria/0gkit/pull/28)** — `apps/landing/next.config.mjs` permanent 308 redirect: `/errors/:code` → `https://docs.0gkit.com/errors/:code`. The helpUrls baked into every published tarball forever now resolve. **MERGED + deployed.**
+2. **[#29](https://github.com/rajkaria/0gkit/pull/29)** — onboarding fix bundle (5 fixes): TEMPLATE_REF default `v0.3.x` → `main`; all 9 templates' deps `^0.x` → `^1.0.0`; 12 docs+CLI README+init.ts `npx 0g` → `npx @foundryprotocol/0gkit-cli`; CLI `VERSION = "0.1.0"` constant → `readPackageVersion()` runtime read; `@foundryprotocol/0gkit-jobs` removed from CLI deps + lazy-loaded via computed-specifier (loadFoundry pattern). Plus version-sync vitest. **MERGED.**
+3. **[#33](https://github.com/rajkaria/0gkit/pull/33)** — changeset release PR auto-opened by #29; **MERGED → published `@foundryprotocol/0gkit-cli@1.0.2`, `create-0gkit-app@1.0.2`, `create-0g-app@1.0.8` to npm.**
+4. **[#30](https://github.com/rajkaria/0gkit/pull/30)** — `apps/landing/components/Footer.tsx` rewritten for maintainer attribution: "Maintained by Raj Karia" + X (x.com/rajkaria_) + Telegram (t.me/rajkaria) + GitHub icon buttons + Maintainer X/Telegram in Community col + copyright line credits Raj. `apps/landing/public/llms.txt` new (llmstxt.org format, 3.5KB). `apps/docs/app/concepts/page.mdx` → "Deeper concept guides" section linking durable-jobs + observability + 3 exporter pages. `apps/docs/lib/nav.ts` → added 4 missing package nav entries (contracts/indexer/testing/devnet). **MERGED + deployed.**
+5. **[#31](https://github.com/rajkaria/0gkit/pull/31)** — two new sentinel workflows. `.github/workflows/fresh-machine-smoke.yml`: daily cron + manual dispatch, matrix 9 templates × Node 20/22/24 of `npm create 0gkit-app@latest` against published npm (zero env overrides), asserts no `^0.x` pre-v1 pins, calls CLI `--version`. `.github/workflows/link-check.yml`: daily + push-to-main + manual, lychee crawls landing + docs + a generated helpUrls list pulled dynamically from `packages/0gkit-core/src/error-codes.ts`. **MERGED.**
+6. **[#32](https://github.com/rajkaria/0gkit/pull/32)** — docs UI brand overhaul. `apps/docs/app/globals.css` full palette swap (pure-black bg, purple `#9200E1`, brand-tinted sidebar active state with inset bar, gradient h1, polished code blocks with rounded table borders + brand-purple scrollbar). `apps/docs/app/layout.tsx` adds Geist + Geist Mono via `next/font/google`, ØG mark + "docs" pill in topbar, Home + Playground quick-links. `apps/docs/components/Logo.tsx` new (copy of landing's, deterministic id for SSR safety). LHCI a11y first failed 0.91 vs 0.95 — fixed with `-webkit-text-fill-color: transparent` + solid `color: var(--fg)` fallback on h1 + bumped `--muted` from `#6e6e7a` to `#8a8a96` (4.3:1 → 5.4:1 contrast for small text). **OPEN — CI re-running post a11y fix.**
+7. **[#35](https://github.com/rajkaria/0gkit/pull/35)** — one-line: `/llms.txt` had hardcoded "v1.0.1" pin that drifted instantly when v1.0.2 shipped; replaced with "v1.0.x release line, surface-stable until v2". **OPEN — CI pending.**
+
+**Closed as duplicate:** PR #34 (stale changeset release PR opened mid-flight, content identical to merged #33).
+
+### Recent Changes
+
+Source of truth = `git log origin/main` on `rajkaria/0gkit`:
+- `02c885c` (#31) ci: fresh-machine smoke + link-check workflows
+- `fdcec79` (#30) feat: maintainer footer + llms.txt + concept discoverability
+- `80be713` (#33) release v1.0.2: cli + create-0gkit-app + create-0g-app
+- `378a8de` (#29) onboarding fix bundle (5 bugs)
+- `fa5e490` (#28) landing redirect /errors/:code → docs.0gkit.com
+
+Open PRs still in flight: [#32](https://github.com/rajkaria/0gkit/pull/32) docs UI overhaul, [#35](https://github.com/rajkaria/0gkit/pull/35) llms.txt phrasing polish.
+
+### Next Steps
+
+**Immediate:**
+
+1. **Wait for PR #32 + #35 CI green, squash-merge both.** No re-CI of #32 needed — the a11y fix is the second commit on the branch; just verify lhci passes ≥0.95 across perf/a11y/best-practices/SEO on all 4 audited pages.
+2. **After #32 lands** — verify docs.0gkit.com renders the new purple/Geist palette and the topbar logo. Visit a few pages.
+3. **After #35 lands** — verify `https://0gkit.com/llms.txt` has the un-pinned phrasing.
+
+**Carryover polish (deferred — user didn't flag, but in the original backlog):**
+
+4. **`0gkit-testing` mocks sync to SP6/SP7 class shapes.** Per CLAUDE.md: `mockComputeClient.chat()` should be `.inference()`; `mockStorageClient` needs `.estimate(bytes)` returning a deterministic `Estimate`, and `.upload(bytes, { dryRun: true })` returning the `DryRunResult` envelope shape. Templates have inline fakes today — once mocks match real shape, templates can use the published mocks.
+5. **`0g cost forecast --from-jaeger <path>`** — new CLI subcommand: parse a Jaeger trace dump, aggregate cost across `0gkit.*` attributed spans. Was scoped out of SP11 v0 explicitly. Substantial work (trace parser + aggregator).
+
+**Larger growth-lever items (from earlier in this session, not started):**
+
+6. **Cookbook / long-form tutorials.** Reference docs are CI-enforced and complete, but no "build an indexed marketplace end-to-end" narrative walkthrough. Pick 2–3 archetypes (chat, ai-agent, nft-with-storage), write guided builds. Biggest growth lever after onboarding-fix landed.
+7. **Discoverability** — Google Search Console domain verification + sitemap submit (needs user action — registrar/SC access).
+8. **Real-world showcase app** — one public app consuming `^1.0.2` from npm (not the workspace, not a template), deployed and linked from landing.
+9. **Community surface** — enable GitHub Discussions (templates already shipped in SP12), set up Discord or similar.
+10. **Foundry consumption refresh** — refactor Foundry's `packages/sdk` onto `@foundryprotocol/0gkit-* ^1.0.2`, delete duplicated storage/da/attestation/inference paths.
+
+### Key Decisions
+
+- **D39 — CLI lightweight via lazy-loaded `0gkit-jobs`.** `@foundryprotocol/0gkit-jobs` removed from CLI `dependencies`; loaded via computed-specifier dynamic import inside `loadJobsBackend()` (loadFoundry pattern, depcruise sees no edge). Devs who never run `0g jobs *` don't pay the multi-minute better-sqlite3 compile. Missing-module path throws clear `ConfigError` with install hint.
+- **D40 — CLI `VERSION` read from `package.json` at runtime via `readFileSync`.** Same `readPackageVersion()` pattern already used by `create-0gkit-app/src/index.ts`. Regression test (`packages/0gkit-cli/src/__tests__/version-sync.test.ts`) asserts `VERSION === pkg.version` exactly so a future hardcode breaks CI.
+- **D41 — Templates default `OGKIT_TEMPLATE_REF=main`** (was `v0.3.x` which never existed). v1.x uses per-package npm tags (`@foundryprotocol/0gkit-core@1.0.1`), not a floating `v1.0.x` git tag — `main` is the closest stable thing (CI-protected). Env override unchanged for reproducible pinning.
+- **D42 — Landing app owns the `/errors/:code` redirect.** Permanent 308 (`Next.js redirects.permanent: true`) → `docs.0gkit.com/errors/:code`. Works retroactively for every v1.0.1+ tarball without needing a v1.0.3 republish.
+- **D43 — Docs site stays on Next.js, no GitBook migration.** GitBook would lose `pnpm docs:check` (CI-enforced one MDX page per error code), Pagefind in-site search, Lighthouse ≥0.95 gate, 45 error pages, 18 package pages, MDX components. PR #32 polished existing UI to match landing's brand (purple `#9200E1`, Geist, ØG mark) instead.
+- **D44 — A11y first-class.** LHCI ≥0.95 gate caught my gradient-h1 contrast regression on PR #32 first try. Fixed by giving the gradient a solid `color` fallback so axe-core sees a valid foreground before WebKit paints the gradient. Also bumped `--muted` to `#8a8a96` (5.4:1 vs landing's `#6e6e7a` 4.3:1) because docs uses muted on small text (sidebar section titles, topbar tag).
+- **D45 — `0g` binary stays via `npx @foundryprotocol/0gkit-cli`.** `0g` as an npm package name belongs to an unrelated game framework; we don't squat it. The bin name `0g` works after `npm i -g @foundryprotocol/0gkit-cli`. Considered claiming the available `0gkit` npm name with a shim package — deferred (small UX win, more publishing surface to maintain).
+- **D46 — Maintainer attribution = Raj Karia personally.** Footer + copyright + llms.txt credit Raj Karia with personal socials (x.com/rajkaria_ + t.me/rajkaria), not Foundry Protocol. The `@foundryprotocol/0gkit-*` npm scope is unchanged — that's where the packages live. This is just human attribution.
+- **D47 — Sentinel workflows on schedule, not PRs.** `fresh-machine-smoke` and `link-check` run daily + manual. Not on `pull_request` because published npm lags behind main — PR runs would always be red until the next release. The existing `create-0gkit-app · scaffolds a project` PR job covers source-tree coverage by building from the branch SHA.
+
+### Previous Session Notes
+
+#### Earlier today (2026-05-23 11:20–13:20 IST) — landing-page + helpUrl rebase
+
+Shipped `apps/landing` Next.js 16 marketing site to 0gkit.com (PR [#26](https://github.com/rajkaria/0gkit/pull/26) → `ab359ac`). New site with 0G brand kit (pure-black, `#9200E1` purple, Geist, ØG slashed-zero mark), hero with copyable `npm create 0gkit-app@latest`, 6 value props, code samples, 18-package map, comparison vs raw SDK. SEO complete (metadataBase + canonical + OG + Twitter + sitemap + robots + 4 JSON-LD blocks + server-generated OG image). `ERROR_HELP_BASE` rebased `0gkit.dev` → `0gkit.com` (D38). All 19 `packages/*/package.json` `homepage` → `https://0gkit.com`. `docs/DEPLOYMENT.md` documents 3-Vercel-project layout. Published v1.0.1 of all 18 packages via PR [#27](https://github.com/rajkaria/0gkit/pull/27) (the helpUrl rebase). docs.0gkit.com + playground.0gkit.com brought up via Vercel CLI link + API project updates.
+
+#### Pre-domain (SP1–SP12 + v1.0.0)
+
+Full 0gkit toolkit shipped (SP1 scaffolder → SP12 community/CI/docs). v1.0.0 cut `0bf9fce`; 18 packages live on npm. SP12 added Pagefind + Lighthouse CI ≥0.95 gates + `pnpm docs:check --exports`. SP11 added `0gkit-observability` (OTel) + `0g cost`. SP10 added `0gkit-jobs` (durable runner, 3 backends). SP9 added 45-code error taxonomy with computed `helpUrl`. SP8 expanded templates 5 → 9 archetypes. SP7 added cost estimator + dryRun across storage/compute/da/contracts/cli. SP6 added `0gkit-indexer` (reorg-safe polling) + `useEvent`/`useLogs`. SP5 added `0gkit-testing` (mocks/fixtures/matchers). SP4 added `0gkit-contracts` (typed clients + Foundry codegen). Phase 1 (SP1–SP3): scaffolder + `0g dev` + wallet. Hackathon era (Sprint 0–3): contracts + SDK + indexer + landing — pre-0gkit split.
+
+Memory pointers: deployer key in sibling worktree `.env`; 0gkit lives at `rajkaria/0gkit` on GitHub; PR workflow rule = squash-merge after CI green, never wait for review.
+
+Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `main`
+0gkit toolkit: `rajkaria/0gkit` · Domain: `0gkit.com` (live as of 2026-05-23)
+
+## Always-on rules for this project
+
+- **Squash-merge own PRs** after CI passes; never leave open as a review gate.
+- Commit/push/merge every change without per-change approval; no narration between tool calls.
+- Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
+- **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
+
+## Session Context (Last updated: 2026-05-23 11:20 IST)
+
+### Current State
+
+**0gkit.com landing page shipped to `rajkaria/0gkit` main.** PR [#26](https://github.com/rajkaria/0gkit/pull/26) squash-merged as [`ab359ac`](https://github.com/rajkaria/0gkit/commit/ab359ac) after fixing one CI breakage (`next lint` removed in Next.js 16 — dropped the script). All checks green.
+
+What's live on main:
+
+- **`apps/landing`** — new Next.js 16 + Tailwind v4 + React 19 marketing site for **0gkit.com**. SSG-only (7 static pages). Single high-conversion page: hero with copyable `npm create 0gkit-app@latest`, value props (6 cards), code samples (storage/compute/attestation/CLI), 18-package map grouped by layer, 0Gkit-vs-raw-SDK comparison, trust stats, footer.
+- **0G brand applied** per [0g.ai/brandkit](https://0g.ai/brandkit): pure `#000000` background, purple primary `#9200E1` + tints `#B75FFF`/`#CB8AFF`/`#D5A3FF`/`#E3C1FF`, Geist + Geist Mono via `next/font/google`, ØG slashed-zero logo.
+- **Hero animations**: 3 floating purple orbs (`filter: blur(80px)`, 12s float), conic-gradient spinner ring (30s spin), SVG grid lines, drifting dot pattern (24s), multi-layer radial glow, vertical beam with `mix-blend-mode: screen`. Animated `0G` gradient text, pulsing install command, staggered rise-on-load. All gated on `prefers-reduced-motion`.
+- **Nomenclature**: display text uses `0Gkit` (capital G) and `0G` (capital G). Package names, install commands, and URLs keep lowercase (`0gkit-core`, `npm create 0gkit-app@latest`, `0gkit.com`).
+- **SEO**: `metadataBase` + canonical, Open Graph, Twitter card, server-generated 1200×630 OG image via `next/og`, `sitemap.ts`, `robots.ts`, 4 JSON-LD blocks (`SoftwareApplication`, `Organization`, `WebSite`, `FAQPage`).
+- **`ERROR_HELP_BASE` rebased** from `https://0gkit.dev/errors/` → `https://0gkit.com/errors/` (D38). Every test, error MDX page, scaffolder updated. Changeset stages `patch` across all 18 published packages (still pending publish → v1.0.1).
+- **Every `packages/*/package.json` `homepage`** → `https://0gkit.com` (19 high-authority npm backlinks).
+- **`docs/DEPLOYMENT.md`** documents 3-Vercel-project layout. No `0gkit.dev` alias — v1.0.0 had zero install base, so v1.0.1 simply uses 0gkit.com clean.
+
+### Recent Changes
+
+This session's PR (#26 = `ab359ac` on main):
+
+- `apps/landing/**` — new Next.js app: `app/{layout,page,sitemap,robots,opengraph-image,icon.svg,globals.css}` + `components/{Logo,Nav,Hero,HeroBackground,InstallCommand,ValueProps,CodeSamples,PackageMap,Comparison,TrustSignals,CTABottom,Footer,StructuredData}.tsx` + `package.json`/`tsconfig.json`/`next.config.mjs`/`postcss.config.mjs`/`README.md`/`.gitignore`/`next-env.d.ts`.
+- `packages/0gkit-core/src/error-codes.ts` — `ERROR_HELP_BASE` → 0gkit.com.
+- 45 `apps/docs/app/errors/<CODE>/page.mdx` — Help URL line rewritten.
+- 22 test assertions across 8 packages — assert against 0gkit.com.
+- `apps/docs/app/templates/page.mdx` — Vercel deploy buttons.
+- All 19 `packages/*/package.json` `homepage` → `https://0gkit.com`.
+- `scripts/scaffold-error-pages.mjs` — new base.
+- `docs/DECISIONS.md` — D38 appended.
+- `docs/DEPLOYMENT.md` — new file documenting 3-project Vercel layout.
+- `README.md` (root) — adds 0gkit.com badge and primary link in first three lines.
+- `.changeset/landing-and-helpurl-rebase.md` — patch across all 18 published packages.
+
+### Next Steps
+
+1. **Stand up the three Vercel projects** (user action — needs Vercel + registrar access):
+   - `0gkit-landing` rooted at `apps/landing` → `0gkit.com` + `www.0gkit.com`.
+   - `0gkit-docs` rooted at `apps/docs` → `docs.0gkit.com`.
+   - `0gkit-playground` rooted at `apps/playground` → `playground.0gkit.com`.
+   - DNS: apex `A → 76.76.21.21`, each subdomain `CNAME → cname.vercel-dns.com`.
+2. **Cut v1.0.1 release** — `pnpm changeset version` → squash merge release PR → publish workflow ships the helpUrl-rebased patch across all 18 packages.
+3. **Submit to Google Search Console** — domain property on `0gkit.com` (DNS TXT verify), submit `https://0gkit.com/sitemap.xml`.
+4. **Foundry consumption refresh** — refactor `packages/sdk` here in Foundryprotocol onto `@foundryprotocol/0gkit-* ^1.0.1`, delete the duplicated storage/da/attestation/inference paths.
+5. **Tutorial / cookbook docs layer** — long-form "build an indexed marketplace end-to-end" walkthroughs (reference docs are complete + CI-enforced).
+6. **Carryover**: `/concepts` index → observability sub-routes link; `0gkit-testing` mocks → SP6/SP7 class shape sync; `0g cost forecast --from-jaeger`.
+
+### Key Decisions
+
+- **D38 — `ERROR_HELP_BASE` locked to `https://0gkit.com/errors/` from v1.0.1.** Derived from one constant (per D27). 0gkit.dev redirect intentionally not held; v1.0.0 has zero meaningful install base, so rebase is clean.
+- **Architecture: three Vercel projects, three subdomains** (not subpaths via rewrites). Each app builds independently, isolated Pagefind/search artifacts, clean preview URLs. Google treats subdomains as separate properties — wanted for ranking the marketing root.
+- **All package `homepage` fields → 0gkit.com.** 19 high-PageRank backlinks from npmjs.com to the domain — strongest free SEO lever.
+- **0G brand palette + ØG slashed-zero mark** per the published 0g.ai brand kit. Pure black bg, purple primary `#9200E1`, Geist family.
+- **Nomenclature**: `0Gkit` and `0G` in display text; package names / install commands / URLs stay lowercase.
+
+### Previous Session Notes
+
+(Trimmed — see git log on `rajkaria/0gkit` for the SP1–SP12 + v1.0.0 history. Major checkpoints: v1.0.0 cut as `0bf9fce`; SP12 polish + Pagefind + Lighthouse CI as `3b430a2`; SP11 observability + `0g cost forecast` as `2f7a022`; SP10 `0gkit-jobs` durable runner as `296c1d8`; SP9 error taxonomy as `eca1540`. v1.0.0 published 18 packages to npm.)
+
+
+Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `main`
 Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on the **0gkit** open-source toolkit.
 
 ## Always-on rules for this project
