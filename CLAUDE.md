@@ -10,11 +10,62 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 
-## Session Context (Last updated: 2026-05-23 15:20 IST)
+## Session Context (Last updated: 2026-05-23 15:48 IST)
 
 ### Current State
 
-**Three PRs landed this session — onboarding + brand polish complete, cookbook tutorials shipped.** Carryover from the 14:06 session: PR #32 (docs UI overhaul) and PR #35 (llms.txt phrasing) were left open awaiting CI. Both merged. New work: PR #36 cookbook tutorials.
+**Two PRs opened this session, awaiting CI/merge.** Both target `rajkaria/0gkit`:
+
+- **[#37](https://github.com/rajkaria/0gkit/pull/37)** — `landing: auto-fetch version from npm registry`. Branch `landing/version-from-github`. New `apps/landing/lib/version.ts` reads `@foundryprotocol/0gkit-cli`'s `latest` from `https://registry.npmjs.org/...` at build time with ISR (`revalidate: 3600`). Falls back to `v1.0.2` if registry is unreachable. Hero pill, Nav badge, TrustSignals stat, StructuredData `softwareVersion`, OG image text, root layout + page metadata all now interpolate the live version. Verified built HTML renders `v1.0.2` everywhere. CI initially failed (transient `terminal prompts disabled` checkout auth error); re-triggered with an empty commit. **Awaiting CI green → squash-merge.**
+- **[#38](https://github.com/rajkaria/0gkit/pull/38)** — `testing: sync mocks to SP6/SP7 class shapes`. Branch `testing/sync-mocks-to-sp7`. `mockComputeClient.chat(messages)` → `inference({ messages, ... })` returning `{ output, receipt, raw }`; new `.estimate()` + `inference(_, { dryRun: true })` returning `DryRunResult<InferenceResult>`. `mockStorageClient` gains `.estimate(data)` + `upload(_, { dryRun: true })` returning `DryRunResult<UploadResult>`. `.discover()` renamed `.listProviders()`. **57/57 tests green**, boundary + format + build green. Changeset minor bump on `@foundryprotocol/0gkit-testing` (1.0.1 → 1.1.0). **Awaiting CI green → squash-merge.**
+
+A `ScheduleWakeup` is queued for ~15:50 IST to check + merge both PRs.
+
+### Recent Changes
+
+This session's diff:
+
+**PR #37 (`apps/landing/`):**
+- `apps/landing/lib/version.ts` — new. Fetches latest 0gkit-cli version from npm registry with `next: { revalidate: 3600 }`. Returns `{ version, tag, url }`. Fallback to `1.0.2`.
+- `apps/landing/components/Hero.tsx` — async; uses `getLatestRelease()` for pill href + label.
+- `apps/landing/components/Nav.tsx` — async; uses `getLatestRelease()` for the version pill.
+- `apps/landing/components/TrustSignals.tsx` — async; STATS built inside the component from the live version.
+- `apps/landing/components/StructuredData.tsx` — async; `SOFTWARE_APPLICATION` lifted to `buildSoftwareApplication(version)` factory.
+- `apps/landing/app/layout.tsx` — `generateMetadata()` async; DESCRIPTION interpolates version.
+- `apps/landing/app/opengraph-image.tsx` — async; OG text uses template-string interpolation (single-child div) to satisfy Satori's `display: flex` rule.
+- `apps/landing/app/page.tsx` — `metadata` slimmed to `{ alternates: { canonical: "/" } }`; description inherits from layout. Async HomePage; no `@ts-expect-error` needed (Next 16 + React 19 + TS 5.6).
+
+**PR #38 (`packages/0gkit-testing/`):**
+- `packages/0gkit-testing/src/mocks/compute.ts` — full rewrite. New `MockInferenceArgs` / `MockInferenceResult` / `MockComputeEstimate(Breakdown)`; `inference()` overloaded with dry-run; `estimate()` derives from `countTokens(content) × 1 gwei` (matches `0gkit-compute`'s placeholder); `listProviders()` replaces `discover()`. Type-only imports from `0gkit-core` keep the boundary clean (no static dep on `0gkit-compute`).
+- `packages/0gkit-testing/src/mocks/storage.ts` — full rewrite. New `MockStorageEstimate(Breakdown)` / `MockUploadResult`; `upload()` overloaded with dry-run; `estimate(data)` derives from 256 KiB segments × 80k gas + 1 gwei (matches `0gkit-storage`'s placeholder). Dry-run does **not** mutate the in-memory store.
+- `packages/0gkit-testing/src/mocks/index.ts` + `src/index.ts` — re-export the new types.
+- `packages/0gkit-testing/src/__tests__/mocks.test.ts` — full rewrite. 19 tests across Storage/Compute/DA, including new dry-run + estimate paths. (Net +7 tests, total 57/57 passing in the package.)
+- `packages/0gkit-testing/README.md` — usage examples updated to `inference()` + new `.estimate()` + dry-run.
+- `.changeset/sync-testing-mocks-sp7.md` — minor bump with migration notes.
+
+### Next Steps
+
+**Immediate (wakeup-driven):**
+
+1. Verify PR #37 + #38 CI green; squash-merge both via `gh pr merge --squash --delete-branch`.
+2. Once #38 lands, run `changeset version` + release to publish `@foundryprotocol/0gkit-testing@1.1.0` to npm.
+
+**Carryover (deferred to next session — all substantial, do not bundle):**
+
+3. **Foundry SDK refresh onto `@foundryprotocol/0gkit-* ^1.0.2`** — refactor `Foundryprotocol/packages/sdk` to consume the published packages, delete duplicated storage/da/attestation/inference paths. Cross-repo, multi-PR work.
+4. **Real-world showcase app** — one public app on `^1.0.2` (not workspace, not template), deployed, linked from landing.
+5. **`0g cost forecast --from-jaeger <path>`** — new CLI subcommand: trace parser + per-span aggregator across `0gkit.*` attributed spans + tests + docs.
+6. **Community surface** — enable GitHub Discussions; Discord optional.
+7. **Discoverability** — GSC verification + sitemap submit (needs user / registrar access).
+8. **Template inline-fake migration** — now that #38 widens the mock surface, the SP8 templates (`ai-agent`, `storage-app`, `tee-attested-api`, `chat`) can drop their inline `fakeCompute`/`fakeStorage` and depend on `@foundryprotocol/0gkit-testing` directly. Intentionally **not** bundled into #38 to keep that PR scoped.
+
+### Key Decisions
+
+- **D51 — Landing version is read from the npm registry, not GitHub releases.** GitHub's `releases/latest` returned `tag_name = "@foundryprotocol/0gkit-cli@1.0.2"` (the most recent per-package changeset release), which interpolated as `softwareVersion: "@foundryprotocol/0gkit-cli@1.0.2"`. Switching to `https://registry.npmjs.org/@foundryprotocol/0gkit-cli/latest` yields just `version: "1.0.2"`. This is also the truth users see when they `npm i`. Fallback hardcoded to `1.0.2` so the registry being down can never break the marketing page.
+- **D52 — Async server components, no `@ts-expect-error` shims.** Next 16 + React 19 + TS 5.6 type async server components natively. The pragma is required only on older stacks.
+- **D53 — Testing mocks reproduce the result/estimate types locally instead of depending on `0gkit-storage` / `0gkit-compute`.** Keeps `0gkit-testing`'s "depends on core only" rule. Types tagged `Mock*` so downstream tests using `import type { StorageEstimate } from "@foundryprotocol/0gkit-storage"` still type-check against the mock's return (they're structurally identical via the shared `Estimate` from core).
+- **D54 — Template inline fakes are not migrated in #38.** Widening the mock surface and migrating consumers are two changes; bundling them would make #38 review-hostile. Migration is queued as a follow-up.
+- **(Carried) D48–D50** from earlier in the day: dark-only docs CSS, prose-link underline, cookbook at `/cookbook`.
 
 **Shipped this session (all merged to main):**
 
@@ -66,6 +117,10 @@ Cookbook (prior session's biggest-growth-lever item) is now shipped — pick the
 - **(Carried) D39–D47** from prior session: CLI lazy-load jobs, runtime VERSION read, OGKIT_TEMPLATE_REF=main, landing-owned /errors redirect, docs stays on Next.js (no GitBook), a11y first-class, 0g binary via npx, maintainer = Raj Karia personally, sentinel workflows on schedule not PR.
 
 ### Previous Session Notes
+
+#### Earlier today (2026-05-23 15:20 IST) — onboarding + brand polish + cookbook
+
+Three PRs merged: [#35](https://github.com/rajkaria/0gkit/pull/35) llms.txt phrasing; [#32](https://github.com/rajkaria/0gkit/pull/32) docs UI brand overhaul + a11y (dropped `prefers-color-scheme: light`, added prose-link underlines); [#36](https://github.com/rajkaria/0gkit/pull/36) cookbook tutorials (chat / ai-agent / NFT). D48 (dark-only docs), D49 (prose underline), D50 (cookbook layout). Cookbook is now live at docs.0gkit.com/cookbook with three end-to-end guides.
 
 #### Earlier today (2026-05-23 14:06 IST) — 0gkit v1.0.2 onboarding + brand foundation
 
