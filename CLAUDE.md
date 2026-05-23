@@ -10,7 +10,56 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check` (dependency-cruiser). Foundry is always a separately-loaded opt-in plugin.
 
-## Session Context (Last updated: 2026-05-22 ~22:15 IST)
+## Session Context (Last updated: 2026-05-23 ~08:35 IST)
+
+### 🎉 v1.0.0 ✅ Cut & published to npm
+
+**0gkit is feature-complete.** All 12 sub-projects (SP1–SP12) shipped, Phase 4 closed, **v1.0.0** cut across every published package.
+
+**This session:**
+
+1. **Landed SP12** — pulled from the previous session's `sp12-polish` local branch, committed the lingering `0gkit-testing` vitest timeout fix (per-test 30s, addresses the SP11 carryover flake), opened [PR #22](https://github.com/rajkaria/0gkit/pull/22), fixed two CI breakages along the way (out-of-sync `pnpm-lock.yaml` after pagefind addition; `lighthouse:no-pwa` preset adding strict per-audit assertions on top of the documented 0.95 category gates — dropped the preset). Squash-merged as `3b430a2`.
+2. **Released SP12** — merged the auto-generated changeset PR [#23](https://github.com/rajkaria/0gkit/pull/23). Published `create-0gkit-app@0.5.0` to npm.
+3. **Cut v1.0.0** — opened [PR #24](https://github.com/rajkaria/0gkit/pull/24) with a single changeset bumping all 17 `@foundryprotocol/0gkit-*` packages + `create-0gkit-app` to **major**. Fixed prettier flagging pagefind's generated output (added `apps/docs/public/pagefind/` to `.gitignore` + `.prettierignore`). CI green. Squash-merged as `7bad6be`.
+4. **Released v1.0.0** — merged changeset PR [#25](https://github.com/rajkaria/0gkit/pull/25) (`0bf9fce`). Release workflow published **18 packages at v1.0.0** to npm.
+5. **Tagged & released on GitHub** — created annotated `v1.0.0` tag at `0bf9fce` + a consolidated GitHub Release at https://github.com/rajkaria/0gkit/releases/tag/v1.0.0 summarising the full v1.0.0 surface.
+
+**All 18 packages live at v1.0.0 on npm:**
+
+- `@foundryprotocol/0gkit-core` `0gkit-cli` `0gkit-storage` `0gkit-compute` `0gkit-da` `0gkit-attestation` `0gkit-chain`
+- `@foundryprotocol/0gkit-wallet` `0gkit-wallet-react`
+- `@foundryprotocol/0gkit-contracts` `0gkit-indexer` `0gkit-jobs` `0gkit-observability` `0gkit-react` `0gkit-testing` `0gkit-mcp` `0gkit-devnet`
+- `create-0gkit-app`
+
+**Stability commitment from v1.0.0:** public API surface frozen until v2.0.0. Bug fixes → patches; new features → minors; breaking changes → majors.
+
+**Next session:**
+
+1. **Foundry consumption refresh.** Foundryprotocol's own `packages/sdk` was supposed to refactor onto `@0gkit/*` internals (SP5 from the original 0gkit roadmap — never landed in this branch). With `1.0.0` on npm, Foundry can now `^1.0.0`-pin and delete the duplicated storage/da/attestation/inference code paths it carries today. Worth scoping as a Foundry-side sprint.
+2. **Real-world dogfood pass.** Stand up a small example consuming `^1.0.0` from npm (not the workspace), publish it as a public starter, and use it as a smoke test for the published-package experience (Pagefind search reachable in published docs, helpUrls hit live pages, scaffold installs cleanly off `npm create 0gkit-app@latest`).
+3. **Post-v1 minor backlog** — `0g cost forecast --from-jaeger <path>` (deferred from SP11), `concept index page → observability sub-routes link` (SP12 polish miss), `0gkit-testing` mocks updated to match the real SP6/SP7 class shapes (template inline-fake migration).
+
+### SP12 — Polish + community + Pagefind + Lighthouse CI ✅ Shipped
+
+**0gkit repo:** [PR #22](https://github.com/rajkaria/0gkit/pull/22) — SP12 squash-merged as `3b430a2`. Branch `sp12-polish` deleted post-merge.
+
+**What shipped:**
+
+- **`create-0gkit-app --ci <github|gitlab|circle|none>`** — scaffolds chosen CI workflow files from `templates/_ci/` alongside the template.
+- **Vercel Deploy buttons** on all 9 template READMEs + docs templates page.
+- **Community templates** — `.github/ISSUE_TEMPLATE/{bug,feature,security,rfc,help,show-and-tell}` + `.github/DISCUSSION_TEMPLATE/{help,show-and-tell,rfcs}`.
+- **CONTRIBUTING.md** refresh — 8 sections (setup, tests, templates, error codes, sub-project plans, changesets, DCO sign-off, COC) + Contributor Covenant 2.1 contact wired.
+- **`pnpm docs:check --exports`** — asserts every public export of every `0gkit-*` package is documented; CI gate.
+- **Pagefind in-site search** — lazy-loaded on focus, ⌘K shortcut, wired into docs layout. `apps/docs/public/pagefind/` now in `.gitignore` (regenerated on every `pnpm build`).
+- **Lighthouse CI** — ≥ 0.95 gate across performance / a11y / best-practices / SEO on 4 pages.
+- **D35–D37** decisions appended.
+- **Roadmap marked complete** — v1.0.0 milestone.
+- **Pickup from SP11:** `0gkit-testing` per-test timeout bumped to 30s to avoid turbo parallel-scheduler starvation.
+
+**Implementation deviations:**
+
+- Dropped the `lighthouse:no-pwa` preset from `lighthouse.config.json`. The preset enforced individual-audit assertions on top of the documented four-category 0.95 gate (e.g. `unused-javascript` maxLength=0, `lcp-lazy-loaded` minScore on pages without an LCP image returning NaN, etc.). The category gate is the documented SP12 contract; the preset was failing CI spuriously without adding meaningful coverage on top of the categories.
+- Added `apps/docs/public/pagefind/` to `.gitignore` + `.prettierignore`. Pagefind's `pagefind:build` regenerates these on every docs build — they are artifacts, not source.
 
 ### SP11 — `@foundryprotocol/0gkit-observability` ✅ Shipped
 
