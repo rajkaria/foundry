@@ -10,11 +10,89 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 
-## Session Context (Last updated: 2026-05-23 20:08 IST)
+## Session Context (Last updated: 2026-05-23 20:45 IST)
 
 ### Current State
 
-**Brief planning hand-off session — no code changes.** User asked "start with next development sprint"; agreed the next session will (a) land PR #42 on `rajkaria/0gkit` first (squash-merge once CI green via `gh pr merge --squash --delete-branch`, then merge the auto-opened version-packages PR to publish `@foundryprotocol/0gkit-cli@1.1.0`), then (b) plan + execute **SP13** (docs cleanup + migration guide + version-sync CI gate) per `docs/superpowers/plans/2026-05-23-post-v1-roadmap.md` on the 0gkit repo. Session compacted at 8 prompts / ~21M tokens — context preserved by this save.
+**SP13 shipped + released. Four PRs landed on `rajkaria/0gkit` this session.** All gates green; npm published the patch bumps for `0gkit-storage` + `0gkit-compute` plus the minor for `0gkit-cli` from the prior in-flight PR.
+
+- **[#42](https://github.com/rajkaria/0gkit/pull/42)** `feat(cli): 0g cost forecast --from-jaeger <path>` — **MERGED** as `6ff20a1`. The last SP11 carryover (was the only open PR at session start, all checks already green when picked up).
+- **[#43](https://github.com/rajkaria/0gkit/pull/43)** `chore: version packages` (auto-opened after #42) — **MERGED** as `e418683`. Triggered Release workflow → `@foundryprotocol/0gkit-cli@1.1.0` published to npm.
+- **[#44](https://github.com/rajkaria/0gkit/pull/44) — SP13** `docs cleanup + migration guide + version-sync CI gate` — **MERGED** as `d964721`. 37 files, +848/−55. One-shot CI red on the new perf-benchmark workflow (missing transitive 0gkit-* dist on a `--filter` build); fixed in the same branch by switching the prebuild to a workspace `pnpm build`; re-run all green. Branch `sp13-docs-cleanup-migration-version-gate` deleted post-merge.
+- **[#45](https://github.com/rajkaria/0gkit/pull/45)** `chore: version packages` (auto-opened after #44) — **MERGED**. Release workflow publishes `@foundryprotocol/0gkit-storage` + `@foundryprotocol/0gkit-compute` patches (deprecation copy correction in source code).
+
+No open PRs. Workspace clean on `main` at the post-#45 release commit.
+
+### SP13 — what shipped (single PR)
+
+**Docs:**
+
+- **New `apps/docs/app/migrate-from-official-sdks/page.mdx`** — three side-by-side migration blocks (storage / compute / DA) with real install diffs, before/after code samples, what-you-gain rollup, and the `.raw()` escape hatch documented for hybrid usage.
+- Sidebar nav (`apps/docs/lib/nav.ts`) gains a **Migration** section under Guides.
+- **13 stale `rajkaria/0g-ai-kit` slug refs** across per-package MDX rewritten to `rajkaria/0gkit` (D13 repo rename was never propagated to per-package docs — `npx degit` lines were silently broken).
+- **8 template README Vercel deploy buttons + inline links** flipped from `0gkit.dev` → `docs.0gkit.com` (D38). The URL-encoded `envLink` / `envDescription` fragments are caught by the same sed.
+- `apps/docs/app/getting-started/page.mdx` no longer pins `0.1.0` for the `@foundryprotocol` scope — uses `@latest` per the canonical SP13 pattern (versions are read from the npm registry at build time everywhere else, e.g. apps/landing's `getLatestRelease()`).
+- Storage / compute "next major" deprecation copy in docs corrected to **v2** (we shipped v1.0; the prior "removed in v1.0" copy was self-contradictory).
+
+**CI gates:**
+
+- **`docs:check --versions`** — new mode in `scripts/docs-check.mjs`. Walks MDX + README files, extracts `@foundryprotocol/0gkit-*@x.y.z` pins (caret/tilde OK; `@latest` and unversioned mentions ignored), reads current `packages/<name>/package.json`, fails CI if any pin is **lower** than current. Wired into existing `pnpm docs:check`. 17 new node:test cases in `scripts/__tests__/docs-check.test.mjs` (semver compare ignoring pre-release suffixes, pin discovery, version diff, edge cases like unparseable package.json + non-existent dirs).
+- **`.github/workflows/perf-benchmark.yml`** — new workflow. Runs `scripts/bench-cli-coldstart.mjs` (8 iterations + 2 warmups, fresh `node` process per sample via `spawnSync`, computes p50/p95/max). **5000ms p95 budget on Node 22 ubuntu.** Baseline JSON uploaded as run artifact (30-day retention). 8 new node:test cases in `scripts/__tests__/bench-cli-coldstart.test.mjs` (percentile + summarize helpers, no-mutation invariant). Local Apple-Silicon run: **p50 965ms / p95 2718ms** — well under budget. **CI gotcha (now fixed):** the workflow originally pre-built only `0gkit-core` + `0gkit-cli` via `--filter`, which left `0gkit-chain/storage/compute/da` dist missing so the CLI failed `ERR_MODULE_NOT_FOUND` on first invoke. Fixed by switching to a full workspace `pnpm build` after the core prebuild — turbo cache makes the cost reasonable.
+
+**Source:**
+
+- `packages/0gkit-storage/src/storage.ts` + `packages/0gkit-compute/src/compute.ts` — deprecation warnings on `{ privateKey }` / `{ brokerKey }` no longer say "will be removed in v0.3" (we are past v1.0; that promise was impossible). Both now say "removed in v2" to match the v1.0 stability commitment.
+
+**Templates:**
+
+- `templates/storage-app/README.md` drops the stale `@0.3.0` pin on `0gkit-storage`.
+- `templates/inference-app/package.json` bumps upstream `@0gfoundation/0g-compute-ts-sdk` peer from `^0.3.0` → `^0.8.3` (current upstream, verified via `npm view`).
+
+**Housekeeping rolled in:**
+
+- `apps/docs/.gitignore` + `apps/playground/.gitignore` (one-liner `.vercel`) — pre-existing untracked state from local Vercel linkage.
+
+**Changeset** `.changeset/sp13-docs-cleanup-migration-version-gate.md` cut as patch on `0gkit-storage` + `0gkit-compute` (deprecation copy only — no API change).
+
+### Recent Changes
+
+Source of truth = `git log origin/main` on `rajkaria/0gkit`:
+
+- `<sha-45>` (#45) chore: version packages (patches: 0gkit-storage, 0gkit-compute)
+- `d964721` (#44) SP13: docs cleanup + migration guide + version-sync CI gate
+- `e418683` (#43) chore: version packages (0gkit-cli minor → 1.1.0)
+- `6ff20a1` (#42) feat(cli): 0g cost forecast --from-jaeger <path>
+- `10ee6f6` docs(plan): post-v1 roadmap SP13–SP25 (committed in the prior session)
+
+### Next Steps
+
+**Immediate next session:**
+
+1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git pull --ff-only`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/`.
+2. **Pick the next sprint from the post-v1 roadmap** (`docs/superpowers/plans/2026-05-23-post-v1-roadmap.md`). Wave A's recommended next is **SP14** — local `0g traces` explorer, builds directly on what PR #42 added:
+   - Extend `0gkit-observability`: `OGKIT_TRACE_DIR` env opts in to mirroring spans as JSONL into `.0gkit/traces/<date>-<traceId>.jsonl`, in addition to the configured exporter (D58 planned).
+   - New `0g traces list [--last N]` — read trace files, summarise per trace.
+   - New `0g traces inspect <traceId>` — pretty-print spans + fees + attributes; `--json` flag pipes cleanly into `0g cost forecast --from-jaeger`.
+   - Extend the SP13 CLI reference's `0g cost` section with the `list/inspect` flows.
+3. **Then SP15** (error polish + `--copy-issue-context` CLI flag), then **SP16** (`define0GConfig` + golden path across all 9 templates). See the roadmap doc for the full Wave A→D sequence + dependency graph.
+
+**Carryover from earlier waves** (unchanged — all substantial, do not bundle): Foundry SDK refresh = SP21, Showcase app = SP22, Community surface = SP23.
+
+### Key Decisions (this session)
+
+- **SP13 stays one PR.** Audit + migration page + CI gates + source-code copy fixes shipped together. The version-sync gate is the "no future drift" backstop; the audit fixes are the "no current drift" backstop. Splitting them would have meant one PR adds a gate that the other PR's content trips, then fixes it — pointless ping-pong.
+- **`docs:check --versions` ignores `@latest` and unversioned mentions.** Only **explicit** `@x.y.z` pins (caret/tilde tolerated) are checked. Encourages drop-the-version-from-docs as the canonical pattern; `@latest` is fine because npm decides what that resolves to per install.
+- **Deprecation copy aligned with v1.0 stability commitment.** "Removed in v0.3" was a v0-era TODO that survived the v1.0 cut. v2.0 is the next API break; pre-1.0 sunset windows are no longer meaningful on a v1.x branch.
+- **Perf workflow builds the full workspace, not just `0gkit-cli`.** The CLI's runtime imports span chain/storage/compute/da; a `--filter` build only writes core+cli dist and the CLI errors `ERR_MODULE_NOT_FOUND` on first invoke. Turbo cache makes the workspace build acceptable cost.
+- **Per-test `0gkit-testing` flake under turbo's parallel scheduler is still a pre-existing known issue** (`test-wallet-errors.test.ts` + `fixtures.test.ts` time out ~5s under CPU contention; pass 57/57 in 4.4s when filtered). Not introduced by SP13; reliably green on CI runners. SP12 polish item — not worth a release on its own.
+- **(Carried) D58–D61** (planned, defined in the roadmap doc): `OGKIT_TRACE_DIR` opt-in JSONL mirror; `define0GConfig` lives in `0gkit-core`; `Compute.router()` becomes template default; `0g test` lazy-imports `0gkit-testing` via computed specifier.
+- **(Carried) D51–D57** from earlier today: D51 landing version reads from npm registry; D52 async server components no `@ts-expect-error`; D53 testing mocks reproduce types locally; D54 template migration not bundled into the mock widening PR; D55 the template inline-fake migration shipped as standalone PR #40; D56 `vi.spyOn` is the supported way to tamper with mock storage state; D57 `mockComputeClient` has no "throw" responder knob.
+
+### Previous Session Notes
+
+#### Earlier today (2026-05-23 20:08 IST) — planning hand-off (no code)
+
+Brief session — confirmed sequence: land PR #42 + auto version-packages PR, then SP13. Session compacted at 8 prompts / ~21M tokens. SP13 plan body from the roadmap doc was carried forward verbatim.
 
 ### Previous Session State (carried — still authoritative)
 
