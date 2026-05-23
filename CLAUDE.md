@@ -10,9 +10,31 @@ Hackathon (HackQuest, deadline May 16 2026) — concluded; work now continues on
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check` (dependency-cruiser). Foundry is always a separately-loaded opt-in plugin.
 
-## Session Context (Last updated: 2026-05-23 ~08:35 IST)
+## Session Context (Last updated: 2026-05-23 ~09:30 IST)
 
-### 🎉 v1.0.0 ✅ Cut & published to npm
+### Current State
+
+**Q&A / strategy session — no code changes.** User asked for an honest read on 0gkit's value, docs quality, and whether it needs its own domain. Surfaced one concrete, time-sensitive decision (register `0gkit.dev`/`.com` before any v1.0.x patch ships, because `ERROR_HELP_BASE` in `0gkit-core` is baked into the v1 npm tarballs and frozen until v2).
+
+### Recent Changes
+
+None to source. CLAUDE.md updated only to record this checkpoint.
+
+### Next Steps
+
+1. **Register `0gkit.dev` (or `.com`) this week.** Strongest single argument: every published `ZeroGError` carries a `helpUrl` computed from `ERROR_HELP_BASE` (D27 — computed-from-code, no per-throw override). Locking the domain before any v1.0.x patch ships means the URLs in every v1 npm tarball resolve to a stable host forever (until v2). After registration, update `ERROR_HELP_BASE` in `0gkit-core` and ship a patch release across the workspace.
+2. **Foundry consumption refresh.** Still the headline next-sprint item — refactor `packages/sdk` onto `@foundryprotocol/0gkit-* ^1.0.0`, delete the duplicated storage/da/attestation/inference paths Foundry still carries.
+3. **Tutorial / cookbook docs layer.** Reference docs (per-package + per-error + concept) are CI-enforced and complete. The remaining docs gap is long-form walkthroughs ("build an indexed marketplace end-to-end"). Worth scoping after the Foundry refresh, before evangelism push.
+4. **Carryover polish items** (unchanged from previous checkpoint): `/concepts` index page → observability sub-routes link, `0gkit-testing` mocks → SP6/SP7 class shape sync, `0g cost forecast --from-jaeger`.
+
+### Key Decisions
+
+- **Lock a `helpUrl` domain before the first v1.0.x patch.** Changing `ERROR_HELP_BASE` post-1.0 means permanent broken links in every installed v1 tarball. Cheap to do now, expensive to defer.
+- Domain is for docs + landing only; GitHub stays the source of truth for issues / discussions / contributions / source. No plan to fragment the dev surface.
+
+### Previous Session Notes
+
+#### 🎉 v1.0.0 ✅ Cut & published to npm
 
 **0gkit is feature-complete.** All 12 sub-projects (SP1–SP12) shipped, Phase 4 closed, **v1.0.0** cut across every published package.
 
