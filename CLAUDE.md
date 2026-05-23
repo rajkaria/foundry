@@ -10,9 +10,68 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 
-## Session Context (Last updated: 2026-05-23 14:06 IST)
+## Session Context (Last updated: 2026-05-23 15:20 IST)
 
 ### Current State
+
+**Three PRs landed this session — onboarding + brand polish complete, cookbook tutorials shipped.** Carryover from the 14:06 session: PR #32 (docs UI overhaul) and PR #35 (llms.txt phrasing) were left open awaiting CI. Both merged. New work: PR #36 cookbook tutorials.
+
+**Shipped this session (all merged to main):**
+
+1. **[#35](https://github.com/rajkaria/0gkit/pull/35)** — `apps/landing/public/llms.txt`: dropped hardcoded `v1.0.1` pin, replaced with "v1.0.x release line, surface-stable until v2". **MERGED 9:30 UTC.**
+2. **[#32](https://github.com/rajkaria/0gkit/pull/32)** — docs UI brand overhaul. Squash-merged after a second a11y fix on top of the first: dropped the `@media (prefers-color-scheme: light)` block entirely (Lighthouse runs in headless Chrome which defaults to light, so the override was flipping `--bg` to `#ffffff` and code-bg to `#f6f8fa` while leaving brand purples unchanged — `#cb8aff` on `#f6f8fa` is 2.28:1, well under WCAG 4.5:1). Also added default underline on `.prose a` because axe-core's `link-in-text-block` requires non-color signal regardless of contrast (`#b75fff` vs `--fg-dim #b8b8c2` is 1.85:1 even in dark mode). Lighthouse CI hit 0.95+ a11y across all 4 audited pages on the retry. **MERGED 9:41 UTC.** Live on docs.0gkit.com.
+3. **[#36](https://github.com/rajkaria/0gkit/pull/36)** — cookbook tutorials. Three end-to-end guides:
+   - `/cookbook/chat-app` — Next.js + storage + indexer + react (per-room channels extension, client-side signing migration, rate limiting, durable uploads, OTel).
+   - `/cookbook/ai-agent` — Compute ReAct + attestation + jobs (real attestation wiring, MemoryBackend → SqliteBackend → RedisBackend swap, webhook delivery, cost estimation, tool isolation, idempotency).
+   - `/cookbook/nft-minter` — Foundry + storage + typed contracts (read-through gateway for marketplace compatibility, OZ upgrade path, ERC-2981 royalties, durable uploads).
+   - Plus `/cookbook` index + new "Cookbook" nav section + home-page link. Pagefind 82 → 86 pages. **MERGED 9:50 UTC.**
+
+**End-to-end verified live (carries over, still true):** npm scaffolder works on v1.0.2, CLI `--version` reports `1.0.2`, `/errors/<CODE>` redirects to docs, `/llms.txt` is unpinned (3.5 KB), footer credits Raj Karia personally, docs.0gkit.com renders the purple/Geist brand palette with the ØG mark.
+
+### Recent Changes
+
+Source of truth = `git log origin/main` on `rajkaria/0gkit`:
+- `<sha-36>` (#36) docs(cookbook): three end-to-end tutorials (chat / agent / NFT)
+- `<sha-32>` (#32) docs(ui): brand overhaul + a11y fixes
+- `294b517` (#35) docs(llms): drop version pin, use release-line phrasing
+- `02c885c` (#31) ci: fresh-machine smoke + link-check workflows
+- `fdcec79` (#30) feat: maintainer footer + llms.txt + concept discoverability
+- `80be713` (#33) release v1.0.2: cli + create-0gkit-app + create-0g-app
+- `378a8de` (#29) onboarding fix bundle (5 bugs)
+- `fa5e490` (#28) landing redirect /errors/:code → docs.0gkit.com
+
+No open PRs in flight at end of session.
+
+### Next Steps
+
+**Carryover polish (still deferred):**
+
+1. **`0gkit-testing` mocks sync to SP6/SP7 class shapes** — `mockComputeClient.chat()` → `.inference()`; `mockStorageClient` needs `.estimate(bytes)` + `.upload(bytes, { dryRun: true })` returning the `DryRunResult` envelope. Templates have inline fakes today; once mocks match real shape, templates can use the published mocks.
+2. **`0g cost forecast --from-jaeger <path>`** — new CLI subcommand: parse a Jaeger trace dump, aggregate cost across `0gkit.*` attributed spans. Substantial (trace parser + aggregator).
+
+**Larger growth-lever items (still unstarted):**
+
+3. **Discoverability** — GSC domain verification + sitemap submit (needs user action — registrar/SC access).
+4. **Real-world showcase app** — one public app consuming `^1.0.2` from npm (not workspace, not template), deployed and linked from landing.
+5. **Community surface** — enable GitHub Discussions, set up Discord or similar.
+6. **Foundry consumption refresh** — refactor `packages/sdk` onto `@foundryprotocol/0gkit-* ^1.0.2`, delete duplicated storage/da/attestation/inference paths.
+
+Cookbook (prior session's biggest-growth-lever item) is now shipped — pick the next based on user priority.
+
+### Key Decisions
+
+- **D48 — Docs site is dark-only, no light theme.** The `@media (prefers-color-scheme: light)` override flipped `--bg` to `#ffffff` while leaving brand purples (`#b75fff`, `#cb8aff`) unchanged → WCAG-failing contrasts on every brand-tinted text/link in light mode. Landing is dark-only too; the brand palette doesn't have enough lightness for a credible light theme without re-deriving every tint. Block removed.
+- **D49 — Prose links carry a default underline.** axe-core's `link-in-text-block` requires either ≥3:1 contrast vs surrounding text OR a non-color signal. Brand purple `#b75fff` vs `--fg-dim #b8b8c2` is 1.85:1 in dark mode. Default underline on `.prose a` only (topbar/sidebar are nav, context disambiguates) is the universal fix.
+- **D50 — Cookbook tutorials live at `/cookbook`, separate from `/concepts` and `/packages`.** Concepts explain *what abstractions are*; packages are API reference; template READMEs are per-template terse. Cookbook is the missing layer: guided builds, `npm create` → production, ~1500-2000 words each. Three archetypes (chat / agent / NFT) cover the largest design-space surface.
+- **(Carried) D39–D47** from prior session: CLI lazy-load jobs, runtime VERSION read, OGKIT_TEMPLATE_REF=main, landing-owned /errors redirect, docs stays on Next.js (no GitBook), a11y first-class, 0g binary via npx, maintainer = Raj Karia personally, sentinel workflows on schedule not PR.
+
+### Previous Session Notes
+
+#### Earlier today (2026-05-23 14:06 IST) — 0gkit v1.0.2 onboarding + brand foundation
+
+PR #28 (errors redirect) → MERGED. PR #29 (5-fix onboarding bundle: TEMPLATE_REF default, template deps, CLI helpUrl, runtime VERSION, jobs lazy-load) → MERGED. PR #33 (changeset release v1.0.2 across cli + create-0gkit-app + create-0g-app) → MERGED → published. PR #30 (maintainer footer + llms.txt + concept discoverability) → MERGED. PR #31 (fresh-machine-smoke + link-check sentinel workflows on cron) → MERGED. PR #32 (docs UI brand overhaul) → OPENED in session, MERGED this session. PR #35 (llms.txt phrasing) → OPENED in session, MERGED this session. D39–D47 captured the architectural calls.
+
+#### Older state for reference
 
 **0gkit v1.0.2 LIVE on npm — public dev onboarding path unbroken end-to-end.** User dropped an audit identifying 6 bugs that broke the first-minute experience for a fresh dev. All 6 fixed and verified live.
 
