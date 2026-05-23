@@ -10,16 +10,60 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 
-## Session Context (Last updated: 2026-05-23 15:48 IST)
+## Session Context (Last updated: 2026-05-23 19:10 IST)
 
 ### Current State
 
-**Two PRs opened this session, awaiting CI/merge.** Both target `rajkaria/0gkit`:
+**Four PRs landed this session on `rajkaria/0gkit` main; npm publishes in flight.**
 
-- **[#37](https://github.com/rajkaria/0gkit/pull/37)** — `landing: auto-fetch version from npm registry`. Branch `landing/version-from-github`. New `apps/landing/lib/version.ts` reads `@foundryprotocol/0gkit-cli`'s `latest` from `https://registry.npmjs.org/...` at build time with ISR (`revalidate: 3600`). Falls back to `v1.0.2` if registry is unreachable. Hero pill, Nav badge, TrustSignals stat, StructuredData `softwareVersion`, OG image text, root layout + page metadata all now interpolate the live version. Verified built HTML renders `v1.0.2` everywhere. CI initially failed (transient `terminal prompts disabled` checkout auth error); re-triggered with an empty commit. **Awaiting CI green → squash-merge.**
-- **[#38](https://github.com/rajkaria/0gkit/pull/38)** — `testing: sync mocks to SP6/SP7 class shapes`. Branch `testing/sync-mocks-to-sp7`. `mockComputeClient.chat(messages)` → `inference({ messages, ... })` returning `{ output, receipt, raw }`; new `.estimate()` + `inference(_, { dryRun: true })` returning `DryRunResult<InferenceResult>`. `mockStorageClient` gains `.estimate(data)` + `upload(_, { dryRun: true })` returning `DryRunResult<UploadResult>`. `.discover()` renamed `.listProviders()`. **57/57 tests green**, boundary + format + build green. Changeset minor bump on `@foundryprotocol/0gkit-testing` (1.0.1 → 1.1.0). **Awaiting CI green → squash-merge.**
+- **[#37](https://github.com/rajkaria/0gkit/pull/37)** `landing: auto-fetch version from npm registry` — **MERGED** as `d9def6d`. Carryover from previous session; CI re-ran clean after Prettier auto-fix on 3 landing files.
+- **[#38](https://github.com/rajkaria/0gkit/pull/38)** `testing: sync mocks to SP6/SP7 class shapes` — **MERGED** as `5df7b1a`. Carryover. Bumped `@foundryprotocol/0gkit-testing` 1.0.1 → 1.1.0; `mockComputeClient.inference()` + `.estimate()` + dry-run, `mockStorageClient.estimate()` + dry-run.
+- **[#39](https://github.com/rajkaria/0gkit/pull/39)** `chore: version packages` (auto-opened by changesets) — **MERGED**. Triggered Release workflow → `@foundryprotocol/0gkit-testing@1.1.0` published to npm.
+- **[#40](https://github.com/rajkaria/0gkit/pull/40)** `templates: use published 0gkit-testing mocks instead of inline fakes` — **NEW this session**. **MERGED**. Branch `testing/templates-use-published-mocks` deleted post-merge.
+- **[#41](https://github.com/rajkaria/0gkit/pull/41)** `chore: version packages` (auto-opened after #40) — **MERGED**. Releases `create-0gkit-app` + `create-0g-app` patch bumps with templates that now consume `@foundryprotocol/0gkit-testing@^1.1.0`.
 
-A `ScheduleWakeup` is queued for ~15:50 IST to check + merge both PRs.
+No open PRs. Workspace state is clean on main.
+
+### Recent Changes
+
+**PR #40 — template inline-fake migration (this session's only net-new work):**
+
+- `templates/storage-app/src/__tests__/storage-flow.test.ts` — full rewrite. Drops the local `fakeStorage()` factory in favor of `mockStorageClient()` from `@foundryprotocol/0gkit-testing`. The bytes-mismatch test uses `vi.spyOn(storage, "download").mockResolvedValue(new Uint8Array([0xff]))` because the mock's `__store()` is `ReadonlyMap` and can't be tampered with directly.
+- `templates/storage-app/package.json` — adds `@foundryprotocol/0gkit-testing: ^1.1.0` to `devDependencies` (wasn't there before).
+- `templates/ai-agent/src/__tests__/agent.test.ts` — replaces `fakeCompute(responses)` with `sequencedCompute(responses)` that wraps `mockComputeClient({ responder })` in a small closure walking a response array. The retry-exhaustion test keeps its inline throwing stub (the mock has no "throw" knob — would be a feature add to `0gkit-testing`).
+- `templates/ai-agent/package.json` — bumps `@foundryprotocol/0gkit-testing` `^1.0.0` → `^1.1.0`.
+- `templates/tee-attested-api/src/__tests__/app.test.ts` — replaces inline `vi.fn(inference)` with `mockComputeClient({ receiptOverride: { txHash: "0x1234" } })`. Default echo responder produces `echo: <prompt>` which satisfies `toMatch(/echo/)` naturally.
+- `templates/tee-attested-api/package.json` — bumps `@foundryprotocol/0gkit-testing` `^1.0.0` → `^1.1.0`.
+- `.changeset/templates-use-published-mocks.md` — patch bumps `create-0gkit-app` + `create-0g-app`.
+
+**Not touched:** `chat` template (its "fakes" are just `new TextEncoder().encode(...)` byte fixtures — no compute/storage mock).
+
+**Verification rollup:** `storage-app` 6/6, `ai-agent` 9/9, `tee-attested-api` 8/8 tests pass; `tsc --noEmit` clean per template; workspace `pnpm format:check` + `pnpm boundary:check` (300 modules, 0 violations) green. Net ~60 LOC removed across the 3 templates.
+
+### Next Steps
+
+**Carryover (still deferred — all substantial, do not bundle):**
+
+1. **Foundry SDK refresh onto `@foundryprotocol/0gkit-* ^1.0.2`** — refactor `Foundryprotocol/packages/sdk` to consume the published packages, delete duplicated storage/da/attestation/inference paths. Cross-repo, multi-PR work.
+2. **Real-world showcase app** — one public app on `^1.0.2` (not workspace, not template), deployed and linked from landing.
+3. **`0g cost forecast --from-jaeger <path>`** — new CLI subcommand: Jaeger trace parser + per-span aggregator across `0gkit.*` attributed spans + tests + docs.
+4. **Community surface** — enable GitHub Discussions; Discord optional.
+5. **Discoverability** — GSC verification + sitemap submit (needs user / registrar access).
+
+Template inline-fake migration (was #8 on the carryover list) is **done** as of #40.
+
+### Key Decisions
+
+- **D55 — Templates' inline fakes were migrated as a single dedicated PR (#40), not bundled into #38.** Rationale per D54: widening the mock surface (testing pkg) and migrating consumers (templates) are two changes; bundling them would make either PR review-hostile. The clean separation also let #38 ship + publish to npm before #40 needed it.
+- **D56 — `vi.spyOn` is the supported way to tamper with mock storage state in tests.** `mockStorageClient.__store()` returns `ReadonlyMap` (intentional — peek but don't poke). For the storage-app "bytes don't match" path, spy on `download` and mock-resolve with bad bytes. Cleaner than the previous test's reassign-upload-then-set-store dance.
+- **D57 — `mockComputeClient` has no "throw" responder knob; the one ai-agent test that needs it keeps an inline stub.** Adding `responder: () => { throw new Error(...) }` support to the mock would be a feature add to `0gkit-testing` and not worth a release for a single test case in one template.
+- **(Carried) D51–D54** from earlier in the day: D51 landing version reads from npm registry not GitHub releases; D52 async server components, no `@ts-expect-error`; D53 testing mocks reproduce result/estimate types locally instead of depending on storage/compute (keeps boundary clean); D54 template inline-fakes were not migrated in #38.
+
+### Previous Session Notes
+
+#### Earlier today (2026-05-23 15:48 IST) — landing version + testing mocks SP6/SP7 sync
+
+Two PRs opened: [#37](https://github.com/rajkaria/0gkit/pull/37) landing auto-fetches version from npm registry; [#38](https://github.com/rajkaria/0gkit/pull/38) testing mocks synced to SP6/SP7 class shapes (mockCompute.inference()/.estimate(), mockStorage.estimate()/dry-run). Both merged this session (above).
 
 ### Recent Changes
 
