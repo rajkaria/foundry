@@ -10,7 +10,77 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 
-## Session Context (Last updated: 2026-05-23 20:45 IST)
+## Session Context (Last updated: 2026-05-26 04:45 IST)
+
+### Current State
+
+**SP14 shipped + released. Two PRs landed on `rajkaria/0gkit` main this session** (one feature, one auto-generated version-packages):
+
+- **[#46](https://github.com/rajkaria/0gkit/pull/46) — SP14** `local 0g traces explorer + OGKIT_TRACE_DIR JSONL mirror` — **MERGED** as `c205c36`. One-shot CI red on `docs:check --exports` (the new `0gkit-observability` exports weren't listed in the package MDX); fixed on the same branch + re-run all green. Branch `sp14-local-trace-explorer` deleted post-merge.
+- **[#47](https://github.com/rajkaria/0gkit/pull/47)** `chore: version packages` (auto-opened after #46) — **MERGED** as `750150a`. Triggers Release workflow to publish `@foundryprotocol/0gkit-observability` + `@foundryprotocol/0gkit-cli` minors + `@foundryprotocol/0gkit-core` patch.
+
+No open PRs. Workspace clean on `main` at the post-#47 release commit.
+
+### SP14 — what shipped (single PR)
+
+**`0gkit-observability`:**
+
+- **New `src/trace-sink.ts`** — pure JSONL sink helpers: `defaultTraceDir()` (env-driven), `isSinkEnabled()`, `pathForTrace(dir, id, now)` (formats `<YYYY-MM-DD>-<traceId>.jsonl`), `appendSpanRecord(dir, record, now)` (fire-and-forget append), `listTraceFiles(dir)` (newest-first, filename-regex filtered), `readTraceFile(path)` (JSONL parse, tolerates blank lines, throws on corrupt), `summarizeTrace(id, recs)` (counts, fee/gas totals, top op). Idempotent + side-effect-free; mkdir is recursive so the first write creates the dir.
+- **`src/wrap.ts` hook** — after each `span.end()`, when `OGKIT_TRACE_DIR` is set, the wrapper writes `{ traceId, spanId, name, attributes, status, startTimeUnixNano, endTimeUnixNano }` as one JSONL line via `appendSpanRecord`. Wrapped in `try { await ... } catch {}` so a full disk / EACCES never crashes the caller. `process.hrtime.bigint()` is anchored to `Date.now()` once for the unix-nano timestamps.
+- **New exports from package root:** `appendSpanRecord`, `defaultTraceDir`, `isSinkEnabled`, `listTraceFiles`, `pathForTrace`, `readTraceFile`, `summarizeTrace`, plus types `TraceFileEntry`, `TraceFileSummary`, `TraceRecord`. Listed in the `apps/docs/app/packages/0gkit-observability/page.mdx` Exports section (CI gate enforces).
+- **Bundle-size test fix:** added `platform: "node"` to the esbuild config so `node:fs/promises` + `node:path` resolve as built-ins instead of being treated as missing browser deps. Bundle still ≤ 20 KB gz.
+- **14 new sink tests** (env + path + write/read roundtrip + listTraceFiles ignoring non-matching filenames + summarizeTrace edge cases) + **3 new instrument-integration tests** (success span mirrored; error span mirrored with `status=error` + `0gkit.error_code` attr; off when env unset). 49/49 observability tests green.
+
+**`0gkit-cli`:**
+
+- **New `src/commands/traces.ts`** — `registerTraces(program, deps)` registers `0g traces list` + `0g traces inspect <traceId>` subcommands. `list` supports `--last N`, `--dir <path>`, `--json`; `inspect` supports `--dir <path>` + `--json`. Errors are throw-`ZeroGError` (positional `(code, message, hint)` constructor — same shape as the rest of the CLI, **not** the object-literal pattern that landed in my first draft and exploded with `Help: ... [object Object]`).
+- **Production `tracesReader` wired in `src/cli.ts`** — pulls `defaultTraceDir`, `listTraceFiles`, `readTraceFile`, `summarizeTrace` directly from `@foundryprotocol/0gkit-observability` (added as a regular dep — tiny package, no native bindings). Tests inject fakes via `ProgramDeps.tracesReader`.
+- **`src/commands/cost.ts` extended:** `--from-jaeger -` reads JSON from stdin via `deps.readStdin`. `inspect --json | 0g cost forecast --from-jaeger -` is the end-to-end pipeline.
+- **3 new error codes** in `0gkit-core`'s frozen `ERROR_CODES` tuple: `OBSERVABILITY_TRACE_DIR_NOT_SET`, `OBSERVABILITY_TRACE_NOT_FOUND`, `OBSERVABILITY_TRACE_READ_FAILED`. Each has a substantive MDX page under `apps/docs/app/errors/<CODE>/` (scaffolded by `scripts/scaffold-error-pages.mjs` then hand-edited).
+- **10 new traces tests** + **2 new cost stdin tests** + **program.test.ts assertion list bumped** to include `traces`. 119/119 CLI tests green.
+
+**Docs:**
+
+- `apps/docs/app/cli/page.mdx` gains a new `## 0g traces` section after `## 0g cost`, with the env-var quickstart and the `inspect --json | cost forecast --from-jaeger -` pipeline. Cross-link added inside the existing `## 0g cost` `--from-jaeger` row pointing at `-` (stdin).
+- `apps/docs/app/packages/0gkit-observability/page.mdx` gains a `## Local trace mirror (OGKIT_TRACE_DIR)` section + the new exports.
+
+**Changeset** `.changeset/sp14-local-trace-explorer.md` cuts a minor on `0gkit-observability` (new env behavior + new exports) + minor on `0gkit-cli` (new `traces` namespace) + patch on `0gkit-core` (new error codes).
+
+### Recent Changes
+
+Source of truth = `git log origin/main` on `rajkaria/0gkit`:
+
+- `750150a` (#47) chore: version packages (observability + cli minors, core patch)
+- `c205c36` (#46) SP14: local 0g traces explorer + OGKIT_TRACE_DIR JSONL mirror
+- `ecaaf14` (#45) chore: version packages (0gkit-storage + 0gkit-compute patches)
+- `d964721` (#44) SP13: docs cleanup + migration guide + version-sync CI gate
+
+### Next Steps
+
+**Immediate next session:**
+
+1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git pull --ff-only`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/`. SP14 sits at `c205c36`; published versions are at `750150a`.
+2. **Verify the release workflow published** `@foundryprotocol/0gkit-observability@1.1.0`, `@foundryprotocol/0gkit-cli@1.3.0`, `@foundryprotocol/0gkit-core@1.0.2` to npm (`npm view <pkg> version`). If any failed (e.g. NPM_TOKEN expiry), re-trigger.
+3. **Pick the next sprint from `docs/superpowers/plans/2026-05-23-post-v1-roadmap.md`.** Wave A's recommended next is **SP15** — error page polish + `--copy-issue-context` CLI flag:
+   - Audit the 45 error pages for stale package versions / dead repro commands (one pass with the SP13 `--versions` gate).
+   - New `0g <any-cmd> --copy-issue-context` flag — on any thrown ZeroGError, dump a markdown block (code, message, hint, redacted CLI args, node/OS versions, package versions, last 10 traceback frames, docs link) suitable for pasting into a GitHub issue.
+   - Update `apps/docs/app/errors/page.mdx` index header with the "Stuck? Run with `--copy-issue-context`" callout.
+4. **Then SP16** (`define0GConfig` + golden path across all 9 templates), then **SP17** (`0g doctor --fix` + `0g test` conformance runner). See the roadmap doc for the full Wave A→D sequence + dependency graph.
+
+**Carryover from earlier waves** (unchanged — all substantial, do not bundle): Foundry SDK refresh = SP21, Showcase app = SP22, Community surface = SP23.
+
+### Key Decisions (this session)
+
+- **D62 — Trace sink is a side-channel inside `wrap.ts`, not a new OTel `SpanProcessor`.** Two reasons: (a) it must work in `mode: "attach"` where the caller owns the SDK and never registers our processor; (b) it's pure file I/O with no OTel dependency, so users who never set `OGKIT_TRACE_DIR` pay zero runtime cost. Tradeoff accepted: the JSONL records carry only the attributes we set via the in-wrap `setAttr` capture (plus name + status + timestamps), not whatever third-party processors add later. That's correct for `0gkit.*`-only inspection — the synced-on-disk subset is exactly what `0g traces inspect` and `0g cost forecast --from-jaeger` need.
+- **D63 — Sink writes are awaited but errors are swallowed.** `await appendSpanRecord(...)` so the dir-create + file-write are serialized per span (no interleaving on the same `<date>-<traceId>.jsonl` file), but the outer `try/catch` swallows any throw so a broken disk never crashes a production handler. The doc page (`OBSERVABILITY_TRACE_READ_FAILED`) walks users through the delete-and-regenerate recovery path.
+- **D64 — `0g traces` lives in the CLI namespace, not as a TUI.** The `inspect` JSON output is a Jaeger-v1-shaped envelope so it pipes straight into `cost forecast --from-jaeger -` without an adapter step. A future `0g traces tui` could be added later, but the v0 surface is text + pipes, in keeping with the rest of `0g`.
+- **D65 — `0g cost forecast --from-jaeger` accepts `-` for stdin.** Adding stdin to the same flag (instead of a separate `--from-stdin`) keeps the surface area small and matches the broader Unix convention. Reuses `deps.readStdin` (already on `ProgramDeps`); no new I/O abstraction.
+- **D66 — Trace file naming: `<YYYY-MM-DD>-<traceId>.jsonl`** (UTC date). Date prefix keeps one day's traces grouped for easy `ls`/`rg`; trace id is the unique key. Filename regex `/^(\d{4}-\d{2}-\d{2})-([^/.]+)\.jsonl$/` is what `listTraceFiles` uses to filter out README/.DS_Store/etc.
+- **(Carried) D58–D61 from previous session:** `OGKIT_TRACE_DIR` opt-in mirror is what D58 forecast; **D58 is now realized.** D59 (`define0GConfig` in core) lands in SP16. D60 (`Compute.router()` template default) lands in SP19. D61 (`0g test` lazy-imports `0gkit-testing`) lands in SP17.
+
+### Previous Session Notes
+
+#### Earlier today (2026-05-23 20:45 IST) — SP13 ship
 
 ### Current State
 
