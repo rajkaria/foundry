@@ -11,23 +11,34 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 - **`/save-context` REPLACES the latest-session section below — do not append.** Older session detail lives in git history (`git log` on this file).
 
-## Session Context (Last updated: 2026-05-26 10:51 IST)
+## Session Context (Last updated: 2026-05-26 12:07 IST)
 
 ### Current State
 
-**SP15 shipped + released.** `@foundryprotocol/0gkit-cli@1.4.0` live on npm (verified). All 18 v1.x packages still live at the v1.0.x baseline (`0gkit-core@1.3.0`).
+**SP15 still the latest ship.** `@foundryprotocol/0gkit-cli@1.4.0` live on npm. **SP16 plan is on 0gkit `main`** at `bd87fe5` (`docs/superpowers/plans/2026-05-26-sp16-golden-path-typed-config.md`, 1479 lines, 10 tasks). **No code work yet on SP16** — only the plan.
 
-**SP16 plan written this session** — saved at `docs/superpowers/plans/2026-05-26-sp16-golden-path-typed-config.md` on 0gkit local `main` (not yet pushed/committed). 10 tasks: new `define0GConfig` + `detectLocalDevnet` + `printFirstSuccess` in `0gkit-core`; all 9 templates adopt `define0GConfig` + auto-devnet + first-success banner + "What next?" README; docs templates page update; CI banner-grep gate.
+**Foundryprotocol CLAUDE.md trimmed this session** from 1158 → 65 lines (95% reduction), committed `2d515d5` on Foundryprotocol `main`. The accumulated SP1–SP15 session history was deleted from this file (still in `git log`); only always-on rules + a compact "Recent Session History" timeline + load-bearing decisions remain.
 
-No open PRs. 0gkit working dir clean on `main` at `41868fc` (post-SP15-release).
+No open PRs on either repo. Both working dirs clean.
+
+### Recent Changes (this session)
+
+- `/Users/rajkaria/Projects/Foundryprotocol/CLAUDE.md` — full rewrite: trimmed 1158→65 lines. Added explicit rule: **`/save-context` REPLACES the latest-session section, never appends.** Older detail intentionally dropped — older sessions are recoverable via `git log` if needed.
+- `/Users/rajkaria/Projects/0G-ai-kit/docs/superpowers/plans/2026-05-26-sp16-golden-path-typed-config.md` — new file. 10-task implementation plan with TDD test code, exact file paths, commit guidance per step. Self-contained for subagent execution.
 
 ### Next Steps
 
 1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git pull --ff-only`). Local working dir is `/Users/rajkaria/Projects/0G-ai-kit/`.
-2. **Commit the SP16 plan** if not already committed: `git add docs/superpowers/plans/2026-05-26-sp16-golden-path-typed-config.md && git commit -m "docs(plan): SP16 golden path + typed config"`.
-3. **Execute SP16** via `superpowers:subagent-driven-development` against the saved plan. The plan is self-contained — every task has TDD test code, file paths, and commit guidance.
-4. **After SP16 lands**, the auto-generated changeset PR publishes `0gkit-core` minor (new exports) + `create-0gkit-app` / `create-0g-app` patches. Verify with `npm view @foundryprotocol/0gkit-core version`.
-5. **Then SP17** — `0g doctor --fix` + `0g test` conformance runner. See [post-v1 roadmap](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-23-post-v1-roadmap.md) for the full Wave A→D sequence (SP18 MCP init, SP19 Compute Router, SP20 contracts import, SP21 Foundry SDK refresh, SP22 showcase app, SP23 community).
+2. **Execute SP16** via `superpowers:subagent-driven-development` against the saved plan. The plan is self-contained — every task has TDD test code, file paths, and commit guidance. Recommended pattern from prior sprints: fresh subagent per task + two-stage review.
+3. **After SP16 lands**, the auto-generated changeset PR publishes `0gkit-core` minor (new exports) + `create-0gkit-app` / `create-0g-app` patches. Verify with `npm view @foundryprotocol/0gkit-core version`.
+4. **Then SP17** — `0g doctor --fix` + `0g test` conformance runner. See [post-v1 roadmap](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-23-post-v1-roadmap.md) for the full Wave A→D sequence (SP18 MCP init, SP19 Compute Router, SP20 contracts import, SP21 Foundry SDK refresh, SP22 showcase app, SP23 community).
+
+### Key Decisions (this session)
+
+- **D71 (planned, in SP16 plan)** — First-success banner contract token `[0gkit:first-success]` is a public contract for log scrapers / CI grep. Templates emit it via `printFirstSuccess({ op, id })` from `0gkit-core` on the first 0G op.
+- **D72 (planned, in SP16 plan)** — `detectLocalDevnet` is a pure chainId probe with a 1s default timeout, not a shell-out to `0g doctor --json`. Keeps templates from depending on the CLI binary at runtime.
+- **D73 (planned, in SP16 plan)** — zod is a direct dep on `0gkit-core` (~14 KB gz). Worth the install-graph cost to give every template + the MCP server + the CLI the same env validation primitive.
+- **CLAUDE.md hygiene rule** — `/save-context` replaces, never appends. The accumulating-history pattern compounded per-session token cost ~10x over the project's lifetime; trim was overdue. Git history preserves everything.
 
 ### Recent Session History (most-recent first; full detail in git history)
 
