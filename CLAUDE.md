@@ -10,9 +10,77 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 
-## Session Context (Last updated: 2026-05-26 04:45 IST)
+## Session Context (Last updated: 2026-05-26 06:39 IST)
 
 ### Current State
+
+**SP15 shipped + released. Two PRs landed on `rajkaria/0gkit` main this session** (one feature, one auto-generated version-packages):
+
+- **[#48](https://github.com/rajkaria/0gkit/pull/48) — SP15** `--copy-issue-context CLI flag + error page polish` — **MERGED** as `925634a`. One CI fail on first push (`packages/0gkit-cli/src/__tests__/traces.test.ts` had an explicit `: ProgramDeps` return type without the four new fields; the other 14 test files all use `as unknown as ProgramDeps` so they tolerated the widening); fixed in `a86b9d9` and re-run all green. Branch `sp15-error-polish-copy-issue-context` deleted post-merge.
+- **[#49](https://github.com/rajkaria/0gkit/pull/49)** `chore: version packages` (auto-opened after #48) — **MERGED** as `41868fc`. Triggers the Release workflow to publish `@foundryprotocol/0gkit-cli@1.4.0` (minor — new flag).
+
+No open PRs. Workspace clean on `main` at the post-#49 release commit.
+
+### SP15 — what shipped (single PR)
+
+**`0gkit-cli`:**
+
+- **New global flag `--copy-issue-context`** on every `0g` command. Plumbed through `program.ts:GlobalFlags` → `context.ts:CliContext` → `runCommand`. Defaults off.
+- **New `src/issue-context.ts`** — pure, side-effect-free markdown builder. Exports `redactArgv(argv)` (strips `--private-key` values in both `--flag value` and `--flag=value` forms; strips URL userinfo from `--rpc`) and `buildIssueContext({ error, argv, node, os, packages, now })` (renders the report). No fs, no env, no fetch. The URL redaction uses a raw regex instead of `URL.toString()` because the latter percent-encodes the literal `<redacted>` placeholder text.
+- **`runCommand` extension** — when `context.copyIssueContext` is true, after `out.failure(...)` runs, lazy-imports `./issue-context.js` + `node:os` and writes the markdown block to `deps.writeErr`. Stack frames are clipped to first 10 with a "… N more frames omitted" footer.
+- **`ProgramDeps` gained four fields:** `argv: readonly string[]`, `writeErr: (line) => void`, `packageVersions: () => Array<{name, version}>`, `now: () => Date`. Tests inject fakes; production routes to `process.stderr`, `process.argv.slice(2)`, real package resolution, and `new Date()`.
+- **Production `packageVersions` resolver** in `cli.ts` uses `import.meta.resolve` (sync + stable since Node 20.6) to find each `@foundryprotocol/0gkit-*` package's main entry, then walks up directories to find the nearest matching `package.json`. The CommonJS `createRequire().resolve()` path was abandoned because every `0gkit-*` package's `exports` field restricts to `"import"` condition only — CJS-style resolution fails with `No "exports" main defined`. The CLI's own version is seeded explicitly (pnpm workspace symlinks don't expose self-package via name lookup).
+
+**Error pages:**
+
+- **5 stale "ships in SP10/SP11" / "Pre-SP10 stub" notes replaced** with real working snippets. The five pages: `JOBS_BACKEND_UNREACHABLE` (sqlite backend example), `JOBS_JOB_NOT_FOUND` (`runner.status(id)`), `JOBS_HANDLER_THREW` (`jobs.define({ maxAttempts: 3, handler: throws })`), `JOBS_WEBHOOK_BAD_SIGNATURE` (`jobs.verifyWebhook(...)`), `OBSERVABILITY_EXPORTER_FAILED` (real OTLP `instrument0g({...})`).
+- **`/errors` index page** gains a callout under the heading: `> Stuck? Re-run any 0g command with --copy-issue-context. ...` linking to `https://github.com/rajkaria/0gkit/issues/new`.
+
+**Docs:**
+
+- **`apps/docs/app/cli/page.mdx`** — global-flags table gains `--copy-issue-context` row; new `## Debugging: --copy-issue-context` section after `## Output & exit codes` explains the redactions + capture-to-file pattern.
+
+**Tests:** 8 new unit tests for `redactArgv` + `buildIssueContext` + 2 new integration tests in `program.test.ts` for the `runCommand --copy-issue-context` flag (positive + negative). Full CLI suite: 129/129 passing.
+
+**Changeset** `.changeset/sp15-copy-issue-context.md` cuts a minor on `0gkit-cli` (new flag).
+
+### Recent Changes
+
+Source of truth = `git log origin/main` on `rajkaria/0gkit`:
+
+- `41868fc` (#49) chore: version packages (0gkit-cli minor → 1.4.0)
+- `925634a` (#48) SP15: --copy-issue-context CLI flag + error page polish
+- `750150a` (#47) chore: version packages (observability + cli minors, core patch)
+- `c205c36` (#46) SP14: local 0g traces explorer + OGKIT_TRACE_DIR JSONL mirror
+
+### Next Steps
+
+**Immediate next session:**
+
+1. **Pull `main`** on `rajkaria/0gkit` (`git fetch && git pull --ff-only`). Local working dir is still `/Users/rajkaria/Projects/0G-ai-kit/`. SP15 sits at `925634a`; published version is at `41868fc`.
+2. **Verify the release workflow published** `@foundryprotocol/0gkit-cli@1.4.0` to npm (`npm view @foundryprotocol/0gkit-cli version`). If it failed (e.g. NPM_TOKEN expiry), re-trigger.
+3. **Pick the next sprint from `docs/superpowers/plans/2026-05-23-post-v1-roadmap.md`.** Wave A is now complete (SP13 docs cleanup, SP14 local traces, SP15 issue context). Wave B is **SP16** — `define0GConfig` in `0gkit-core` + golden path across all 9 templates:
+   - New `define0GConfig` typed config builder with zod env validation. Three slots: `server`, `client`, `edge` (each filters env access).
+   - Every template adopts `define0GConfig` in `app.config.ts` (or `0g.config.ts`). Templates ship with `.env.example` matching the schema.
+   - Every template: working `npm run dev`; auto-detects local devnet via `0g doctor --json | jq .checks` at boot; first-success banner on the first 0G op; `README.md` "What next?" section.
+   - Update `apps/docs/app/templates/page.mdx` — "Under 5 minutes" promise per template.
+   - CI: extend `fresh-machine-smoke.yml` to assert the first-success banner appears in `npm run dev` output for at least storage-app + chat templates.
+4. **Then SP17** (`0g doctor --fix` + `0g test` conformance runner), then **SP18** (`0g mcp init <agent>` for cursor/claude/windsurf/codex). See the roadmap doc for the full Wave A→D sequence + dependency graph.
+
+**Carryover from earlier waves** (unchanged — all substantial, do not bundle): Foundry SDK refresh = SP21, Showcase app = SP22, Community surface = SP23.
+
+### Key Decisions (this session)
+
+- **D67 — `--copy-issue-context` writes to stderr, not stdout.** Keeps `--json` stdout contract clean (`{ ok: true, ... }` or `{ ok: false, error: ... }`) so pipelines that consume the JSON envelope aren't broken by an extra markdown block. Users capture the report via `2> issue.md`.
+- **D68 — `import.meta.resolve` is the production path for package-version discovery, not `createRequire`.** Every `@foundryprotocol/0gkit-*` package's `exports` field is `{ ".": { "types": ..., "import": ... } }` (no `"require"` condition, no `"./package.json"` entry). `createRequire(import.meta.url).resolve(name)` fails with `No "exports" main defined`. `import.meta.resolve` is sync + stable since Node 20.6 (the published `engines.node >= 20`). The CLI then walks up from the resolved main entry to find the matching `package.json` — handles pnpm workspace + npm tarball + dedupe layouts uniformly.
+- **D69 — Stack frames clipped to 10, header lines preserved.** Issue reports stay paste-friendly; the omitted-count footer (`… N more frames omitted`) lets reporters know the full stack was longer. Header lines (the `Error: <message>` prefix, multi-line error messages from upstream RPCs) are kept verbatim — they often contain the actual root cause.
+- **D70 — The CLI's own version is seeded explicitly into `packageVersions()`.** pnpm workspace symlinks plus restricted `exports` mean `import.meta.resolve('@foundryprotocol/0gkit-cli')` either fails or resolves the workspace symlink whose `package.json` may not match the published shape. The `VERSION` constant in `program.ts` already reads the local `package.json` at module load (D40 from SP12); reusing it for the issue report is one line.
+- **(Carried) D62–D66 from SP14** (trace sink as side-channel inside `wrap.ts`; awaited writes with swallowed errors; `0g traces` lives in CLI namespace; `--from-jaeger -` accepts stdin; trace filename format).
+- **(Carried) D58–D61 from the SP14 roadmap** (define0GConfig planned for SP16; Compute.router() planned for SP19; `0g test` lazy-imports `0gkit-testing` for SP17).
+
+### Previous Session Notes
+
+#### Earlier today (2026-05-26 04:45 IST) — SP14 ship
 
 **SP14 shipped + released. Two PRs landed on `rajkaria/0gkit` main this session** (one feature, one auto-generated version-packages):
 
