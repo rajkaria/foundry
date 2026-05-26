@@ -22,6 +22,7 @@ export const DOC_NAV: DocGroup[] = [
       { href: "/docs/quickstart", label: "Quickstart" },
       { href: "/docs/build-on-foundry", label: "Build on Foundry" },
       { href: "/docs/0g-hackathon", label: "Integrate Foundry (0G)" },
+      { href: "/docs/0g-apac-submission", label: "0G APAC submission proof" },
     ],
   },
   {
