@@ -35,45 +35,52 @@ const CONTRACTS = [
     name: "ForgeFactory",
     address: "0x636109264EBF6cFD18CC38bD43eDf9cCad7ae23D",
     tx: "0xe307da04576e3a695aa05d83a60b1f0d82b0029fd5da7ef46b17e96eba5818d0",
-    role: "Main user entry point — anyone calls createForge(...) to spin up a Forge.",
+    role: "Entry point. createForge(...) spins up a new Forge.",
     main: true,
   },
   {
     name: "Ingot",
     address: "0x39B736f424754d05a0da186d89015b74d1DDe1d3",
     tx: "0x9f29bf63b497767fd7e7c0fcb72b2bc16021a26d54a5606442dd5891ed711c65",
-    role: "ERC-721 cap table. Each token represents a co-owned model; holders earn revenue.",
+    role: "ERC-721 cap table. Holders earn revenue per share.",
     main: true,
   },
   {
     name: "RevenueSplitter",
     address: "0xC58E0F32BD43e43153D3CA8ee8F25C8198789289",
     tx: "0x813d2ed42e270c8db8fb61c61864149b8aa89e28b91b8bdb6b18deec73778dd4",
-    role: "Receives inference payments per Ingot and splits to holders by share.",
+    role: "Routes inference payments to Ingot holders.",
     main: false,
   },
   {
     name: "ContributionRegistry",
     address: "0x05235Ba0F2a77bcaB87371E4d797D6830ddC2d86",
     tx: "0xfdd4331b06bf1a089f82e7b52ecacb5e3e27fa9f7ea0693d5fea8f295b75ad46",
-    role: "Logs each Smith's data / compute / capital contribution into a Forge.",
+    role: "Logs Smith contributions to each Forge.",
     main: false,
   },
   {
     name: "IngotRegistry",
     address: "0xF8f3fAE648A8d7ee4Df0A7b10a0F759938aab7e1",
     tx: "0x40d8df433a7813195989eb2fc9da9a2008b83f9c54ac56377c9ef0fbba5ac48c",
-    role: "Canonical directory of all minted Ingots — used by /ingots and the MCP server.",
+    role: "Canonical directory of all minted Ingots.",
     main: false,
   },
   {
     name: "FORGEToken",
     address: "0xE716B0260f462b2A1789cB6cfCBd825736b920Ca",
     tx: "0xf7d67458f582b366906e93c60c4f222a99685351ab84320ef1299b43b5198450",
-    role: "ERC-20 protocol token. Share-denomination for Ingot ownership.",
+    role: "ERC-20 protocol token; denominates Ingot shares.",
     main: false,
   },
 ];
+
+const LINK_CLASS =
+  "text-ember-400 underline decoration-ember-400/40 underline-offset-2 hover:text-ember-300 hover:decoration-ember-300";
+
+function shortAddr(a: string): string {
+  return `${a.slice(0, 6)}…${a.slice(-4)}`;
+}
 
 const SETUP_CALL = {
   name: "Ingot.setFactory(ForgeFactory)",
@@ -124,8 +131,6 @@ const toc = [
   { id: "source", label: "Source code" },
   { id: "npm", label: "Published npm packages" },
   { id: "verify", label: "How to verify" },
-  { id: "reality", label: "Real vs roadmap" },
-  { id: "copy-paste", label: "Copy-paste reply block" },
 ];
 
 export default function ZeroGApacSubmissionPage() {
@@ -143,13 +148,12 @@ export default function ZeroGApacSubmissionPage() {
             href={EXPLORER}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-ember-400 hover:underline"
+            className={LINK_CLASS}
           >
             chainscan.0g.ai
           </a>{" "}
-          (chain {CHAIN_ID}) and on npm. We follow our own honesty rule:{" "}
-          <em>nothing on this page is aspirational</em> — anything that isn't live yet
-          is explicitly called out in §reality.
+          (chain {CHAIN_ID}) and on npm. We follow our own honesty rule: nothing on
+          this page is aspirational.
         </Lead>
       }
       toc={toc}
@@ -164,11 +168,6 @@ export default function ZeroGApacSubmissionPage() {
         Storage upload proxy and 0G Compute broker integration are wired into the web
         app, with the deposit wallet and on-chain provider listed below.
       </P>
-      <Callout tone="ember" title="Reviewer shortcut">
-        Skip to <a href="#copy-paste">§copy-paste reply block</a> for the exact text
-        you can paste into the submission thread.
-      </Callout>
-
       <H2 id="network">Network + deployment</H2>
       <Table
         head={["Field", "Value"]}
@@ -186,7 +185,7 @@ export default function ZeroGApacSubmissionPage() {
               href={EXPLORER}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               {EXPLORER}
             </a>,
@@ -198,7 +197,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/block/${DEPLOY_BLOCK}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               {DEPLOY_BLOCK} ({DEPLOY_BLOCK_HEX})
             </a>,
@@ -215,7 +214,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/${DEPLOYER}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>{DEPLOYER}</Code>
             </a>,
@@ -232,7 +231,7 @@ export default function ZeroGApacSubmissionPage() {
           href="https://github.com/rajkaria/foundry/blob/main/contracts/deployments/aristotle.json"
           target="_blank"
           rel="noreferrer noopener"
-          className="text-ember-400 hover:underline"
+          className={LINK_CLASS}
         >
           <Code>contracts/deployments/aristotle.json</Code>
         </a>
@@ -254,11 +253,14 @@ export default function ZeroGApacSubmissionPage() {
             href={`${EXPLORER}/address/${c.address}`}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-ember-400 hover:underline"
+            title={c.address}
+            className={LINK_CLASS}
           >
-            <Code>{c.address}</Code>
+            <Code>{shortAddr(c.address)}</Code>
           </a>,
-          c.role,
+          <span key={`${c.name}-r`} className="text-platinum-200">
+            {c.role}
+          </span>,
         ])}
       />
 
@@ -275,7 +277,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/0x636109264EBF6cFD18CC38bD43eDf9cCad7ae23D`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <strong>ForgeFactory</strong>
             </a>,
@@ -288,7 +290,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/0x39B736f424754d05a0da186d89015b74d1DDe1d3`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <strong>Ingot</strong>
             </a>,
@@ -303,7 +305,7 @@ export default function ZeroGApacSubmissionPage() {
           href="https://github.com/rajkaria/foundry/blob/main/packages/indexer/src/index.ts"
           target="_blank"
           rel="noreferrer noopener"
-          className="text-ember-400 hover:underline"
+          className={LINK_CLASS}
         >
           <Code>packages/indexer/src/index.ts</Code>
         </a>{" "}
@@ -312,7 +314,7 @@ export default function ZeroGApacSubmissionPage() {
           href="https://foundryprotocol.xyz/dashboard"
           target="_blank"
           rel="noreferrer noopener"
-          className="text-ember-400 hover:underline"
+          className={LINK_CLASS}
         >
           foundryprotocol.xyz/dashboard
         </a>{" "}
@@ -343,7 +345,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/${DEPLOYER}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>{DEPLOYER}</Code>
             </a>,
@@ -355,7 +357,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry/blob/main/apps/web/app/api/storage/upload/route.ts"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               POST /api/storage/upload
             </a>,
@@ -385,7 +387,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/${COMPUTE_BROKER}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>{COMPUTE_BROKER}</Code>
             </a>,
@@ -397,7 +399,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/${COMPUTE_PROVIDER}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>{COMPUTE_PROVIDER}</Code>
             </a>,
@@ -428,7 +430,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/${DEPLOYER}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>{DEPLOYER}</Code>
             </a>,
@@ -440,7 +442,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/${TREASURY}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>{TREASURY}</Code>
             </a>,
@@ -452,7 +454,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/${COMPUTE_BROKER}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>{COMPUTE_BROKER}</Code>
             </a>,
@@ -464,7 +466,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/address/${COMPUTE_PROVIDER}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>{COMPUTE_PROVIDER}</Code>
             </a>,
@@ -488,7 +490,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/tx/${c.tx}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>
                 {c.tx.slice(0, 18)}…{c.tx.slice(-6)}
@@ -503,7 +505,7 @@ export default function ZeroGApacSubmissionPage() {
               href={`${EXPLORER}/tx/${SETUP_CALL.tx}`}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               <Code>
                 {SETUP_CALL.tx.slice(0, 18)}…{SETUP_CALL.tx.slice(-6)}
@@ -534,7 +536,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://docs.0g.ai"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               docs.0g.ai
             </a>,
@@ -554,7 +556,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               foundryprotocol.xyz
             </a>,
@@ -566,7 +568,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz/build-on-foundry"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               foundryprotocol.xyz/build-on-foundry
             </a>,
@@ -578,7 +580,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz/ecosystem"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               foundryprotocol.xyz/ecosystem
             </a>,
@@ -590,7 +592,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz/judges"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               foundryprotocol.xyz/judges
             </a>,
@@ -609,7 +611,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz/dashboard"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               /dashboard
             </a>,
@@ -621,7 +623,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz/forges"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               /forges
             </a>,
@@ -633,7 +635,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz/forges/new"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               /forges/new
             </a>,
@@ -645,7 +647,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz/ingots"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               /ingots
             </a>,
@@ -657,7 +659,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz/smiths"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               /smiths
             </a>,
@@ -669,7 +671,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://foundryprotocol.xyz/lineage"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               /lineage
             </a>,
@@ -723,7 +725,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               github.com/rajkaria/foundry
             </a>,
@@ -735,7 +737,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry/tree/main/contracts/src"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               contracts/src/
             </a>,
@@ -747,7 +749,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry/blob/main/contracts/script/Deploy.s.sol"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               contracts/script/Deploy.s.sol
             </a>,
@@ -759,7 +761,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry/blob/main/contracts/deployments/aristotle.json"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               contracts/deployments/aristotle.json
             </a>,
@@ -771,7 +773,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry/tree/main/packages/sdk"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               packages/sdk/
             </a>,
@@ -783,7 +785,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry/tree/main/packages/mcp-foundry"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               packages/mcp-foundry/
             </a>,
@@ -795,7 +797,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry/tree/main/packages/indexer"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               packages/indexer/
             </a>,
@@ -807,7 +809,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry/tree/main/apps/web"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               apps/web/
             </a>,
@@ -819,7 +821,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/foundry/tree/main/apps/eval-coordinator"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               apps/eval-coordinator/
             </a>,
@@ -831,7 +833,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://github.com/rajkaria/0gkit"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               github.com/rajkaria/0gkit
             </a>,
@@ -843,7 +845,7 @@ export default function ZeroGApacSubmissionPage() {
               href="https://docs.0gkit.com"
               target="_blank"
               rel="noreferrer noopener"
-              className="text-ember-400 hover:underline"
+              className={LINK_CLASS}
             >
               docs.0gkit.com
             </a>,
@@ -861,7 +863,7 @@ export default function ZeroGApacSubmissionPage() {
             href={`https://www.npmjs.com/package/${name}`}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-ember-400 hover:underline"
+            className={LINK_CLASS}
           >
             <Code>{name}</Code>
           </a>,
@@ -877,7 +879,7 @@ export default function ZeroGApacSubmissionPage() {
           href="https://www.npmjs.com/search?q=%40foundryprotocol"
           target="_blank"
           rel="noreferrer noopener"
-          className="text-ember-400 hover:underline"
+          className={LINK_CLASS}
         >
           npm
         </a>
@@ -891,7 +893,7 @@ export default function ZeroGApacSubmissionPage() {
             href={`https://www.npmjs.com/package/${name}`}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-ember-400 hover:underline"
+            className={LINK_CLASS}
           >
             <Code>{name}</Code>
           </a>,
@@ -922,107 +924,6 @@ curl https://foundryprotocol.xyz/api/v1/models
 npm i @foundryprotocol/sdk
 node -e "import('@foundryprotocol/sdk').then(({Foundry}) => \\
   console.log(new Foundry({contracts:'aristotle'}).contracts))"`}</CodeBlock>
-
-      <H2 id="reality">Real vs roadmap (honesty page)</H2>
-      <Table
-        head={["Capability", "Status", "Evidence"]}
-        rows={[
-          [
-            "Six contracts deployed on Aristotle (16661)",
-            <Pill key="c1" tone="positive" dot>live</Pill>,
-            "Block 33,325,628 — see §contracts",
-          ],
-          [
-            "Ingot.setFactory wiring",
-            <Pill key="c2" tone="positive" dot>live</Pill>,
-            "Tx 0x7492…887c, §txs",
-          ],
-          [
-            "SDK + MCP + adapters published",
-            <Pill key="c3" tone="positive" dot>live</Pill>,
-            "§npm-foundry",
-          ],
-          [
-            "0gkit (18 packages) published",
-            <Pill key="c4" tone="positive" dot>live</Pill>,
-            "§npm-0gkit",
-          ],
-          [
-            "0G Storage upload proxy",
-            <Pill key="c5" tone="positive" dot>live</Pill>,
-            "/api/storage/upload route + ZG_STORAGE_INDEXER",
-          ],
-          [
-            "0G Compute broker integration",
-            <Pill key="c6" tone="positive" dot>live</Pill>,
-            "apps/web/lib/zg-compute.ts + eval-coordinator",
-          ],
-          [
-            "OpenAI-compatible inference API",
-            <Pill key="c7" tone="positive" dot>live</Pill>,
-            "/api/v1/chat/completions",
-          ],
-          [
-            "Forges created on-chain",
-            <Pill key="c8" tone="warn" dot>0 so far</Pill>,
-            "/forges shows empty-state — first creation is open",
-          ],
-          [
-            "Ingots minted on-chain",
-            <Pill key="c9" tone="warn" dot>0 so far</Pill>,
-            "Follows from no Forge having transitioned to live yet",
-          ],
-          [
-            "Published storage roots on-chain",
-            <Pill key="c10" tone="warn" dot>0 so far</Pill>,
-            "Ingot.weightsRoot is set at Ingot mint; no mint yet",
-          ],
-          [
-            "Agent ID adaptor contract",
-            <Pill key="c11" tone="neutral" dot>roadmap</Pill>,
-            "Not deployed; Ingot ERC-721 currently serves as model identity",
-          ],
-        ]}
-      />
-      <Callout tone="note" title="Why this matters">
-        We could ship a one-line stub that creates a Forge from the deployer EOA and
-        claim "1 user on-chain" — but per our own honesty rule, on-chain numbers only
-        count user-initiated transactions. The infrastructure is ready; the first
-        organic Forge is what we ask judges to help us catalyze.
-      </Callout>
-
-      <H2 id="copy-paste">Copy-paste reply block</H2>
-      <P>
-        For pasting directly into the 0G APAC review thread:
-      </P>
-      <CodeBlock lang="markdown">{`Foundry Protocol — 0G Aristotle Mainnet (chain 16661)
-
-dApp contracts (all live, block 33,325,628):
-  ForgeFactory   (main user-facing)  0x636109264EBF6cFD18CC38bD43eDf9cCad7ae23D
-  Ingot          (ERC-721 cap table) 0x39B736f424754d05a0da186d89015b74d1DDe1d3
-  RevenueSplitter                    0xC58E0F32BD43e43153D3CA8ee8F25C8198789289
-  ContributionRegistry               0x05235Ba0F2a77bcaB87371E4d797D6830ddC2d86
-  IngotRegistry                      0xF8f3fAE648A8d7ee4Df0A7b10a0F759938aab7e1
-  FORGEToken (ERC-20)                0xE716B0260f462b2A1789cB6cfCBd825736b920Ca
-  Deployer / coordinator EOA         0x4f1866324c7F42E175794C864E649ECBAe07CfE8
-  Treasury                           0x6B130682699955932F4E07aF91581e94920606d7
-
-0G Storage:
-  Indexer:     https://indexer-storage.0g.network
-  Uploader:    0x4f1866324c7F42E175794C864E649ECBAe07CfE8
-  Root hashes: produced at runtime; none on-chain yet (no Ingot mint yet).
-
-0G Compute:
-  Deposit wallet (EOA):  0xAE64220d1639b0E6F9D78Aa2954a84e8B3f557Cd
-  On-chain provider:     0xd9966e13a6026Fcca4b13E7ff95c94DE268C471C
-
-Agent ID adaptor: not yet deployed.
-
-Full structured details + verification commands:
-https://foundryprotocol.xyz/docs/0g-apac-submission
-
-Repos: https://github.com/rajkaria/foundry · https://github.com/rajkaria/0gkit
-Explorer: https://chainscan.0g.ai`}</CodeBlock>
 
       <PageNav
         prev={{ href: "/docs/0g-hackathon", label: "Integrate Foundry (0G)" }}
