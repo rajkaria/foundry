@@ -21,7 +21,13 @@ SP16 (golden path + define0GConfig) landed earlier as PR #50 (`f59b752`). All CI
 
 **Context for this session:** discovered `lvxuan149/0g-apac-app-test` — a manual exploratory-QA repo testing the 0G ecosystem (incl. hackathon submissions like Foundry). Fixed bilingual defect template (标题/归属/严重度/环境/复现步骤/预期/实际/截图/根因), routing buckets (App Suite | 0G Infra | 生态 dApp | Hackathon项目), P1–P4 severity (undefined in their repo), SNR gate. The 0gkit feature makes any 0gkit-based dApp auto-emit that template.
 
-### Recent Changes (this session)
+### Recent Changes (this session — 2026-06-01 ~13:55 IST: publish + contribution PR)
+
+- **Published 0gkit 1.5.0.** Squash-merged the stale version-packages PR [#51](https://github.com/rajkaria/0gkit/pull/51) on `rajkaria/0gkit`; Release run 404'd (expired `NPM_TOKEN` secret); rotated the secret + re-ran run `26742042939` → all 18 `@foundryprotocol/0gkit-*` packages live at `1.5.0` (verified via `npm view`).
+- **Opened goodwill PR [lvxuan149/0g-apac-app-test#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1)** from fork `rajkaria/0g-apac-app-test`, branch `defect-intel-template-and-0gkit`. Four file changes, strictly additive: `defects/SEVERITY.md` (P1–P4 rubric), `defects/TEMPLATE.md` (YAML front-matter template, groupable by `root_cause_code`), `defects/README.md` (the "if the app is built with 0gkit" auto-emit guide + honesty caveats), and a one-line pointer added to their root `README.md`. Honored their hard rules (no ProofClaw mention; their English ownership bucket names; no feature-request framing).
+- **Foundry repo:** updated `CLAUDE.md` (this file, commit `3f1ddb0`) + added memory `project_0gkit_publish_gotchas.md`.
+
+#### Prior session detail (defect-report build — shipped in PR #52)
 
 On `rajkaria/0gkit` (local `/Users/rajkaria/Projects/0G-ai-kit/`), all in PR #52:
 - `packages/0gkit-core/src/defect-report.ts` — **new.** `buildDefectReport()` renders the QA defect template (bilingual labels); `suggestOwnership(code)` (infra namespaces → `0G Infra`, else `Hackathon项目`); `suggestSeverity(code)` (P1 blockers / P3 caller-fixable / P2 default). Framework-agnostic, zero deps — callable from a browser dApp error boundary or the CLI.
@@ -47,7 +53,7 @@ On `rajkaria/0gkit` (local `/Users/rajkaria/Projects/0G-ai-kit/`), all in PR #52
 
 ### Recent Session History (most-recent first; full detail in git history)
 
-- **2026-06-01 13:12 IST — defect-report feature** — `buildDefectReport()`/`suggestOwnership()`/`suggestSeverity()` in `0gkit-core` + `--defect-report` CLI flag. Maps any `ZeroGError` onto the 0G app-test QA template (`lvxuan149/0g-apac-app-test`). PR [#52](https://github.com/rajkaria/0gkit/pull/52) merged (`006e514`), CI green, changeset core+cli minor (publish pending). Decisions D74–D76. Next: verify publish → goodwill PR to their QA repo.
+- **2026-06-01 13:12 IST — defect-report feature** — `buildDefectReport()`/`suggestOwnership()`/`suggestSeverity()` in `0gkit-core` + `--defect-report` CLI flag. Maps any `ZeroGError` onto the 0G app-test QA template (`lvxuan149/0g-apac-app-test`). PR [#52](https://github.com/rajkaria/0gkit/pull/52) merged (`006e514`), CI green, changeset core+cli minor. **Published 1.5.0 on 2026-06-01** (via PR #51 merge + NPM_TOKEN rotation) and **goodwill PR [#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1) opened** to their QA repo (severity rubric + YAML template + 0gkit auto-emit guide). Decisions D74–D76.
 - **2026-05-27 00:34 IST — SP16 ship** — golden path + `define0GConfig` typed config across all 9 templates. PR [#50](https://github.com/rajkaria/0gkit/pull/50) (`f59b752`). `define0GConfig`/`detectLocalDevnet`/`printFirstSuccess` in core; auto-devnet detection + first-success banner + "What next?" README per template. Decisions D71–D73.
 - **2026-05-26 06:39 IST — SP15 ship** — `--copy-issue-context` CLI flag (markdown error dump on stderr with redacted argv + node/OS/package versions) + 5 stale error-page snippets refreshed + `/errors` index callout. PRs [#48](https://github.com/rajkaria/0gkit/pull/48) + [#49](https://github.com/rajkaria/0gkit/pull/49) (version packages). Published `0gkit-cli@1.4.0`. Decisions D67–D70.
 - **2026-05-26 04:45 IST — SP14 ship** — local `0g traces` explorer (`OGKIT_TRACE_DIR` JSONL sink in `0gkit-observability`; `0g traces list|inspect` CLI; `0g cost forecast --from-jaeger -` stdin). PRs [#46](https://github.com/rajkaria/0gkit/pull/46) + [#47](https://github.com/rajkaria/0gkit/pull/47). Published `0gkit-observability@1.1.0` + `0gkit-cli@1.3.0` + `0gkit-core@1.0.2`. Decisions D62–D66.
