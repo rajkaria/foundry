@@ -11,11 +11,11 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
 - **`/save-context` REPLACES the latest-session section below — do not append.** Older session detail lives in git history (`git log` on this file).
 
-## Session Context (Last updated: 2026-06-01 13:12 IST)
+## Session Context (Last updated: 2026-06-01 13:55 IST)
 
 ### Current State
 
-**Defect-report feature shipped to 0gkit (`main` @ `006e514`, PR [#52](https://github.com/rajkaria/0gkit/pull/52) squash-merged).** New `buildDefectReport()` / `suggestOwnership()` / `suggestSeverity()` in `0gkit-core` + a `--defect-report` CLI flag. Turns any `ZeroGError` into a ready-to-file QA defect in the bilingual template used by the 0G ecosystem app-test program (`github.com/lvxuan149/0g-apac-app-test`). Changeset is **core minor + cli minor** — the auto version-packages PR will publish on merge; **not yet verified published** (`npm view @foundryprotocol/0gkit-core version` still needs checking).
+**Defect-report feature shipped to 0gkit (`main` @ `006e514`, PR [#52](https://github.com/rajkaria/0gkit/pull/52) squash-merged).** New `buildDefectReport()` / `suggestOwnership()` / `suggestSeverity()` in `0gkit-core` + a `--defect-report` CLI flag. Turns any `ZeroGError` into a ready-to-file QA defect in the bilingual template used by the 0G ecosystem app-test program (`github.com/lvxuan149/0g-apac-app-test`). Changeset is **core minor + cli minor**. **Published 2026-06-01** — `@foundryprotocol/0gkit-core@1.5.0` + `0gkit-cli@1.5.0` (and all 18 packages, fixed-version bump `1.3.0→1.5.0`, which also shipped the previously-unpublished SP16 changeset) live on npm. Publish initially failed: version-packages PR [#51](https://github.com/rajkaria/0gkit/pull/51) had been left unmerged since SP16, and on merge the Release `changeset publish` step 404'd on all packages because the `NPM_TOKEN` repo secret had **expired**. Rotated the secret (new automation token) + re-ran run `26742042939` → published clean. **Goodwill contribution PR opened: [lvxuan149/0g-apac-app-test#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1)** (severity rubric + YAML template + 0gkit auto-emit guide).
 
 SP16 (golden path + define0GConfig) landed earlier as PR #50 (`f59b752`). All CI green on #52 (`lint·typecheck·build·test` 6m13s, `create-0gkit-app`, cold-start, lhci). Both working dirs clean.
 
@@ -34,8 +34,8 @@ On `rajkaria/0gkit` (local `/Users/rajkaria/Projects/0G-ai-kit/`), all in PR #52
 
 ### Next Steps
 
-1. **Verify publish** — once the auto version-packages PR merges, `npm view @foundryprotocol/0gkit-core version` should bump (core minor) and `0gkit-cli` minor. Watch for the changeset PR on `rajkaria/0gkit`.
-2. **External contribution PR to `lvxuan149/0g-apac-app-test`** (hold until publish so docs link resolves): add (a) a defined **P1–P4 severity rubric**, (b) a **YAML/front-matter defect template** (makes defects aggregatable → their stated systemic-pattern goal), (c) an **"if the app uses 0gkit"** section pointing at `buildDefectReport()` / `0g … --defect-report`. It's their repo, so this is a goodwill PR they must accept.
+1. ~~**Verify publish**~~ ✅ **Done 2026-06-01** — core/cli `1.5.0` live on npm (see Current State). **Carry-forward gotcha:** the version-packages PR must be merged after each feature merge or nothing publishes; and the `NPM_TOKEN` secret expired once — if a future Release run 404s on PUT for all packages, rotate the npm automation token and re-run.
+2. ~~**External contribution PR to `lvxuan149/0g-apac-app-test`**~~ ✅ **Opened [#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1)** — added (a) P1–P4 severity rubric, (b) YAML front-matter template, (c) "if the app is built with 0gkit" auto-emit guide, + one additive README pointer. Strictly additive; their repo, their call. **Await their review/merge.** (Respected their hard rule: no ProofClaw mention; used their English ownership bucket names.)
 3. **Optionally wire `--defect-report` / `buildDefectReport()` into Foundry's own dApp** error boundary so Foundry is the cleanest testee in their QA queue.
 4. **Then SP17** — `0g doctor --fix` + `0g test` conformance runner (frames nicely as "QA noise reduction"). See [post-v1 roadmap](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-23-post-v1-roadmap.md): SP18 MCP init, SP19 Compute Router, SP20 contracts import, SP21 Foundry SDK refresh, SP22 showcase app, SP23 community.
 
