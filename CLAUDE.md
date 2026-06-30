@@ -8,83 +8,85 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - **Squash-merge own PRs** after CI passes; never leave open as a review gate.
 - Commit/push/merge every change without per-change approval; no narration between tool calls.
 - Honesty rule: never fabricate endpoints/behaviors; stubbed/unverified things must be labeled as such.
-- **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*`. Enforced in CI by `pnpm boundary:check`.
+- **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*` app packages. Enforced in CI by `pnpm boundary:check` (now also scans `templates/_kits`).
 - **`/save-context` REPLACES the latest-session section below — do not append.** Older session detail lives in git history (`git log` on this file).
 
-## Session Context (Last updated: 2026-06-01 13:55 IST)
+## Session Context (Last updated: 2026-06-30 16:25 IST)
 
 ### Current State
 
-**Defect-report feature shipped to 0gkit (`main` @ `006e514`, PR [#52](https://github.com/rajkaria/0gkit/pull/52) squash-merged).** New `buildDefectReport()` / `suggestOwnership()` / `suggestSeverity()` in `0gkit-core` + a `--defect-report` CLI flag. Turns any `ZeroGError` into a ready-to-file QA defect in the bilingual template used by the 0G ecosystem app-test program (`github.com/lvxuan149/0g-apac-app-test`). Changeset is **core minor + cli minor**. **Published 2026-06-01** — `@foundryprotocol/0gkit-core@1.5.0` + `0gkit-cli@1.5.0` (and all 18 packages, fixed-version bump `1.3.0→1.5.0`, which also shipped the previously-unpublished SP16 changeset) live on npm. Publish initially failed: version-packages PR [#51](https://github.com/rajkaria/0gkit/pull/51) had been left unmerged since SP16, and on merge the Release `changeset publish` step 404'd on all packages because the `NPM_TOKEN` repo secret had **expired**. Rotated the secret (new automation token) + re-ran run `26742042939` → published clean. **Goodwill contribution PR opened: [lvxuan149/0g-apac-app-test#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1)** — **revised 2026-06-01 to drop the 0gkit auto-emit section** (pulled pending real 0g-kit QA; PR is now a pure generic QA-process contribution: P1–P4 severity rubric + structured YAML defect template, +114/−0, 4 files, history squashed clean of 0gkit refs).
+**0gkit "Kits" epic launched. K0 (the engine) is fully built and shipped to PR [rajkaria/0gkit#54](https://github.com/rajkaria/0gkit/pull/54) (branch `kits-epic`); awaiting GitHub CI → squash-merge.** Kits = drop-in, composable, **multi-framework** feature overlays for 0G apps (`npm create 0gkit-app -- --kits <kit>` at scaffold time, or `0g add <kit>` into an existing project). Clean-room design that takes *reference* from `create-0g-dapp`'s "skills" (Schema Labs) but is our own better version: heavy logic in versioned `0gkit-*` packages (upgradeable, not a code dump), a **3-tier portability model**, per-`(kit × base)` CI gating, durability + real-attestation categories they lack, and honest finance framing.
 
-SP16 (golden path + define0GConfig) landed earlier as PR #50 (`f59b752`). All CI green on #52 (`lint·typecheck·build·test` 6m13s, `create-0gkit-app`, cold-start, lhci). Both working dirs clean.
+**What's in PR #54 (all local gates green: lint·typecheck·build·test·boundary·templates·kits 4/4·format):**
+- **New engine package `@foundryprotocol/0gkit-kits`** — pure, deps `zod`+`giget` only (neutrality-enforced). Surface: `KitManifestSchema`, registry (`listKits`/`getKit`/`loadRegistry` + build-time codegen `gen-registry.mjs`), `resolveTiers`, `applyKit` (composition closure deps-first/deduped/cycle-safe; conflicts throw `KitError`; kit self-supplies its 0gkit deps via `dependencies`), idempotent `mergePackageJson`/`appendEnv`, `fetchKitOverlay`, `detectBase`.
+- **3-tier model:** portable `lib` (always) + per-framework `adapters/<base>` + React-only `ui`. Kits live as git overlays under `templates/_kits/<kit>/` (NOT a workspace pkg, mirrors `templates/_ci`).
+- **`agent-memory` reference kit** — lib-only core via injected `MemoryStorage` (portable + unit-tested); mcp + react adapters wire real `0gkit-storage` (content-addressed root-registry pattern); react UI.
+- **Wiring:** `--kits` flag + interactive picker in `create-0g-app`; `0g add` / `0g kits list|info` in `0gkit-cli` (engine **lazy-loaded** via computed dynamic import, D39 — no static dep). `create-0gkit-app` declares the engine dep so the published command works.
+- **CI gate `pnpm kits:check`** — applies every `(kit × base)` from the *local* tree + type-checks (incl. React/Next bases — the tsc-skip hole was closed). Wired into fresh-machine-smoke.
+- **Plans:** full bite-sized plans for **K0–K11** (K0–K4 Kits + carryover K5–K11 = old SP17–SP23, re-sequenced after the epic) + consolidated roadmap + design spec, all under `docs/superpowers/{specs,plans}/` on `kits-epic`.
 
-**Context for this session:** discovered `lvxuan149/0g-apac-app-test` — a manual exploratory-QA repo testing the 0G ecosystem (incl. hackathon submissions like Foundry). Fixed bilingual defect template (标题/归属/严重度/环境/复现步骤/预期/实际/截图/根因), routing buckets (App Suite | 0G Infra | 生态 dApp | Hackathon项目), P1–P4 severity (undefined in their repo), SNR gate. The 0gkit feature makes any 0gkit-based dApp auto-emit that template.
+**Both working dirs:** `0G-ai-kit` on `kits-epic` (pushed); Foundryprotocol worktree clean.
 
-### Recent Changes (this session — 2026-06-01 ~13:55 IST: publish + contribution PR)
+### Recent Changes (this session — 2026-06-30: Kits epic design + plan + K0 build)
 
-- **Published 0gkit 1.5.0.** Squash-merged the stale version-packages PR [#51](https://github.com/rajkaria/0gkit/pull/51) on `rajkaria/0gkit`; Release run 404'd (expired `NPM_TOKEN` secret); rotated the secret + re-ran run `26742042939` → all 18 `@foundryprotocol/0gkit-*` packages live at `1.5.0` (verified via `npm view`).
-- **Opened goodwill PR [lvxuan149/0g-apac-app-test#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1)** from fork `rajkaria/0g-apac-app-test`, branch `defect-intel-template-and-0gkit`. Strictly additive. **Then revised** (per Raj): removed the entire 0gkit auto-emit section — it was self-promotion in Raj's voice before 0g-kit had actually been run through their QA flow. Final PR = generic QA-process contribution only: `defects/SEVERITY.md` (P1–P4 rubric), `defects/TEMPLATE.md` (YAML front-matter template, groupable by `root_cause_code`/`ownership`/`severity`/`chain_id`; `source: manual|tool-generated` key is tool-neutral), `defects/README.md` (usage + grep aggregation recipes), one-line additive pointer in root `README.md`. Title now "Add P1–P4 severity rubric and structured (YAML) defect template". Branch history squashed to one commit so no 0gkit traces remain. Honored their hard rules (no ProofClaw; their English ownership bucket names; no feature-request framing). **Open question: run 0g-kit through their QA flow first; only then reconsider an auto-emit contribution.**
-- **Foundry repo:** updated `CLAUDE.md` (this file, commit `3f1ddb0`) + added memory `project_0gkit_publish_gotchas.md`.
-
-#### Prior session detail (defect-report build — shipped in PR #52)
-
-On `rajkaria/0gkit` (local `/Users/rajkaria/Projects/0G-ai-kit/`), all in PR #52:
-- `packages/0gkit-core/src/defect-report.ts` — **new.** `buildDefectReport()` renders the QA defect template (bilingual labels); `suggestOwnership(code)` (infra namespaces → `0G Infra`, else `Hackathon项目`); `suggestSeverity(code)` (P1 blockers / P3 caller-fixable / P2 default). Framework-agnostic, zero deps — callable from a browser dApp error boundary or the CLI.
-- `packages/0gkit-core/src/__tests__/defect-report.test.ts` — **new**, 11 tests (incl. exhaustiveness over `ERROR_CODES`).
-- `packages/0gkit-core/src/index.ts` — exports the 3 fns + 5 types.
-- `packages/0gkit-cli/src/{context.ts,program.ts}` — new `--defect-report` global flag; emits report to **stderr** on error (mirrors `--copy-issue-context`; keeps `--json` stdout clean). Auto-derives Chain ID via `getNetwork`.
-- `packages/0gkit-cli/src/__tests__/program.test.ts` — +2 tests.
-- `apps/docs/app/packages/core/page.mdx` — API section + exports list.
-- `.changeset/defect-report-qa-template.md` — core minor + cli minor.
+- **Brainstormed + spec'd the Kits epic** (`docs/superpowers/specs/2026-06-30-0gkit-kits-design.md`). Decisions: name = **"kits"** (the 0gkit pun); clean-room not a port; **dropped create-0g-dapp's hackathon-track taxonomy** (unverified marketing) in favor of 0G capability domains; finance kit reframed honest (analysis + attested log, **no money-moving bot**).
+- **Batch-planned all 12 sprints** (multi-sprint-planning): K0–K4 (Kits) + K5–K11 (carryover old SP17–SP23, folded in per Raj's request). The carryover plans were authored by a background agent in an isolated worktree (branch `kits-carryover-plans`), then merged into `kits-epic`.
+- **Executed K0 end-to-end via `superpowers:subagent-driven-development`** — 11 tasks, fresh implementer + spec/quality review each, ledger at `.superpowers/sdd/progress.md`. Then a **whole-branch opus review caught 4 cross-task bugs the 11 green per-task gates structurally couldn't** (see Key Decisions). All fixed (`74f4825`). Opened **PR #54**.
+- **Foundry repo:** this CLAUDE.md update.
 
 ### Next Steps
 
-1. ~~**Verify publish**~~ ✅ **Done 2026-06-01** — core/cli `1.5.0` live on npm (see Current State). **Carry-forward gotcha:** the version-packages PR must be merged after each feature merge or nothing publishes; and the `NPM_TOKEN` secret expired once — if a future Release run 404s on PUT for all packages, rotate the npm automation token and re-run.
-2. ~~**External contribution PR to `lvxuan149/0g-apac-app-test`**~~ ✅ **Opened [#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1)**, then **revised to drop the 0gkit auto-emit section** (don't pitch our own tool in their repo before it's QA'd). Final PR = (a) P1–P4 severity rubric + (b) YAML front-matter template + one additive README pointer. **Await their review/merge.**
-3. **Optionally wire `--defect-report` / `buildDefectReport()` into Foundry's own dApp** error boundary so Foundry is the cleanest testee in their QA queue.
-4. **Then SP17** — `0g doctor --fix` + `0g test` conformance runner (frames nicely as "QA noise reduction"). See [post-v1 roadmap](https://github.com/rajkaria/0gkit/blob/main/docs/superpowers/plans/2026-05-23-post-v1-roadmap.md): SP18 MCP init, SP19 Compute Router, SP20 contracts import, SP21 Foundry SDK refresh, SP22 showcase app, SP23 community.
+1. **Land K0:** verify CI green on [#54](https://github.com/rajkaria/0gkit/pull/54) → `gh pr merge 54 --squash --delete-branch`. (Publish of `0gkit-kits`+`0gkit-cli`+`create-0g-app`/`create-0gkit-app` happens in **K4**, not yet — changeset is staged; `0gkit-kits` joins the `@foundryprotocol/0gkit-*` linked group.)
+2. **K1** — `ai-oracle`, `sealed-inference`, `prediction-market` (composition + real attestation). Plan ready: `docs/superpowers/plans/2026-06-30-k1-verifiable-ai-market.md`. Execute via subagent-driven-development off fresh `main` after #54 merges.
+3. Then **K2** (durable-agent/live-feed) → **K3** (inft-studio/yield-intel) → **K4** (docs/GTM/publish) → carryover **K5–K11**. Master sequence: `docs/superpowers/plans/2026-06-30-kits-epic-roadmap.md`.
+4. **Deferred Minors from K0's final review** (non-blocking, triage in a later sprint): engine `package.json` `files` lists README/LICENSE not present; `appendEnv` regex not metachar-escaped; raw mutable `KITS` export; applyKit I/O-failure mid-loop partial write (optional stage-then-commit hardening).
 
 ### Key Decisions (this session)
 
-- **D74** — Defect-report renderer + routing/severity heuristics live in `0gkit-core`, **not** the CLI. Rationale: the value prop is "any 0gkit dApp auto-emits the QA template" — a browser dApp can't shell out to the CLI, so the primitive must be importable. CLI just wires the `--defect-report` flag on top.
-- **D75** — `suggestOwnership` only ever returns `0G Infra` or `Hackathon项目` (the two buckets a 0gkit *consumer* can legitimately attribute). `App Suite` / `生态 dApp` are valid manual overrides but never auto-suggested — a hackathon dApp can't author defects against 0G's own/other apps.
-- **D76** — `suggestSeverity` is explicitly labeled "(suggested — confirm against impact)" in the output. Severity is impact-based and can't be inferred from an error code alone; the heuristic is a starting default, not a verdict. Honesty-rule compliant.
+- **D77** — Kits are git overlays under `templates/_kits/`, applied via giget (reusing the `fetchCi` pattern); NOT published packages or string codegen.
+- **D78** — the `0gkit-kits` engine imports only `zod`+`giget`+`node:*`; never another `0gkit-*`/`@foundryprotocol/*` (neutrality + CLI cold-start). Kit *overlays* MAY import `@foundryprotocol/0gkit-*` but never a Foundry app pkg. Both rules CI-enforced (`boundary:check` now scans `templates/_kits`).
+- **D79** — 3-tier model: `lib` always applied, `adapters[base]` if present, `ui` on React bases only; a kit is offered for a base iff `resolveTiers` is non-empty.
+- **D80** — composition: `composes[]` auto-applies deps first (deps-first DFS, deduped, cycle-safe); `conflicts[]` throws `KitError`; a kit's required 0gkit packages travel in its own `dependencies` (not `requires`) so it is self-sufficient on any base.
+- **Process win** — the **whole-branch opus review is load-bearing**: it caught 4 integration-seam bugs invisible to 11 green per-task gates — (C1) published `create-0gkit-app` missing the engine dep → `MODULE_NOT_FOUND`; (C2) the react adapter written against a **non-existent** `0gkit-storage` API, hidden because `kits:check` skipped `tsc` on Next bases; (I3) scaffold `writeEnvExample` clobbering kit env vars; (I4) `detectBase` vocab not matching template/registry bases. Lesson: always run the final whole-branch review even when every task is green, and never let a CI matrix silently skip type-checking a base.
+
+#### Prior session (2026-06-01) — defect-report shipped + 0gkit 1.5.0 published
+
+`buildDefectReport()`/`suggestOwnership()`/`suggestSeverity()` in `0gkit-core` + `--defect-report` CLI flag (PR [#52](https://github.com/rajkaria/0gkit/pull/52), `006e514`). Published all 18 `@foundryprotocol/0gkit-*` at **1.5.0** (via merging stale version-packages PR #51 + rotating an expired `NPM_TOKEN`). Goodwill PR [lvxuan149/0g-apac-app-test#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1) (P1–P4 severity rubric + YAML defect template; 0gkit auto-emit section dropped pending real QA). Decisions D74–D76.
 
 ### Recent Session History (most-recent first; full detail in git history)
 
-- **2026-06-01 13:12 IST — defect-report feature** — `buildDefectReport()`/`suggestOwnership()`/`suggestSeverity()` in `0gkit-core` + `--defect-report` CLI flag. Maps any `ZeroGError` onto the 0G app-test QA template (`lvxuan149/0g-apac-app-test`). PR [#52](https://github.com/rajkaria/0gkit/pull/52) merged (`006e514`), CI green, changeset core+cli minor. **Published 1.5.0 on 2026-06-01** (via PR #51 merge + NPM_TOKEN rotation) and **goodwill PR [#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1) opened** to their QA repo (severity rubric + YAML template; 0gkit auto-emit section was later removed pending real 0g-kit QA). Decisions D74–D76.
-- **2026-05-27 00:34 IST — SP16 ship** — golden path + `define0GConfig` typed config across all 9 templates. PR [#50](https://github.com/rajkaria/0gkit/pull/50) (`f59b752`). `define0GConfig`/`detectLocalDevnet`/`printFirstSuccess` in core; auto-devnet detection + first-success banner + "What next?" README per template. Decisions D71–D73.
-- **2026-05-26 06:39 IST — SP15 ship** — `--copy-issue-context` CLI flag (markdown error dump on stderr with redacted argv + node/OS/package versions) + 5 stale error-page snippets refreshed + `/errors` index callout. PRs [#48](https://github.com/rajkaria/0gkit/pull/48) + [#49](https://github.com/rajkaria/0gkit/pull/49) (version packages). Published `0gkit-cli@1.4.0`. Decisions D67–D70.
-- **2026-05-26 04:45 IST — SP14 ship** — local `0g traces` explorer (`OGKIT_TRACE_DIR` JSONL sink in `0gkit-observability`; `0g traces list|inspect` CLI; `0g cost forecast --from-jaeger -` stdin). PRs [#46](https://github.com/rajkaria/0gkit/pull/46) + [#47](https://github.com/rajkaria/0gkit/pull/47). Published `0gkit-observability@1.1.0` + `0gkit-cli@1.3.0` + `0gkit-core@1.0.2`. Decisions D62–D66.
-- **2026-05-23 20:45 IST — SP13 ship** — docs cleanup + migration guide (`/migrate-from-official-sdks`) + `docs:check --versions` CI gate + perf benchmark workflow. PRs [#44](https://github.com/rajkaria/0gkit/pull/44) + [#45](https://github.com/rajkaria/0gkit/pull/45). Decisions D51–D57.
-- **2026-05-23 — 0gkit.com domain stand-up + v1.0.x onboarding fixes** — landing page (`apps/landing`), `ERROR_HELP_BASE` → 0gkit.com, fresh-machine-smoke + link-check sentinel workflows, docs UI brand overhaul, cookbook tutorials. PRs #26–#40. Decisions D38–D50.
-- **2026-05-22 — Phase 4 wave (SP9–SP12 + v1.0.0)** — error taxonomy (45 codes + helpUrl + per-code MDX), `0gkit-jobs` durable runner, `0gkit-observability` OTel + `0g cost forecast`, SP12 polish + Pagefind + Lighthouse CI. **Cut v1.0.0** — 18 packages published. Decisions D27–D37.
-- **2026-05-20 to 2026-05-22 — Phase 1–3 (SP1–SP8)** — `create-0gkit-app` scaffolder, `0g dev` local stack, wallet packages, `0gkit-contracts` typed clients, `0gkit-testing` mocks, `0gkit-indexer` reorg-safe events, cost estimator + dryRun, 9-template library. Repo renamed `0G-ai-kit` → `0gkit` (D13). Decisions D8–D26.
-- **Pre-2026-05-20 — hackathon era (Sprint 0–3)** — Foundry monorepo + landing + 6 contracts + SDK + indexer + inference loop + Ingot + Lineage + AI-wizard + TEE-viewer. Superseded by the real `@foundryprotocol/0gkit-*` primitives.
+- **2026-06-30 16:25 IST — Kits epic + K0 ship** — designed + spec'd the Kits feature-overlay system, batch-planned K0–K11, and built **K0** (engine `@foundryprotocol/0gkit-kits` + `agent-memory` reference kit + `--kits`/`0g add` wiring + `kits:check` CI gate) via subagent-driven development. Whole-branch opus review caught + fixed 4 cross-task bugs. PR [#54](https://github.com/rajkaria/0gkit/pull/54) open, local gates green. Decisions D77–D80.
+- **2026-06-01 13:55 IST — defect-report + publish 1.5.0** — see Prior session above. PR #52 (`006e514`); 1.5.0 live on npm; goodwill PR #1. Decisions D74–D76.
+- **2026-05-27 00:34 IST — SP16 ship** — golden path + `define0GConfig` across all 9 templates. PR [#50](https://github.com/rajkaria/0gkit/pull/50) (`f59b752`). Decisions D71–D73.
+- **2026-05-26 06:39 IST — SP15 ship** — `--copy-issue-context` CLI flag + stale error-page refresh. PRs [#48](https://github.com/rajkaria/0gkit/pull/48)+[#49](https://github.com/rajkaria/0gkit/pull/49). Published `0gkit-cli@1.4.0`. Decisions D67–D70.
+- **2026-05-26 04:45 IST — SP14 ship** — local `0g traces` explorer + `0g cost forecast --from-jaeger`. PRs [#46](https://github.com/rajkaria/0gkit/pull/46)+[#47](https://github.com/rajkaria/0gkit/pull/47). Decisions D62–D66.
+- **2026-05-23 — SP13 + 0gkit.com stand-up** — docs cleanup + migration guide + landing + sentinels. PRs #26–#45. Decisions D38–D57.
+- **2026-05-22 — Phase 4 (SP9–SP12 + v1.0.0)** — error taxonomy, jobs, observability, Pagefind/LHCI. 18 packages published. Decisions D27–D37.
+- **2026-05-20→22 — Phase 1–3 (SP1–SP8)** — scaffolder, `0g dev`, wallet/contracts/testing/indexer, 9 templates. Repo renamed `0G-ai-kit`→`0gkit` (D13). Decisions D8–D26.
+- **Pre-2026-05-20 — hackathon era** — Foundry monorepo + contracts + SDK + inference loop. Superseded by the real `@foundryprotocol/0gkit-*` primitives.
 
 ### Key Architectural Decisions (still load-bearing — full list in `docs/DECISIONS.md` on 0gkit repo)
 
 - **D13** — Repo named `rajkaria/0gkit` (no `ai` suffix). Local working dir `/Users/rajkaria/Projects/0G-ai-kit/` unchanged.
-- **D24** — `templates/*` is **not** in `pnpm-workspace.yaml` (templates use published packages).
-- **D27** — `ZeroGError.helpUrl` is computed from the error code (`ERROR_HELP_BASE + code`), not stored per-throw. `ERROR_HELP_BASE = "https://docs.0gkit.com/errors/"` from v1.0.1 (D38 rebased from `0gkit.dev`).
-- **D32** — `instrument0g()` patches `Storage` / `Compute` / `DA` prototypes; attestation deferred (free functions, no class).
-- **D39** — CLI lazy-loads heavy deps (`0gkit-jobs`, `0gkit-testing`) via computed-specifier dynamic import to keep cold-start under the SP13 perf budget.
-- **D58** — `OGKIT_TRACE_DIR` env opts in to local JSONL trace mirror in `0gkit-observability` (off by default for privacy).
-- **D67** — `--copy-issue-context` writes to **stderr**, not stdout — keeps the `--json` envelope contract clean for pipelines.
-- **D68** — `import.meta.resolve` is the production path for package-version discovery (not `createRequire`); every `@foundryprotocol/0gkit-*` `exports` field is `"import"`-only.
-- **D71–D73 (SP16, shipped)** — first-success banner contract token `[0gkit:first-success]`; `detectLocalDevnet` is a pure chainId probe (no doctor shell-out); zod is a direct dep on `0gkit-core`.
-- **D74–D76 (defect-report)** — renderer/heuristics in `0gkit-core` not CLI (browser dApps can't shell out); `suggestOwnership` auto-returns only `0G Infra`/`Hackathon项目`; `suggestSeverity` always labeled "(suggested — confirm)".
+- **D24** — `templates/*` (and now `templates/_kits/*`) are **not** in `pnpm-workspace.yaml` (they use published packages / are overlays).
+- **D27 / D38** — `ZeroGError.helpUrl` computed from code (`ERROR_HELP_BASE + code`); `ERROR_HELP_BASE = "https://docs.0gkit.com/errors/"`.
+- **D39** — CLI lazy-loads heavy/optional deps (`0gkit-jobs`, `0gkit-testing`, **`0gkit-kits`**) via computed-specifier dynamic import to keep cold-start under the SP13 perf budget.
+- **D58** — `OGKIT_TRACE_DIR` opts in to local JSONL trace mirror in `0gkit-observability` (off by default).
+- **D67 / D68** — `--copy-issue-context` writes to stderr (clean `--json`); `import.meta.resolve` is the prod path for version discovery; every `0gkit-*` `exports` is `"import"`-only.
+- **D71–D73 (SP16)** — first-success banner token `[0gkit:first-success]`; `detectLocalDevnet` pure chainId probe; zod a direct dep of `0gkit-core`.
+- **D74–D76 (defect-report)** — renderer/heuristics in `0gkit-core`; `suggestOwnership` auto-returns only `0G Infra`/`Hackathon项目`; `suggestSeverity` always labeled "(suggested — confirm)".
+- **D77–D80 (Kits)** — git-overlay kits (not pkgs/codegen); engine `@foundryprotocol/*`-app-free (neutrality); 3-tier `lib`/`adapters`/`ui`; composition deps-first/deduped/cycle-safe + kit self-supplies deps via `dependencies`.
 
 ### Pointers
 
-- **0gkit post-v1 roadmap:** `docs/superpowers/plans/2026-05-23-post-v1-roadmap.md` on the 0gkit repo.
-- **Decisions log:** `docs/DECISIONS.md` on the 0gkit repo (D1–D70).
+- **Kits epic:** spec `docs/superpowers/specs/2026-06-30-0gkit-kits-design.md`; plans `docs/superpowers/plans/2026-06-30-k{0..11}-*.md`; master roadmap `…/2026-06-30-kits-epic-roadmap.md`. K0 SDD ledger: `.superpowers/sdd/progress.md` (all on 0gkit repo / `kits-epic` branch).
+- **0gkit post-v1 roadmap (carryover scope source):** `docs/superpowers/plans/2026-05-23-post-v1-roadmap.md` (re-sequenced banner → kits-epic-roadmap).
+- **Decisions log:** `docs/DECISIONS.md` on 0gkit repo.
 - **Deployer/seed key:** sibling worktree `sad-jemison-e5dba7/.env`; deployer `0x4f18…CfE8`.
 - **Memory:** `/Users/rajkaria/.claude/projects/-Users-rajkaria-Projects-Foundryprotocol/memory/MEMORY.md`.
 
 ### Workflow reminders
 
-- Plan-already-written → execute via `superpowers:subagent-driven-development` or `superpowers:executing-plans` → squash-merge after CI green.
+- Plan-already-written → execute via `superpowers:subagent-driven-development` (same session) or `superpowers:executing-plans` → squash-merge after CI green. **Always run the final whole-branch review** (most-capable model) even when per-task gates are green.
 - `gh pr merge --squash --delete-branch` (auto-merge disabled).
-- The Foundryprotocol repo itself has no in-flight work; all current sprints land on `rajkaria/0gkit`.
+- All current sprints (Kits K0–K11) land on `rajkaria/0gkit`. The Foundryprotocol repo itself has no in-flight code work (K9 Foundry SDK refresh is the one cross-repo carryover, far out).
