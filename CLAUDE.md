@@ -23,7 +23,7 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 
 **(Superseded)** K6 (`0g mcp init`) + Kits epic K0–K5 were built+published in prior sessions (2026-06-30 → 2026-07-01); detail in this file's git history + Recent Session History below. Note: `0gkit-kits` last published @1.8.0 (K6), `0gkit-testing`/`create-0gkit-app` unchanged since K5/epic.
 
-### Recent Changes (this session — 2026-07-01: publish epic + ship+publish K5)
+### Recent Changes (prior 2026-07-01 session — publish epic + ship+publish K5; this session's K7 detail is in Current State above)
 
 - **Published the Kits epic.** The expired `NPM_TOKEN` GitHub secret was refreshed (Raj supplied a fresh Automation token; validated with `npm whoami` first), then squash-merged version PR #55; `release.yml` published clean. **`0gkit-kits@1.6.0` 404'd on the npm read-CDN for ~minutes despite publishing fine** (brand-new scoped packument lags; write endpoint already knew it, `npm access get status` = public) — became HTTP 200 on its own. Do not panic-republish (memory `project_0gkit_publish_gotchas` updated).
 - **Reality-checked the K5 plan before coding** (the K1 discipline) and caught two real drifts + one wiring note → rewrote `docs/superpowers/plans/2026-06-30-k5-doctor-fix-test.md` (see its "Reality check" table): (a) plan reused K1's **D81–D83** → renumbered K5 to **D84–D86** and **backfilled K1's D81–D83** into `docs/DECISIONS.md` (which had stalled at D80); (b) plan's `0g test --kits` assumed a `.0gkit/kits.json` that **K0 never persisted** → added the persistence to `applyKit`; (c) real compute is broker-based (`broker.inference.*`), so live `conformanceDeps.makeCompute` wraps it, suites stay mock-injected.
@@ -39,7 +39,7 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 4. **K5 follow-ups (Minor, triage later):** `--kits` conformance discovery is inert until a kit ships a `conformance.ts` (path/extension needs reconciling with the compiled runtime; currently emits an honest "no conformance module" note — D86-compliant). Live `makeCompute` still uses deprecated `{ brokerKey }` (no sync `signerFromKey` in `0gkit-wallet` yet).
 5. **K0 deferred minors** (still open): engine `package.json` `files` lists README/LICENSE not present; `appendEnv` regex not metachar-escaped; raw mutable `KITS` export; applyKit I/O-failure mid-loop partial write.
 
-### Key Decisions (this session — 2026-07-01)
+### Key Decisions (prior 2026-07-01 session — K5 D84–D86; this session's K7 D89–D91 are in the load-bearing list above)
 
 - **D84 (K5)** — `0g test` lazy-imports `0gkit-testing` via a computed dynamic specifier (D39); conformance suites are pure functions over injected factories → run offline in CI, never gate on Aristotle (D10). CI-verified by the `0g --help cold-start` benchmark.
 - **D85 (K5)** — `0g doctor --fix` is advisory-only: writes `.env*` and prints commands (npm-install line for stale pins, `0g dev` rpc fallback) — never auto-installs or mutates network state. Every non-ok check exposes a `fixCmd` shown with or without `--fix`.
