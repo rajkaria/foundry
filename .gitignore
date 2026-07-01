@@ -76,3 +76,4 @@ docs/04-sprint-plan.md
 docs/05-enhancements.md
 .vercel
 packages/*/src/__boundary_violation__.ts
+.burn-rate/

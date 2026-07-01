@@ -11,75 +11,73 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - **0gkit neutrality is a hard invariant:** no `@0gkit/*` package may statically depend on `@foundryprotocol/*` app packages. Enforced in CI by `pnpm boundary:check` (now also scans `templates/_kits`).
 - **`/save-context` REPLACES the latest-session section below — do not append.** Older session detail lives in git history (`git log` on this file).
 
-## Session Context (Last updated: 2026-06-30 18:30 IST)
+## Session Context (Last updated: 2026-07-01 12:55 IST)
 
 ### Current State
 
-**K0 (the Kits engine) is MERGED — PR [rajkaria/0gkit#54](https://github.com/rajkaria/0gkit/pull/54) squash-merged to `main` (commit `6ca9f39`).** Kits = drop-in, composable, **multi-framework** feature overlays for 0G apps (`npm create 0gkit-app -- --kits <kit>` or `0g add <kit>`). Engine = `@foundryprotocol/0gkit-kits` (zod+giget only, neutrality-enforced) + `agent-memory` reference kit + 3-tier model + `kits:check` CI gate. Landed after fixing **3 CI failures** (2 were masked behind the first): create-0gkit-app DTS build-order, format:check (root-caused — `gen-registry.mjs` now auto-prettier-formats its generated output), and docs:check (added the `0gkit-kits` package docs page + nav).
+**The Kits epic is BUILT, MERGED, and PUBLISHED. K0–K5 are all live on npm.** This session (1) published the previously-merged-but-unpublished Kits epic, then (2) built + shipped + published K5.
 
-**K1 (Verifiable AI + flagship prediction-market) is PLANNED + reconciled, NOT yet built.** Branch `kits-k1-verifiable-ai` (off merged main, pushed). The original K1 draft was written against **non-existent APIs** (`compute.inferAttested`/`chain.anchor`/`attestation.verify`) — the same integration-seam trap K0's review caught. The plan is now **rewritten against the real stack** (`Compute.inference`, `Storage.upload/download`, `verifyEnvelope`/`signEnvelope`+`digestJson`, `0gkit-contracts.createTypedContract`). Three kits — `ai-oracle`, `sealed-inference`, `prediction-market` (composes ai-oracle) — each a portable injected-deps lib + per-base adapters + React UI (mirrors `agent-memory`). Execution = `subagent-driven-development`; fresh ledger at `.superpowers/sdd/progress.md`.
+- **Kits epic (K0–K4)** — was merged to `main` in the prior session but never published. This session merged Changesets release PR #55 → published **`@foundryprotocol/0gkit-kits@1.6.0`** (brand-new flagship pkg), **`0gkit-cli@1.6.0`**, **`create-0gkit-app@1.1.0`**. Kits = drop-in, composable, multi-framework feature overlays (`npm create 0gkit-app -- --kits <kit>` / `0g add <kit>`). 8 kits live: `agent-memory`, `ai-oracle`, `sealed-inference`, `prediction-market`, `durable-agent`, `live-feed`, `inft-studio`, `yield-intel`.
+- **K5 (`0g doctor --fix` + `0g test`)** — built this session via subagent-driven-development, whole-branch **Opus** reviewed (Ready to merge, all 5 integration seams verified sound), merged (PR [#60](https://github.com/rajkaria/0gkit/pull/60) → `f356a91`), and published: **`0gkit-cli@1.7.0` + `0gkit-testing@1.7.0` + `0gkit-kits@1.7.0`** (all verified live on npm; version PR #61).
+- **Next sprint = K6** (`0g mcp init <agent>`). Nothing in flight; `main` is green + released.
+- **This CLAUDE.md was VERY stale at session start** (claimed K1 unbuilt) — it now reflects reality. Fresh SDD ledger for K5 lived at `0G-ai-kit/.superpowers/sdd/progress.md` (gitignored, local; marked DONE + PUBLISHED).
 
-**Both working dirs:** `0G-ai-kit` on `kits-k1-verifiable-ai` (pushed); Foundryprotocol worktree = this CLAUDE.md update.
+### Recent Changes (this session — 2026-07-01: publish epic + ship+publish K5)
 
-### Recent Changes (this session — 2026-06-30 PM: land K0 #54 + reconcile K1)
-
-- **Landed K0 / PR #54.** CI was RED on 2 checks → fixed **3 failures**: (1) `create-0gkit-app-e2e` built the package before the kits engine → DTS `TS2307`; added an engine pre-build step in `.github/workflows/ci.yml`. (2) `format:check` — 7 carryover plan docs + `registry.generated.ts`; **root-caused the generated file** (codegen emitted raw `JSON.stringify` that never matched prettier → perpetual drift) and **fixed at source: `gen-registry.mjs` now formats its output through prettier** (idempotent, cold-build fallback); also `.prettierignore`'d the local `.superpowers` ledger. (3) `docs:check` (masked behind format) — new `0gkit-kits` pkg had no docs → wrote `apps/docs/app/packages/0gkit-kits/page.mdx` (all 24 exports) + sidebar nav. **Validated every build-job step locally incl. playwright**, then squash-merged on green.
-- **Reconciled the K1 plan** to real package APIs. Inventoried `0gkit-{compute,attestation,chain,storage,indexer,contracts,core,testing}` and found the draft assumed verbs that don't exist (`compute.inferAttested`/`chain.anchor`/`attestation.verify`) and that **no TEE quote verification exists in the stack**. Rewrote `docs/superpowers/plans/2026-06-30-k1-verifiable-ai-market.md` against the real surface + Raj's 2 decisions (D81/D82). Branch `kits-k1-verifiable-ai` pushed; fresh SDD ledger written.
-- **Foundry repo:** this CLAUDE.md update.
+- **Published the Kits epic.** The expired `NPM_TOKEN` GitHub secret was refreshed (Raj supplied a fresh Automation token; validated with `npm whoami` first), then squash-merged version PR #55; `release.yml` published clean. **`0gkit-kits@1.6.0` 404'd on the npm read-CDN for ~minutes despite publishing fine** (brand-new scoped packument lags; write endpoint already knew it, `npm access get status` = public) — became HTTP 200 on its own. Do not panic-republish (memory `project_0gkit_publish_gotchas` updated).
+- **Reality-checked the K5 plan before coding** (the K1 discipline) and caught two real drifts + one wiring note → rewrote `docs/superpowers/plans/2026-06-30-k5-doctor-fix-test.md` (see its "Reality check" table): (a) plan reused K1's **D81–D83** → renumbered K5 to **D84–D86** and **backfilled K1's D81–D83** into `docs/DECISIONS.md` (which had stalled at D80); (b) plan's `0g test --kits` assumed a `.0gkit/kits.json` that **K0 never persisted** → added the persistence to `applyKit`; (c) real compute is broker-based (`broker.inference.*`), so live `conformanceDeps.makeCompute` wraps it, suites stay mock-injected.
+- **Built K5 via SDD** (6 consolidated groups): conformance suites + `runConformance()` in `0gkit-testing`; `applyKit` persists `.0gkit/kits.json`; `0g test` CLI (lazy-imported per D39/D84, `--suite/--local/--galileo/--kits`); `0g doctor --fix` with per-check `→ run <cmd> to fix` + `.env`/stale-pin/rpc fixers (production seam wired in `cli.ts` so `bumpStalePins` isn't a no-op — a review catch); 9 templates adopt `0g test` (5 with real vitest got a separate `test:conformance`); `0gkit-testing` docs page; changeset + decisions.
+- **Whole-branch Opus review** returned Ready-to-merge (0 Critical/Important); fixed 2 doc/comment Minors (a stranded D80 paragraph in DECISIONS.md; an over-claiming live-compute comment). CI green incl. the `0g --help cold-start` benchmark → D84 lazy-import is CI-verified.
+- **Process note:** one implementer subagent got stuck in a self-spawned monitor loop and stopped without committing; controller verified the WIP (163 tests / build / typecheck / boundary all green) and finalized the commits. Add `"Do NOT spawn sub-agents / background monitors"` to implementer dispatches.
 
 ### Next Steps
 
-1. **Execute K1** via `superpowers:subagent-driven-development` on `kits-k1-verifiable-ai`: T1 `ai-oracle` → T2 `sealed-inference` → T3 `prediction-market` (composes ai-oracle) → T4 matrix+docs+changeset+full-gate+PR. Plan: `docs/superpowers/plans/2026-06-30-k1-verifiable-ai-market.md` (REVISED — read its "Reality check" table). Ledger: `.superpowers/sdd/progress.md`. **Whole-branch opus review before merge**; squash-merge on green CI. (No publish in K1 — that's K4.)
-2. Then **K2** (durable-agent/live-feed) → **K3** (inft-studio/yield-intel) → **K4** (docs/GTM/**publish** — `0gkit-kits` joins the linked `@foundryprotocol/0gkit-*` group) → carryover **K5–K11**. Roadmap: `docs/superpowers/plans/2026-06-30-kits-epic-roadmap.md`.
-3. **K0 deferred minors** (triage later): engine `package.json` `files` lists README/LICENSE not present; `appendEnv` regex not metachar-escaped; raw mutable `KITS` export; applyKit I/O-failure mid-loop partial write.
+1. **K6** (old SP18) — `0g mcp init <agent>` writes MCP config for cursor/claude/windsurf/codex, exposing the 0gkit tool set. Synergy: kits with MCP adapters (agent-memory, durable-agent, sealed-inference) auto-register their tools. Plan: `docs/superpowers/plans/2026-06-30-k6-mcp-init.md` — **reality-check it against the real CLI/MCP surface first** (the K1/K5 lesson). Then K7 (compute-router, research-gated) → K8 (contracts import) → K9 (Foundry SDK refresh, cross-repo) → K10 (showcase) → K11 (community). Roadmap: `docs/superpowers/plans/2026-06-30-kits-epic-roadmap.md`.
+2. **K5 follow-ups (Minor, triage later):** `--kits` conformance discovery is inert until a kit ships a `conformance.ts` (path/extension needs reconciling with the compiled runtime; currently emits an honest "no conformance module" note — D86-compliant). Live `makeCompute` still uses deprecated `{ brokerKey }` (no sync `signerFromKey` in `0gkit-wallet` yet).
+3. **K0 deferred minors** (still open): engine `package.json` `files` lists README/LICENSE not present; `appendEnv` regex not metachar-escaped; raw mutable `KITS` export; applyKit I/O-failure mid-loop partial write.
 
-### Key Decisions (this session)
+### Key Decisions (this session — 2026-07-01)
 
-- **D81 (K1 honesty)** — the stack has **no TEE quote verification** (`0gkit-attestation` = EIP-191 signed-envelope over an eval-result schema; the `tee-attested-api` template verifies a *provider-signed* envelope). K1 frames attestation honestly as a **signed inference receipt, signature-verified** (badge = "✓ signature verified", never "TEE attested"), behind an injected `Attestor` interface so a real TEE-quote verifier can slot in later. No fabricated behavior (honesty rule).
-- **D82 (K1 anchor)** — no `chain.anchor` primitive exists; K1 ships **both**: default **0G Storage anchor** (immutable content-addressed `root` = commitment) + **opt-in on-chain anchor** (bundled `Anchor.sol` via `0gkit-contracts.createTypedContract`, env-flag-gated; mirrors `templates/nft-with-storage`).
-- **D83 (codegen hygiene)** — `0gkit-kits/scripts/gen-registry.mjs` now formats `registry.generated.ts` through prettier (was raw `JSON.stringify` → perpetual `format:check` drift). Idempotent; graceful cold-build fallback.
-- **Process win (reaffirmed)** — a **pre-build API inventory** caught K1's fictional-API gap before any code was written; the whole-branch review remains the net. Always verify a plan's pseudocode against real exports first, and **run the COMPLETE gate** — `docs:check` was masked behind `format:check` on #54 and only surfaced once format passed.
+- **D84 (K5)** — `0g test` lazy-imports `0gkit-testing` via a computed dynamic specifier (D39); conformance suites are pure functions over injected factories → run offline in CI, never gate on Aristotle (D10). CI-verified by the `0g --help cold-start` benchmark.
+- **D85 (K5)** — `0g doctor --fix` is advisory-only: writes `.env*` and prints commands (npm-install line for stale pins, `0g dev` rpc fallback) — never auto-installs or mutates network state. Every non-ok check exposes a `fixCmd` shown with or without `--fix`.
+- **D86 (K5)** — `applyKit` persists `.0gkit/kits.json` (`{applied,base,at}`, union-merge on re-apply, dryRun no-op); `0g test --kits` reads it; missing manifest / no kits ⇒ informational note, never a failure. (Closed the K0 gap where applied-kit state was never persisted.)
+- **Publish learnings** — a brand-new scoped package's first-ever publish can 404 on the read CDN for minutes though it's live (don't republish; confirm via `npm publish --dry-run` "cannot publish over" + `npm access get status`=public). `create-0g-app` is `"private": true` (canonical scaffolder is `create-0gkit-app`). Leaving version-packages PRs open indefinitely strands releases (the SP16/#51 gotcha).
 
-#### Prior session (2026-06-01) — defect-report shipped + 0gkit 1.5.0 published
+#### Prior session (2026-06-30 PM) — K0 #54 landed + K1 reconciled
 
-`buildDefectReport()`/`suggestOwnership()`/`suggestSeverity()` in `0gkit-core` + `--defect-report` CLI flag (PR [#52](https://github.com/rajkaria/0gkit/pull/52), `006e514`). Published all 18 `@foundryprotocol/0gkit-*` at **1.5.0** (via merging stale version-packages PR #51 + rotating an expired `NPM_TOKEN`). Goodwill PR [lvxuan149/0g-apac-app-test#1](https://github.com/lvxuan149/0g-apac-app-test/pull/1) (P1–P4 severity rubric + YAML defect template; 0gkit auto-emit section dropped pending real QA). Decisions D74–D76.
+Fixed 3 CI failures on #54 and squash-merged the K0 engine to `main` (`6ca9f39`). A pre-build API inventory caught that the original K1 plan was written against non-existent verbs → rewrote it against the real stack. Decisions D81–D83 (K1): honest signed-receipt attestation (no TEE-quote verifier; injected `Attestor` seam); 0G-Storage-default + opt-in-on-chain anchor (`Anchor.sol`); `gen-registry.mjs` prettier-formats its generated output. (K1–K4 were subsequently built + merged; this session published them.)
 
 ### Recent Session History (most-recent first; full detail in git history)
 
-- **2026-06-30 18:30 IST — K0 #54 landed + K1 reconciled** — fixed 3 CI failures on #54 (create-0gkit-app DTS build-order; `gen-registry.mjs` prettier-formats output; new `0gkit-kits` docs page) and squash-merged K0 to `main` (`6ca9f39`). Then a pre-build API inventory caught that the K1 plan was written against non-existent verbs → rewrote it against the real stack + Raj's decisions (honest signed-receipt attestation D81; storage+opt-in-on-chain anchor D82). Branch `kits-k1-verifiable-ai` ready for SDD. Decisions D81–D83.
-- **2026-06-30 16:25 IST — Kits epic + K0 ship** — designed + spec'd the Kits feature-overlay system, batch-planned K0–K11, and built **K0** (engine `@foundryprotocol/0gkit-kits` + `agent-memory` reference kit + `--kits`/`0g add` wiring + `kits:check` CI gate) via subagent-driven development. Whole-branch opus review caught + fixed 4 cross-task bugs. PR [#54](https://github.com/rajkaria/0gkit/pull/54) shipped (squash-merged). Decisions D77–D80.
-- **2026-06-01 13:55 IST — defect-report + publish 1.5.0** — see Prior session above. PR #52 (`006e514`); 1.5.0 live on npm; goodwill PR #1. Decisions D74–D76.
-- **2026-05-27 00:34 IST — SP16 ship** — golden path + `define0GConfig` across all 9 templates. PR [#50](https://github.com/rajkaria/0gkit/pull/50) (`f59b752`). Decisions D71–D73.
-- **2026-05-26 06:39 IST — SP15 ship** — `--copy-issue-context` CLI flag + stale error-page refresh. PRs [#48](https://github.com/rajkaria/0gkit/pull/48)+[#49](https://github.com/rajkaria/0gkit/pull/49). Published `0gkit-cli@1.4.0`. Decisions D67–D70.
-- **2026-05-26 04:45 IST — SP14 ship** — local `0g traces` explorer + `0g cost forecast --from-jaeger`. PRs [#46](https://github.com/rajkaria/0gkit/pull/46)+[#47](https://github.com/rajkaria/0gkit/pull/47). Decisions D62–D66.
-- **2026-05-23 — SP13 + 0gkit.com stand-up** — docs cleanup + migration guide + landing + sentinels. PRs #26–#45. Decisions D38–D57.
-- **2026-05-22 — Phase 4 (SP9–SP12 + v1.0.0)** — error taxonomy, jobs, observability, Pagefind/LHCI. 18 packages published. Decisions D27–D37.
-- **2026-05-20→22 — Phase 1–3 (SP1–SP8)** — scaffolder, `0g dev`, wallet/contracts/testing/indexer, 9 templates. Repo renamed `0G-ai-kit`→`0gkit` (D13). Decisions D8–D26.
-- **Pre-2026-05-20 — hackathon era** — Foundry monorepo + contracts + SDK + inference loop. Superseded by the real `@foundryprotocol/0gkit-*` primitives.
+- **2026-07-01 12:55 IST — publish epic + ship+publish K5** — refreshed `NPM_TOKEN`, merged #55 → published the Kits epic (kits@1.6.0/cli@1.6.0/create-0gkit-app@1.1.0). Reality-checked + built K5 via SDD (conformance runner, `0g test`, `doctor --fix`, `.0gkit/kits.json`), Opus whole-branch review, merged #60 (`f356a91`), then merged version PR #61 → published cli/testing/kits@1.7.0. Decisions D84–D86.
+- **2026-06-30 18:30 IST — K0 #54 landed + K1 reconciled** — squash-merged K0 to `main` (`6ca9f39`); rewrote the K1 plan against the real stack. Decisions D81–D83. (K1–K4 built+merged after this; published 2026-07-01.)
+- **2026-06-30 16:25 IST — Kits epic + K0 ship** — designed the Kits system, batch-planned K0–K11, built K0 via SDD. PR #54. Decisions D77–D80.
+- **2026-06-01 13:55 IST — defect-report + publish 1.5.0** — `buildDefectReport()` + `--defect-report` (PR #52). Published all 18 packages at 1.5.0. Decisions D74–D76.
+- **2026-05-27 → 2026-05-20 — SP1–SP16 + v1.0.0** — scaffolder, `0g dev`, primitives, 9 templates, error taxonomy/jobs/observability, docs/landing, golden-path `define0GConfig`. Decisions D8–D73. Full detail in git history.
 
 ### Key Architectural Decisions (still load-bearing — full list in `docs/DECISIONS.md` on 0gkit repo)
 
 - **D13** — Repo named `rajkaria/0gkit` (no `ai` suffix). Local working dir `/Users/rajkaria/Projects/0G-ai-kit/` unchanged.
-- **D24** — `templates/*` (and now `templates/_kits/*`) are **not** in `pnpm-workspace.yaml` (they use published packages / are overlays).
-- **D27 / D38** — `ZeroGError.helpUrl` computed from code (`ERROR_HELP_BASE + code`); `ERROR_HELP_BASE = "https://docs.0gkit.com/errors/"`.
-- **D39** — CLI lazy-loads heavy/optional deps (`0gkit-jobs`, `0gkit-testing`, **`0gkit-kits`**) via computed-specifier dynamic import to keep cold-start under the SP13 perf budget.
-- **D58** — `OGKIT_TRACE_DIR` opts in to local JSONL trace mirror in `0gkit-observability` (off by default).
-- **D67 / D68** — `--copy-issue-context` writes to stderr (clean `--json`); `import.meta.resolve` is the prod path for version discovery; every `0gkit-*` `exports` is `"import"`-only.
+- **D24** — `templates/*` (and `templates/_kits/*`) are **not** in `pnpm-workspace.yaml` (they use published packages / are overlays).
+- **D27 / D38** — `ZeroGError.helpUrl` computed from code; `ERROR_HELP_BASE = "https://docs.0gkit.com/errors/"`.
+- **D39** — CLI lazy-loads heavy/optional deps (`0gkit-jobs`, `0gkit-testing`, `0gkit-kits`) via computed-specifier dynamic import to keep cold-start under budget.
 - **D71–D73 (SP16)** — first-success banner token `[0gkit:first-success]`; `detectLocalDevnet` pure chainId probe; zod a direct dep of `0gkit-core`.
 - **D74–D76 (defect-report)** — renderer/heuristics in `0gkit-core`; `suggestOwnership` auto-returns only `0G Infra`/`Hackathon项目`; `suggestSeverity` always labeled "(suggested — confirm)".
-- **D77–D80 (Kits)** — git-overlay kits (not pkgs/codegen); engine `@foundryprotocol/*`-app-free (neutrality); 3-tier `lib`/`adapters`/`ui`; composition deps-first/deduped/cycle-safe + kit self-supplies deps via `dependencies`.
-- **D81–D83 (K1)** — attestation = honest **signed inference receipt** (no TEE-quote verification exists; injected `Attestor` seam for a future real one); anchor = **0G Storage by default + opt-in on-chain** (`Anchor.sol` via `0gkit-contracts`); `gen-registry.mjs` prettier-formats its generated `registry.generated.ts` (kills perpetual `format:check` drift).
+- **D77–D80 (Kits engine)** — git-overlay kits (not pkgs/codegen); engine `@foundryprotocol/*`-app-free (neutrality); 3-tier `lib`/`adapters`/`ui`; composition deps-first/deduped/cycle-safe (`composes[]`), deps travel in `dependencies`.
+- **D81–D83 (K1)** — attestation = honest **signed inference receipt** (no TEE-quote verification exists; injected `Attestor` seam); anchor = **0G Storage default + opt-in on-chain** (`Anchor.sol`, `OG_ANCHOR_ONCHAIN=1`); `gen-registry.mjs` prettier-formats its generated `registry.generated.ts`.
+- **D84–D86 (K5)** — `0g test` lazy-imports `0gkit-testing`, suites pure/offline over injected factories (D84); `0g doctor --fix` advisory-only, writes `.env*`/prints commands, every check exposes `fixCmd` (D85); `applyKit` persists `.0gkit/kits.json` and `0g test --kits` reads it additively (D86).
 
 ### Pointers
 
-- **Kits epic:** spec `docs/superpowers/specs/2026-06-30-0gkit-kits-design.md`; plans `docs/superpowers/plans/2026-06-30-k{0..11}-*.md` (on 0gkit `main` since #54); master roadmap `…/2026-06-30-kits-epic-roadmap.md`. Active branch `kits-k1-verifiable-ai`; K1 SDD ledger `.superpowers/sdd/progress.md` (gitignored — local only).
-- **0gkit post-v1 roadmap (carryover scope source):** `docs/superpowers/plans/2026-05-23-post-v1-roadmap.md` (re-sequenced banner → kits-epic-roadmap).
-- **Decisions log:** `docs/DECISIONS.md` on 0gkit repo.
+- **Kits epic:** spec `docs/superpowers/specs/2026-06-30-0gkit-kits-design.md`; plans `docs/superpowers/plans/2026-06-30-k{0..11}-*.md`; roadmap `…/2026-06-30-kits-epic-roadmap.md` (K0–K5 done+published; **K6 next**).
+- **Decisions log:** `docs/DECISIONS.md` on 0gkit repo (now current through D86).
+- **Publish:** Changesets `release.yml` on push to `main` — pending changesets ⇒ version PR; versions bumped + `NPM_TOKEN` ⇒ publish. `NPM_TOKEN` secret refreshed 2026-07-01. Gotchas in memory `project_0gkit_publish_gotchas`.
 - **Deployer/seed key:** sibling worktree `sad-jemison-e5dba7/.env`; deployer `0x4f18…CfE8`.
 - **Memory:** `/Users/rajkaria/.claude/projects/-Users-rajkaria-Projects-Foundryprotocol/memory/MEMORY.md`.
 
 ### Workflow reminders
 
-- Plan-already-written → execute via `superpowers:subagent-driven-development` (same session) or `superpowers:executing-plans` → squash-merge after CI green. **Always run the final whole-branch review** (most-capable model) even when per-task gates are green.
-- `gh pr merge --squash --delete-branch` (auto-merge disabled).
+- Plan-already-written → **reality-check it against real exports first** (the K1/K5 fictional-API lesson), then execute via `superpowers:subagent-driven-development` → squash-merge after CI green. **Always run the final whole-branch review** (most-capable model) even when per-task gates are green.
+- In SDD implementer dispatches, add **"do NOT spawn sub-agents / background monitors"** (a K5 implementer monitor-looped and stalled).
+- `gh pr merge --squash --delete-branch` (auto-merge disabled). Publishing = merge the Changesets version-packages PR (don't leave it open).
 - All current sprints (Kits K0–K11) land on `rajkaria/0gkit`. The Foundryprotocol repo itself has no in-flight code work (K9 Foundry SDK refresh is the one cross-repo carryover, far out).
