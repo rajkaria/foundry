@@ -117,7 +117,12 @@ export const ECOSYSTEM: EcosystemPartner[] = [
     tagline: "Decentralized vector memory with attested, co-owned inference",
     summary:
       "MemoriaDA gives AI agents sovereign, long-term semantic memory — vector-indexed and stored on 0G Storage — so they can recall context across sessions without renting intelligence from centralized APIs. The MemoriaDA team integrated Foundry so every recall-and-respond flow can route inference through a Foundry-managed TEE node (e.g. 0GM-1.0-35B-A3B on 0G Serving), returning a cryptographic attestation and an `inferenceTxHash` with each response. The result: non-custodial memory backed by a co-owned, revenue-generating model — provable end-to-end on 0G.",
-    zeroGStack: ["0G Chain (Aristotle)", "0G Storage", "0G Compute (TEE)", "0G Serving"],
+    zeroGStack: [
+      "0G Chain (Aristotle)",
+      "0G Storage",
+      "0G Compute (TEE)",
+      "0G Serving",
+    ],
     integration:
       "MemoriaDA routes its agent inference calls through Foundry's TEE-secured serving nodes. Each response carries the Ingot's `inferenceTxHash` plus a TEE attestation, so an agent's memory recall and the model that interpreted it are both verifiable on chain. Smiths who trained the underlying Ingot earn revenue from every MemoriaDA-driven inference.",
     highlights: [

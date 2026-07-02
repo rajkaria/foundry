@@ -23,6 +23,7 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 - **Roadmap** — PR [#76](https://github.com/rajkaria/0gkit/pull/76): K10 + K11 marked done.
 
 **Two manual handoffs (no API/tool can do these):**
+
 1. **K11:** create **RFCs** + **Show your kit** Discussion categories in the repo UI (Discussions → Edit categories → New category, Open-ended format), then re-run `bash scripts/setup-discussions.sh` to seed them; pin [#70](https://github.com/rajkaria/0gkit/discussions/70) (⋯ → Pin). GitHub API has NO `createDiscussionCategory`/`pinDiscussion` mutation (D95).
 2. **K10:** create a Vercel project with **Root Directory = `showcase/0gkit-status`** (env optional per `.env.example`), map `apps.0gkit.com`, then swap the TrustSignals href from the GitHub source to the live URL. The Vercel MCP `deploy_to_vercel` is parameterless and can't target a subdirectory safely (D97).
 
@@ -75,6 +76,6 @@ Repo: `rajkaria/foundry` · Domain: `foundryprotocol.xyz` · Default branch: `ma
 ### Workflow reminders
 
 - Plan-already-written → **reality-check it against real exports/tooling first** (the recurring lesson — K10 even caught a self-inflicted wrong-name npm query, D97), then execute via `superpowers:subagent-driven-development` (or TDD inline for micro-sprints) → squash-merge after CI green. **Always run the final whole-branch review** (most-capable model) even when per-task gates are green.
-- **`format:check` runs `prettier --check "**/*"`** across the whole repo incl. `showcase/` and `docs/superpowers/` — a latent unformatted file (e.g. the roadmap table after a wide-cell edit) fails CI. Run prettier on every changed file before pushing.
+- **`format:check` runs `prettier --check "**/\*"`** across the whole repo incl. `showcase/`and`docs/superpowers/` — a latent unformatted file (e.g. the roadmap table after a wide-cell edit) fails CI. Run prettier on every changed file before pushing.
 - `gh pr merge --squash --delete-branch` (auto-merge disabled). Publishing = merge the Changesets version-packages PR. **Pull `main` before branching a follow-up.**
 - All Kits sprints land on `rajkaria/0gkit`. **K9 (Foundry SDK refresh) is the one cross-repo sprint (lands in the Foundryprotocol repo).**

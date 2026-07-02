@@ -96,7 +96,10 @@ export async function OPTIONS(): Promise<NextResponse> {
 }
 
 function normalizeIngotHex(input: string): string | null {
-  const stripped = input.replace(/^ingot:/, "").trim().toLowerCase();
+  const stripped = input
+    .replace(/^ingot:/, "")
+    .trim()
+    .toLowerCase();
   if (!/^0x[a-f0-9]{40}$/.test(stripped)) return null;
   return stripped;
 }
