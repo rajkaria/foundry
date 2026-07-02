@@ -1,6 +1,6 @@
 {
   "name": "@foundryprotocol/eval-coordinator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Eval coordinator daemon — watches Forges, runs attribution inside a TEE on 0G Compute, signs the envelope, posts to 0G DA, submits on-chain.",
   "type": "module",
