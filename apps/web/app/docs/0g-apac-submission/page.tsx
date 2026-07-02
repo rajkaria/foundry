@@ -90,14 +90,20 @@ const SETUP_CALL = {
 const FOUNDRY_PACKAGES = [
   ["@foundryprotocol/sdk", "Foundry class — viem-based, OpenAI-compatible inference"],
   ["@foundryprotocol/mcp", "MCP server (npx @foundryprotocol/mcp)"],
-  ["@foundryprotocol/indexer", "Event indexer for ForgeCreated / IngotMinted / RevenueClaimed"],
+  [
+    "@foundryprotocol/indexer",
+    "Event indexer for ForgeCreated / IngotMinted / RevenueClaimed",
+  ],
   ["@foundryprotocol/design-tokens", "Shared design tokens"],
 ];
 
 const OGKIT_PACKAGES = [
   ["@foundryprotocol/0gkit-core", "Env validation, network presets, define0GConfig"],
   ["@foundryprotocol/0gkit-chain", "createClient, balance, faucet, explorerUrl"],
-  ["@foundryprotocol/0gkit-storage", "0G Storage wrapper — upload, download, computeRoot"],
+  [
+    "@foundryprotocol/0gkit-storage",
+    "0G Storage wrapper — upload, download, computeRoot",
+  ],
   ["@foundryprotocol/0gkit-compute", "0G Compute broker + OpenAI-compatible shim"],
   ["@foundryprotocol/0gkit-da", "Data Availability publish / verify"],
   ["@foundryprotocol/0gkit-attestation", "TEE attestation envelopes (EIP-191)"],
@@ -152,8 +158,8 @@ export default function ZeroGApacSubmissionPage() {
           >
             chainscan.0g.ai
           </a>{" "}
-          (chain {CHAIN_ID}) and on npm. We follow our own honesty rule: nothing on
-          this page is aspirational.
+          (chain {CHAIN_ID}) and on npm. We follow our own honesty rule: nothing on this
+          page is aspirational.
         </Lead>
       }
       toc={toc}
@@ -173,10 +179,7 @@ export default function ZeroGApacSubmissionPage() {
         head={["Field", "Value"]}
         rows={[
           ["Network", "0G Aristotle Mainnet"],
-          [
-            "Chain ID",
-            <Code key="chain">{CHAIN_ID}</Code>,
-          ],
+          ["Chain ID", <Code key="chain">{CHAIN_ID}</Code>],
           ["EVM RPC", <Code key="rpc">https://evmrpc.0g.ai</Code>],
           [
             "Block explorer",
@@ -203,10 +206,7 @@ export default function ZeroGApacSubmissionPage() {
             </a>,
           ],
           ["Deploy date", DEPLOY_DATE],
-          [
-            "Source commit",
-            <Code key="c">{COMMIT}</Code>,
-          ],
+          ["Source commit", <Code key="c">{COMMIT}</Code>],
           [
             "Deployer EOA",
             <a
@@ -225,8 +225,8 @@ export default function ZeroGApacSubmissionPage() {
       <H2 id="contracts">Deployed contracts (mainnet, chain 16661)</H2>
       <P>
         All six contracts below were deployed by Foundry script{" "}
-        <Code>contracts/script/Deploy.s.sol</Code> from commit{" "}
-        <Code>{COMMIT}</Code>. The deployment artifact is checked in at{" "}
+        <Code>contracts/script/Deploy.s.sol</Code> from commit <Code>{COMMIT}</Code>.
+        The deployment artifact is checked in at{" "}
         <a
           href="https://github.com/rajkaria/foundry/blob/main/contracts/deployments/aristotle.json"
           target="_blank"
@@ -265,9 +265,7 @@ export default function ZeroGApacSubmissionPage() {
       />
 
       <H2 id="user-facing">Main user-facing contracts — the ones to count users on</H2>
-      <P>
-        Two contracts emit the events that map 1:1 to real users:
-      </P>
+      <P>Two contracts emit the events that map 1:1 to real users:</P>
       <Table
         head={["Contract", "Counts as", "Event"]}
         rows={[
@@ -325,18 +323,15 @@ export default function ZeroGApacSubmissionPage() {
       <Callout tone="warn" title="Not deployed yet">
         Foundry's architecture references an Agent ID identity for each Ingot, but{" "}
         <strong>no Agent-ID adapter contract is deployed</strong> on Aristotle today.
-        Agent ID is on the post-v1 roadmap; the Ingot ERC-721 currently functions as
-        the model identity.
+        Agent ID is on the post-v1 roadmap; the Ingot ERC-721 currently functions as the
+        model identity.
       </Callout>
 
       <H2 id="storage">0G Storage</H2>
       <Table
         head={["Field", "Value"]}
         rows={[
-          [
-            "Storage indexer",
-            <Code key="i">https://indexer-storage.0g.network</Code>,
-          ],
+          ["Storage indexer", <Code key="i">https://indexer-storage.0g.network</Code>],
           ["Storage SDK", <Code key="ss">@0gfoundation/0g-storage-ts-sdk ^1.2.9</Code>],
           [
             "Upload signer (EOA)",
@@ -405,10 +400,7 @@ export default function ZeroGApacSubmissionPage() {
             </a>,
           ],
           ["Compute SDK", <Code key="cs">@0gfoundation/0g-compute-ts-sdk ^0.8.3</Code>],
-          [
-            "Broker RPC",
-            <Code key="br">https://evmrpc.0g.ai</Code>,
-          ],
+          ["Broker RPC", <Code key="br">https://evmrpc.0g.ai</Code>],
           [
             "Used by",
             <span key="used">
@@ -687,10 +679,7 @@ export default function ZeroGApacSubmissionPage() {
             <Code key="cc">POST /api/v1/chat/completions</Code>,
             "OpenAI-compatible chat completions, attestation-tagged.",
           ],
-          [
-            <Code key="ml">GET /api/v1/models</Code>,
-            "List of live Foundry Ingots.",
-          ],
+          [<Code key="ml">GET /api/v1/models</Code>, "List of live Foundry Ingots."],
           [
             <Code key="dr">GET /api/v1/demo/receipt</Code>,
             "Sample TEE attestation + revenue receipt envelope.",

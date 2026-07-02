@@ -789,4 +789,4 @@ export class Foundry {
 }
 
 export { createWalletClient, http, parseEther };
-export const VERSION = "1.0.0" as const;
+export const VERSION = "1.1.0" as const;

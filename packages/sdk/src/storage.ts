@@ -1,17 +1,18 @@
 /**
  * 0G Storage — upload, download, and verifiable Merkle roots.
  *
- * Wraps `@0gfoundation/0g-storage-ts-sdk` with an ergonomic surface tuned for
- * Foundry's data + manifest + weights flows. Three pieces of the Foundry
- * pipeline are 0G-Storage-native:
+ * Thin adapter over the neutral `@foundryprotocol/0gkit-storage` `Storage`
+ * class. Foundry's `StorageClient` public surface is preserved byte-for-byte
+ * (`upload`/`uploadText`/`uploadJson`/`download`/`downloadText`/`downloadJson`/
+ * `computeRoot`, the `{ rootHash, txHash, txSeq, size }` envelope, and the
+ * `StorageError` type); the underlying `MemData`/`Indexer` dance now lives in
+ * exactly one place (`0gkit-storage`), lazily importing the Node-only
+ * `@0gfoundation/0g-storage-ts-sdk` (+ `ethers`) so this SDK stays lightweight.
  *
+ * Three pieces of the Foundry pipeline are 0G-Storage-native:
  *   1. Dataset contributions   — uploaded encrypted, root logged on-chain
  *   2. Eval holdouts           — uploaded encrypted, root carried in Forge spec
  *   3. Model weights manifests — uploaded after training, root carried in Ingot
- *
- * Server-side & browser safe: file uploads use `MemData` (in-memory) so the
- * same module works in the wizard, in API routes, in CLI scripts, and in the
- * eval coordinator.
  *
  * @example Node — upload a JSON manifest and get the root
  * ```ts
@@ -29,11 +30,7 @@
  */
 
 import type { Hex } from "viem";
-
-// We dynamic-import the 0G storage SDK lazily so the SDK remains lightweight
-// (5 MB unpacked) in environments that never touch storage — e.g. inference-only
-// clients in the browser.
-type ZgStorageModule = typeof import("@0gfoundation/0g-storage-ts-sdk");
+import { Storage, type StorageSdk } from "@foundryprotocol/0gkit-storage";
 
 const ARISTOTLE_STORAGE_INDEXER = "https://indexer-storage.0g.network";
 const GALILEO_STORAGE_INDEXER = "https://indexer-storage-testnet.0g.ai";
@@ -48,6 +45,11 @@ export interface StorageClientConfig {
   network?: "aristotle" | "galileo";
   /** Replicas to upload to. Defaults to 1 (matches the SDK default). */
   expectedReplicas?: number;
+  /**
+   * Inject the underlying 0G Storage SDK module (testing / advanced). Forwarded
+   * to `@foundryprotocol/0gkit-storage`. @internal
+   */
+  loadSdk?: () => Promise<StorageSdk>;
 }
 
 export interface UploadOptions {
@@ -76,7 +78,11 @@ export interface UploadResult {
 export interface DownloadOptions {
   /** Pass an explicit indexer URL to override the client default. */
   indexerUrl?: string;
-  /** Whether to verify Merkle proofs as fragments arrive (default `true`). */
+  /**
+   * Whether to verify Merkle proofs as fragments arrive. The underlying
+   * `0gkit-storage` client always verifies proofs, so this is accepted for
+   * backward compatibility but downloads are always proof-checked.
+   */
   proof?: boolean;
 }
 
@@ -84,7 +90,8 @@ export class StorageClient {
   readonly indexerUrl: string;
   readonly rpcUrl: string;
   readonly expectedReplicas: number;
-  private cachedModule: ZgStorageModule | null = null;
+  private readonly storage: Storage;
+  private readonly loadSdk?: () => Promise<StorageSdk>;
 
   constructor(config: StorageClientConfig = {}) {
     const net = config.network ?? "aristotle";
@@ -93,6 +100,12 @@ export class StorageClient {
       (net === "galileo" ? GALILEO_STORAGE_INDEXER : ARISTOTLE_STORAGE_INDEXER);
     this.rpcUrl = config.rpcUrl ?? DEFAULT_RPC;
     this.expectedReplicas = config.expectedReplicas ?? 1;
+    this.loadSdk = config.loadSdk;
+    this.storage = new Storage({
+      indexerUrl: this.indexerUrl,
+      rpcUrl: this.rpcUrl,
+      ...(config.loadSdk ? { loadSdk: config.loadSdk } : {}),
+    });
   }
 
   /** Upload arbitrary bytes. */
@@ -100,35 +113,22 @@ export class StorageClient {
     data: Uint8Array | ArrayBuffer,
     opts: UploadOptions
   ): Promise<UploadResult> {
-    const mod = await this.load();
     const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
-    const file = new mod.MemData(Array.from(bytes));
-    const indexer = new mod.Indexer(this.indexerUrl);
-    const [tx, err] = await indexer.upload(
-      file,
-      this.rpcUrl,
-      opts.signer as never,
-      opts.uploadOptions as never,
-      undefined,
-      opts.txOptions as never
-    );
-    if (err) throw new StorageError("upload", err);
-    if ("rootHash" in (tx as object)) {
-      const t = tx as { txHash: string; rootHash: string; txSeq: number };
+    try {
+      const r = await this.storage.upload(bytes, {
+        signer: opts.signer,
+        uploadOptions: opts.uploadOptions,
+        txOptions: opts.txOptions,
+      });
       return {
-        rootHash: normalizeHex(t.rootHash),
-        txHash: normalizeHex(t.txHash),
-        txSeq: t.txSeq,
+        rootHash: normalizeHex(r.root),
+        txHash: normalizeHex(r.tx.txHash ?? "0x"),
+        txSeq: r.txSeq ?? 0,
         size: bytes.length,
       };
+    } catch (err) {
+      throw asStorageError("upload", err);
     }
-    const t = tx as { txHashes: string[]; rootHashes: string[]; txSeqs: number[] };
-    return {
-      rootHash: normalizeHex(t.rootHashes[0]!),
-      txHash: normalizeHex(t.txHashes[0]!),
-      txSeq: t.txSeqs[0]!,
-      size: bytes.length,
-    };
   }
 
   /** Upload UTF-8 text. */
@@ -143,14 +143,19 @@ export class StorageClient {
 
   /** Download bytes by root hash. */
   async download(rootHash: Hex, opts: DownloadOptions = {}): Promise<Uint8Array> {
-    const mod = await this.load();
-    const indexer = new mod.Indexer(opts.indexerUrl ?? this.indexerUrl);
-    const [blob, err] = await indexer.downloadToBlob(rootHash, {
-      proof: opts.proof ?? true,
-    } as never);
-    if (err) throw new StorageError("download", err);
-    if (!blob) throw new StorageError("download", new Error("empty blob"));
-    return new Uint8Array(await blob.arrayBuffer());
+    try {
+      const storage =
+        opts.indexerUrl && opts.indexerUrl !== this.indexerUrl
+          ? new Storage({
+              indexerUrl: opts.indexerUrl,
+              rpcUrl: this.rpcUrl,
+              ...(this.loadSdk ? { loadSdk: this.loadSdk } : {}),
+            })
+          : this.storage;
+      return await storage.download(rootHash);
+    } catch (err) {
+      throw asStorageError("download", err);
+    }
   }
 
   /** Download a UTF-8 string. */
@@ -173,36 +178,16 @@ export class StorageClient {
    * hashes that go into a Forge constructor) but don't need to pay for storage.
    */
   async computeRoot(data: Uint8Array | ArrayBuffer | string): Promise<Hex> {
-    const mod = await this.load();
     const bytes =
       typeof data === "string"
         ? new TextEncoder().encode(data)
         : data instanceof Uint8Array
           ? data
           : new Uint8Array(data);
-    const file = new mod.MemData(Array.from(bytes));
-    // The MemData/MerkleTree pair exposed by the SDK exposes `merkleTree()`.
-    const fileWithMerkle = file as unknown as {
-      merkleTree(): Promise<[{ rootHash(): string }, Error | null]>;
-    };
-    const [tree, err] = await fileWithMerkle.merkleTree();
-    if (err) throw new StorageError("computeRoot", err);
-    return normalizeHex(tree.rootHash());
-  }
-
-  private async load(): Promise<ZgStorageModule> {
-    if (this.cachedModule) return this.cachedModule;
     try {
-      this.cachedModule = await import("@0gfoundation/0g-storage-ts-sdk");
-      return this.cachedModule;
+      return normalizeHex(await this.storage.computeRoot(bytes));
     } catch (err) {
-      throw new StorageError(
-        "init",
-        new Error(
-          "0G Storage SDK not installed. Run: pnpm add @0gfoundation/0g-storage-ts-sdk ethers"
-        ),
-        err
-      );
+      throw asStorageError("computeRoot", err);
     }
   }
 }
@@ -217,6 +202,11 @@ export class StorageError extends Error {
     this.op = op;
     this.cause = original ?? cause;
   }
+}
+
+/** Preserve an already-typed StorageError; otherwise wrap the 0gkit error. */
+function asStorageError(op: string, err: unknown): StorageError {
+  return err instanceof StorageError ? err : new StorageError(op, err);
 }
 
 function normalizeHex(s: string): Hex {

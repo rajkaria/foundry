@@ -253,24 +253,24 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@0gfoundation/0g-storage-ts-sdk':
-        specifier: ^1.2.0
-        version: 1.2.9(bufferutil@4.1.0)(ethers@6.16.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+      '@foundryprotocol/0gkit-attestation':
+        specifier: ^1.5.0
+        version: 1.5.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       '@foundryprotocol/0gkit-core':
-        specifier: ^0.1.0
-        version: 0.1.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
+        specifier: ^1.5.0
+        version: 1.5.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       '@foundryprotocol/0gkit-da':
-        specifier: ^0.1.0
-        version: 0.1.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
+        specifier: ^1.5.0
+        version: 1.5.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
+      '@foundryprotocol/0gkit-storage':
+        specifier: ^1.12.0
+        version: 1.12.0(@0gfoundation/0g-storage-ts-sdk@1.2.9(bufferutil@4.1.0)(ethers@6.16.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10))(ethers@6.16.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       '@langchain/core':
         specifier: '>=0.3.0'
         version: 1.1.46(@opentelemetry/api@1.9.1)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       ai:
         specifier: '>=3.0.0'
         version: 6.0.182(zod@4.3.6)
-      ethers:
-        specifier: ^6.13.0
-        version: 6.16.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       viem:
         specifier: ^2.21.0
         version: 2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
@@ -949,15 +949,35 @@ packages:
   '@ethersproject/wordlists@5.8.0':
     resolution: {integrity: sha512-2df9bbXicZws2Sb5S6ET493uJ0Z84Fjr3pC4tu/qlnZERibZCeUVuqdtt+7Tv9xxhUxHoIekIA7avrKUWHrezg==}
 
-  '@foundryprotocol/0gkit-core@0.1.0':
-    resolution: {integrity: sha512-X0G5CUepljcf07io87mLijGG+9nUPqL2V05XuhuhKEz9VwXNZRMRfgnFp2gWXxL4CxUiDYCUE+lo1WghMbGh2A==}
+  '@foundryprotocol/0gkit-attestation@1.5.0':
+    resolution: {integrity: sha512-BQdBnO33VtwUhlmASDA2kWmQbMuFUxjZt8yGlEycuOxIAMPlyQS6ozcBV+dmkpeA92gZA4A5aeT5AthzpteDyg==}
     peerDependencies:
       viem: ^2.21.0
 
-  '@foundryprotocol/0gkit-da@0.1.0':
-    resolution: {integrity: sha512-4I9m8K+Jp4jqGQ7HeIHo4eq3dlet9SeI55IqROQosr5vdZw0EJHlcdvFseZ/TFQkf/cTGM10/npRv6fBuM3W8w==}
+  '@foundryprotocol/0gkit-core@1.5.0':
+    resolution: {integrity: sha512-aCb1NgUEnoF8dTCLZrvG548xl0OkC1xYVS0SesMZZXFtzcTZ2NsEsfNBMkHNx0syj6PFQJpq5vwXtnn5Zg964w==}
     peerDependencies:
       viem: ^2.21.0
+
+  '@foundryprotocol/0gkit-da@1.5.0':
+    resolution: {integrity: sha512-WCmXs2lkbxQVdaeySDxBkTfwrKTix7jaJRQ7eooPOTfXwgwamyPobYqvmvARR1CjZHOAKftu+dWEDCu9zNT1Yw==}
+    peerDependencies:
+      viem: ^2.21.0
+
+  '@foundryprotocol/0gkit-storage@1.12.0':
+    resolution: {integrity: sha512-WY4uxsxHU+CAMRHafhzKWItv0XLOii8GNrFrHNyJfALUNsyf5MAp/wI4quEgU1QYmCGSW5wJEB9RMKMxn9W+FA==}
+    peerDependencies:
+      '@0gfoundation/0g-storage-ts-sdk': ^1.2.9
+      '@foundryprotocol/0gkit-testing': '*'
+      ethers: 6.13.1
+      viem: ^2.21.0
+    peerDependenciesMeta:
+      '@0gfoundation/0g-storage-ts-sdk':
+        optional: true
+      '@foundryprotocol/0gkit-testing':
+        optional: true
+      ethers:
+        optional: true
 
   '@hono/node-server@1.19.14':
     resolution: {integrity: sha512-GwtvgtXxnWsucXvbQXkRgqksiH2Qed37H9xHZocE5sA3N8O8O8/8FA3uclQXxXVzc9XBZuEOMK7+r02FmSpHtw==}
@@ -5750,14 +5770,28 @@ snapshots:
       '@ethersproject/properties': 5.8.0
       '@ethersproject/strings': 5.8.0
 
-  '@foundryprotocol/0gkit-core@0.1.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
+  '@foundryprotocol/0gkit-attestation@1.5.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
     dependencies:
+      '@foundryprotocol/0gkit-core': 1.5.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       viem: 2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
 
-  '@foundryprotocol/0gkit-da@0.1.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
+  '@foundryprotocol/0gkit-core@1.5.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
     dependencies:
-      '@foundryprotocol/0gkit-core': 0.1.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       viem: 2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+      zod: 3.25.76
+
+  '@foundryprotocol/0gkit-da@1.5.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
+    dependencies:
+      '@foundryprotocol/0gkit-core': 1.5.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
+      viem: 2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+
+  '@foundryprotocol/0gkit-storage@1.12.0(@0gfoundation/0g-storage-ts-sdk@1.2.9(bufferutil@4.1.0)(ethers@6.16.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10))(ethers@6.16.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
+    dependencies:
+      '@foundryprotocol/0gkit-core': 1.5.0(viem@2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
+      viem: 2.48.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+    optionalDependencies:
+      '@0gfoundation/0g-storage-ts-sdk': 1.2.9(bufferutil@4.1.0)(ethers@6.16.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+      ethers: 6.16.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
 
   '@hono/node-server@1.19.14(hono@4.12.18)':
     dependencies:
